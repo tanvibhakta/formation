@@ -1,3 +1,8 @@
+# Todo 
+
+[] How do I get apps to use settings files I've stored on other platforms like iCloud and Dropbox during setup?
+[] How do I copy over setting files for local terminal changes, such as my global gitignore and my bash profile?
+
 # 🐝 Formation <a href="https://www.patreon.com/minamarkham"><img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="100"></a>
 
 ![Let's get in formation](assets/formation.gif)
