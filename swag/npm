@@ -1,4 +1,2 @@
-eslint::eslint
-gatsby-cli::gatsby
+@anthropic-ai/claude-code::claude
 imageoptim-cli::imageOptim
-prettier::prettier
