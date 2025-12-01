@@ -11,10 +11,8 @@ linear
 localtunnel
 mas
 mkcert
-n
 netlify-cli
 nginx
-npm
 pnpm
 rbenv
 shellcheck
