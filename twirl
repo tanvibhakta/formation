@@ -528,6 +528,23 @@ ssh_key_setup() {
     fi
 }
 
+pnpm_setup() {
+    # Check if PNPM_HOME is already set in shell config
+    if [ -z "$PNPM_HOME" ]; then
+        print_warning "Running pnpm setup to configure environment..."
+        pnpm setup
+        # Source the updated shell config to get PNPM_HOME in current session
+        if [ -f "$HOME/.bashrc" ]; then
+            source "$HOME/.bashrc"
+        elif [ -f "$HOME/.zshrc" ]; then
+            source "$HOME/.zshrc"
+        fi
+        print_success "pnpm setup completed"
+    else
+        print_success_muted "pnpm already configured. PNPM_HOME=$PNPM_HOME"
+    fi
+}
+
 mas_setup() {
     if mas account > /dev/null; then
         return 0
@@ -575,10 +592,10 @@ install_application_via_app_store() {
 	fi
 }
 
-install_npm_packages() {
+install_pnpm_packages() {
 	if [[ $(cli_is_installed $2) == 0 ]]; then
 		echo_install "Installing $1"
-		npm install $1 -g --silent
+		pnpm add -g $1 --silent
 		print_in_green "${bold}✓ installed!${normal}\n"
 	else
 		print_success_muted "$1 already installed. Skipped."

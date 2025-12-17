@@ -145,6 +145,16 @@ if [ -e $cwd/swag/brews ]; then
 fi
 
 ###############################################################################
+# SETUP: pnpm
+###############################################################################
+if command -v pnpm &> /dev/null; then
+	chapter "Setting up pnpm…"
+	pnpm_setup
+else
+	print_warning "pnpm not found. Skipping pnpm setup."
+fi
+
+###############################################################################
 # UPDATE: Homebrew
 ###############################################################################
 chapter "Updating Homebrew formulae…"
@@ -194,15 +204,15 @@ chapter "Cleaning up Homebrew files…"
 brew cleanup 2> /dev/null
 
 ###############################################################################
-# INSTALL: npm packages
+# INSTALL: pnpm packages
 ###############################################################################
 if [ -e $cwd/swag/npm ]; then
-	chapter "Installing npm packages…"
+	chapter "Installing pnpm packages…"
 
 	for pkg in $(<$cwd/swag/npm); do
 		KEY="${pkg%%::*}"
 		VALUE="${pkg##*::}"
-		install_npm_packages $KEY $VALUE
+		install_pnpm_packages $KEY $VALUE
 	done
 fi
 
