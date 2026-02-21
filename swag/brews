@@ -1,5 +1,6 @@
 asciinema
 awscli
+duti
 emacs
 gcalcli
 gh
@@ -11,7 +12,6 @@ linear
 localtunnel
 mas
 mkcert
-netlify-cli
 nginx
 pnpm
 rbenv
