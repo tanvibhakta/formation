@@ -2,6 +2,7 @@
 
 [] How do I get apps to use settings files I've stored on other platforms like iCloud and Dropbox during setup?
 [] How do I copy over setting files for local terminal changes, such as my global gitignore and my bash profile?
+[] How do I allow the option of only having certain libraries on certain machines? separate asset files entirely or a build step on each one? g
 
 # 🐝 Formation <a href="https://www.patreon.com/minamarkham"><img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="100"></a>
 
