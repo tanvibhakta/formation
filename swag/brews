@@ -1,5 +1,6 @@
 asciinema
 awscli
+direnv
 duti
 emacs
 gcalcli
@@ -18,6 +19,7 @@ rbenv
 scrcpy
 shellcheck
 tailscale
+tmux
 wget
 yt-dlp
 1password-cli
