@@ -1,0 +1,9 @@
+<application>
+  <component name="SystemPythonService">
+    <option name="userProvidedPythons">
+      <list>
+        <option value="$USER_HOME$/.pyenv/versions/3.12.4/bin/python" />
+      </list>
+    </option>
+  </component>
+</application>

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.alfredapp.andrew.shouldiwatchthismovie</string>
+	<key>category</key>
+	<string>Internet</string>
+	<key>connections</key>
+	<dict>
+		<key>8FFEAC5E-8F49-4D26-B262-50887CB20991</key>
+		<array/>
+		<key>F8C5D133-7C4D-44F2-845B-FAE1568A09E7</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>1A9FC88F-182C-484B-9295-1B0CE632218A</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>35C9FF5F-BD7B-48AD-8619-8679FEB2BC91</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Andrew Pepperrell</string>
+	<key>description</key>
+	<string>Open a trailer in YouTube, details in IMDB &amp; ratings in Rotten Tomatoes</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Should I watch this movie?</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>skipqueryencode</key>
+				<false/>
+				<key>skipvarencode</key>
+				<false/>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>https://www.youtube.com/results?search_query={query}+official+trailer</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>1A9FC88F-182C-484B-9295-1B0CE632218A</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>{var:keyword}</string>
+				<key>subtext</key>
+				<string>Open movie details in YouTube and Letterboxed</string>
+				<key>text</key>
+				<string>Show details for movie '{query}'</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>F8C5D133-7C4D-44F2-845B-FAE1568A09E7</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>skipqueryencode</key>
+				<false/>
+				<key>skipvarencode</key>
+				<false/>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>https://letterboxd.com/search/{query}/</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>35C9FF5F-BD7B-48AD-8619-8679FEB2BC91</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>/Applications/Firefox.app/Contents/MacOS/firefox --new-window</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>8FFEAC5E-8F49-4D26-B262-50887CB20991</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string># Should I watch this movie?
+
+Open a trailer in YouTube, details in IMDB and ratings in Rotten Tomatoes.
+
+![Should I watch this movie?](movie-workflow.png)
+
+## Usage
+
+Type your keyword *("movie" by default)* followed by the name of a movie you'd like to watch.
+
+IMDB and Rotten Tomatoes will open in your default browser, and YouTube will open in Chrome, with the results for your search term.
+
+## Configuration
+
+Fancy checking a few more sites? Add your own searches, and connect them to the same keyword object.
+
+YouTube opens in Chrome to demonstrate that Default Web Searches and Open URL objects can be set to open in a browser of your choice.</string>
+	<key>uidata</key>
+	<dict>
+		<key>1A9FC88F-182C-484B-9295-1B0CE632218A</key>
+		<dict>
+			<key>xpos</key>
+			<real>560</real>
+			<key>ypos</key>
+			<real>95</real>
+		</dict>
+		<key>35C9FF5F-BD7B-48AD-8619-8679FEB2BC91</key>
+		<dict>
+			<key>xpos</key>
+			<real>560</real>
+			<key>ypos</key>
+			<real>270</real>
+		</dict>
+		<key>8FFEAC5E-8F49-4D26-B262-50887CB20991</key>
+		<dict>
+			<key>xpos</key>
+			<real>245</real>
+			<key>ypos</key>
+			<real>350</real>
+		</dict>
+		<key>F8C5D133-7C4D-44F2-845B-FAE1568A09E7</key>
+		<dict>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>140</real>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>movie</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Set the keyword you'd like to use to trigger the workflow</string>
+			<key>label</key>
+			<string>Keyword</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>keyword</string>
+		</dict>
+	</array>
+	<key>variablesdontexport</key>
+	<array/>
+	<key>version</key>
+	<string>2022.2</string>
+	<key>webaddress</key>
+	<string>https://github.com/alfredapp/should-i-watch-this-movie-workflow/</string>
+</dict>
+</plist>

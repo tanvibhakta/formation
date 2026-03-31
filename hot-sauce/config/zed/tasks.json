@@ -1,0 +1,12 @@
+[
+  {
+    "label": "Open today's note",
+    "command": "dir=\"$HOME/notes/daily/$(date +%Y)/$(date +%m-%B)\" && file=\"$dir/$(date +%d).md\" && mkdir -p \"$dir\" && [ -f \"$file\" ] || printf '# %s %s\\n\\n' \"$(date +%Y-%m-%d)\" \"$(date +%A)\" > \"$file\" && zed \"$file\"",
+    "hide": "always"
+  },
+  {
+    "label": "New scratch file",
+    "command": "mkdir -p \"$HOME/notes/scratch\" && zed \"$HOME/notes/scratch/$(date +%Y%m%d-%H%M%S).md\"",
+    "hide": "always"
+  }
+]

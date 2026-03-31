@@ -1,0 +1,70 @@
+<application>
+  <component name="Trusted.Paths">
+    <option name="TRUSTED_PROJECT_PATHS">
+      <map>
+        <entry key="$USER_HOME$/Code" value="true" />
+        <entry key="$USER_HOME$/Code/KnowledgeKeeper_Frontend" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/Base" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/Base-tanvi/admin-ux-improvements" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-alt-179" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-fix-nextjs-security-upgrade" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-240-move-the-chat-implementation-to-within-phaser" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-275-create-a-dover-join-us-clone" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-277-mobile-experience" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-287-click-on-any-of-the-characters-on-the-screen-to-be-able-to" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-288-write-a-build-script-to-strip-all-non-public-code-paths-from" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-351-use-alt-faces-in-the-avatar-instead-of-the-initials" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-358-allow-the-user-to-stop-the-alt-animations" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-396-analytics-fixes" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-400-prescreen-application-should-support-multiple-job" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-401-localstorage-agents-not-being-cleared-correctly-on-forcenew" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-404-reduce-lcp-of-prescreen-page" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-423-rapid_api-linkedin-call-should-happen-imediately-after-a" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-prescreen-ui-fixes" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/alt-177-set-up-swagger-for-web-service-for-the-proxy-endpoints" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/alt-207-get-a-first-pass-of-integrating-tavus-apis" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/alt-209-the-user-should-not-be-able-to-chat-with-the-agent-without" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/alt-222-figure-out-how-easy-it-is-to-do-tavus-video-embedding-in-our" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/alt-229-create-a-side-scroller-game-experience-prototype-similar-to" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/worktree-updates" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/base-wt-test" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/devbox" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/scripts" value="true" />
+        <entry key="$USER_HOME$/Code/alt.inc/the-hold" value="true" />
+        <entry key="$USER_HOME$/Code/appsmith" value="true" />
+        <entry key="$USER_HOME$/Code/appsmith-ee" value="true" />
+        <entry key="$USER_HOME$/Code/backend2.0/graphqlservice/src" value="true" />
+        <entry key="$USER_HOME$/Code/cardinal40-take-home" value="true" />
+        <entry key="$USER_HOME$/Code/desi-deck" value="true" />
+        <entry key="$USER_HOME$/Code/design-lint-appsmith" value="true" />
+        <entry key="$USER_HOME$/Code/design-system" value="true" />
+        <entry key="$USER_HOME$/Code/fiddle" value="true" />
+        <entry key="$USER_HOME$/Code/formation" value="true" />
+        <entry key="$USER_HOME$/Code/kaboodle" value="true" />
+        <entry key="$USER_HOME$/Code/kaboodle/client/apps/web" value="true" />
+        <entry key="$USER_HOME$/Code/kite-public" value="true" />
+        <entry key="$USER_HOME$/Code/koolio-react-app-develop" value="true" />
+        <entry key="$USER_HOME$/Code/leetcode" value="true" />
+        <entry key="$USER_HOME$/Code/llm-toys" value="true" />
+        <entry key="$USER_HOME$/Code/mausambi.in" value="true" />
+        <entry key="$USER_HOME$/Code/pinky-promise-patient-app" value="true" />
+        <entry key="$USER_HOME$/Code/ragchallenge-app" value="true" />
+        <entry key="$USER_HOME$/Code/ragchallenge-service" value="true" />
+        <entry key="$USER_HOME$/Code/react-data-grid" value="true" />
+        <entry key="$USER_HOME$/Code/rss-bridge" value="true" />
+        <entry key="$USER_HOME$/Code/tanvibhakta-website" value="true" />
+        <entry key="$USER_HOME$/Code/telegram-to-dynalist" value="true" />
+        <entry key="$USER_HOME$/Code/tutorial-with-astro" value="true" />
+        <entry key="$USER_HOME$/Code/website/tanvibhakta.in" value="true" />
+        <entry key="$USER_HOME$/Desktop/regex-factory-v2" value="false" />
+      </map>
+    </option>
+  </component>
+  <component name="Trusted.Paths.Settings">
+    <option name="TRUSTED_PATHS">
+      <list>
+        <option value="$USER_HOME$/Code" />
+      </list>
+    </option>
+  </component>
+</application>

@@ -1,0 +1,245 @@
+<application>
+  <component name="AILicenseTypeStorage">
+    <option name="selectedType" value="LITE" />
+  </component>
+  <component name="ActionHistoryManager">
+    <ids>
+      <option value="GotoAction" />
+      <option value="ShowRegistry" />
+      <option value="Git.MainMenu.MergeActions" />
+      <option value="TodoMainGroup" />
+      <option value="Activateaws.toolkit.explorerToolWindow" />
+      <option value="NewPackageJsonFile" />
+      <option value="ActivateTerminalToolWindow" />
+      <option value="ActivateAIAssistantToolWindow" />
+      <option value="ActivateCodyToolWindow" />
+      <option value="About" />
+      <option value="NewStylesheetFile" />
+      <option value="DatabaseView.AddDataSourceGroup" />
+      <option value="DatabaseView.AddDataSourceFromUrl" />
+      <option value="DatabaseViewPopupMenu" />
+      <option value="ActivateTODOToolWindow" />
+      <option value="Console.TableResult.GoToExtractorsScriptsDirectory" />
+      <option value="WelcomeScreen.Plugins" />
+      <option value="Vcs.Log.Diff.Preview.Location" />
+      <option value="main.toolbar.git.MergeRebase" />
+      <option value="Annotate" />
+      <option value="GitWorktree.PurchaseLicense" />
+      <option value="Graph.TreeLayoutGroup" />
+      <option value="ActivatePullRequestsToolWindow" />
+      <option value="Github.Create.Pull.Request" />
+      <option value="Vcs.CopyCurrentBranchName" />
+    </ids>
+  </component>
+  <component name="DynamicPluginEnabler">
+    <trackers>
+      <map>
+        <entry key="2Agqfq2zqce7xzQhPIs9SP9Ts38">
+          <value>
+            <ProjectPluginTracker />
+          </value>
+        </entry>
+        <entry key="2Ay1Vg2VsqVQEIjFFP4etQUt25o">
+          <value>
+            <ProjectPluginTracker />
+          </value>
+        </entry>
+        <entry key="2BSw5lg2QnqMSoHfrJML8J5Crrh">
+          <value>
+            <ProjectPluginTracker />
+          </value>
+        </entry>
+        <entry key="2BexTP7HPbq40yglwVvl41ZvJBO">
+          <value>
+            <ProjectPluginTracker />
+          </value>
+        </entry>
+        <entry key="2DpWqzK58LdnlyGV45uXZOxhUZj">
+          <value>
+            <ProjectPluginTracker />
+          </value>
+        </entry>
+        <entry key="2EQMK70N6y1SvBGsFCntQsxHybp">
+          <value>
+            <ProjectPluginTracker />
+          </value>
+        </entry>
+      </map>
+    </trackers>
+  </component>
+  <component name="FileEditorProviderManager">{
+  &quot;selectedProviders&quot;: {
+    &quot;text-editor,csv-data-editor&quot;: &quot;text-editor&quot;,
+    &quot;text-editor,react_designer&quot;: &quot;text-editor&quot;,
+    &quot;text-editor,sourcemapFileViewerProvider&quot;: &quot;text-editor&quot;
+  }
+}</component>
+  <component name="LangManager">
+    <option name="languageName" value="Python" />
+  </component>
+  <component name="NotRoamableUiSettings">
+    <option name="fontSize" value="13.0" />
+    <option name="presentationModeIdeScale" value="1.75" />
+  </component>
+  <component name="PropertyService"><![CDATA[{
+  "keyToString": {
+    "AIHubNotificationManager.lastUsedLicenseType": "FREE",
+    "CWM_LOGGING_VERSION": "1",
+    "CommitChangeListDialog.DETAILS_SPLITTER_PROPORTION_2": "0.6041397",
+    "CommitToolWindow.COMMIT_SPLITTER_PROPORTION": "0.6066838",
+    "DiffRequestProcessor.BottomComponentSplitter": "0.99",
+    "ExpandBeforeRunStepsPanel": "true",
+    "FindSplitterProportion": "0.33033708",
+    "GeneralSettings.initiallyConfigured": "true",
+    "InstalledPluginsSearchHistory": "mercurial\nsho\ns\ngithub\ngithu",
+    "KEYMAP": "switch work\ntermina\nannotate",
+    "LAST_CALCULATED_COLOR_INDEX_KEY": "4",
+    "LAST_EXTRACTOR_SCRIPTS_CLEANUP_VERSION/data/aggregators": "WS-251.23774.424",
+    "LAST_EXTRACTOR_SCRIPTS_CLEANUP_VERSION/data/extractors": "WS-251.23774.424",
+    "Markdown Split EditorLayout": "Editor only",
+    "MarketplacePluginsSearchHistory": "markdown /sortBy:downloads\nmarkdown\nmar\nworktree\n/suggested",
+    "NextRunPlatformUpdateBuild": "WS-252.28539.21",
+    "NextRunPlatformUpdateSelfBuild": "WS-252.23892.411",
+    "NextRunPlatformUpdateVersion": "2025.2.6",
+    "NonModalCommitCustomization.IsApplied": "true",
+    "Notification.DisplayName-DoNotAsk-com.intellij.ml.llm.plugin.alert.claude.agent": "Claude Agent is here",
+    "Notification.DisplayName-DoNotAsk-com.intellij.ml.llm.plugin.alert.gpt5": "JetBrains AI Assistant",
+    "Notification.DoNotAsk-com.intellij.ml.llm.plugin.alert.claude.agent": "true",
+    "Notification.DoNotAsk-com.intellij.ml.llm.plugin.alert.gpt5": "true",
+    "PluginConfigurable.selectionTab": "1",
+    "RegistryRecentKeys": "ide.experimental.ui",
+    "RunOnceActivity.AccountsToCodyMigration": "true",
+    "RunOnceActivity.CodyAccountsIdsRefresh": "true",
+    "RunOnceActivity.CodyApplicationSettingsMigration": "true",
+    "RunOnceActivity.CodyAssignOrphanedChatsToActiveAccount": "true",
+    "RunOnceActivity.Run Grazie Token Refresher": "true",
+    "RunOnceActivity.TerminalFontSettingsService.fixStoredNonMonospacedFonts": "true",
+    "RunOnceActivity.TerminalOptionsProvider.migration.2025.1.1": "true",
+    "RunOnceActivity.ToggleCodyToolWindowAfterMigration": "true",
+    "RunOnceActivity.VFSInitializationConditionsToFusReporter": "true",
+    "RunOnceActivity.git.modal.commit.deprecation.notification": "true",
+    "RunOnceActivity.git.modal.commit.toggle": "true",
+    "RunOnceActivity.llm.onboarding.window.launcher.v7": "true",
+    "RunOnceActivity.se.text.search": "true",
+    "RunOnceActivity.software.aws.toolkits.jetbrains.services.caws.EnableGitCredHelper": "true",
+    "RunOnceActivity.software.aws.toolkits.jetbrains.services.telemetry.AwsToolkitStartupMetrics": "true",
+    "RunOnceActivity.svelte.init.key": "true",
+    "RunOnceActivity.webstorm.auto-popup.quick-doc.initialized": "true",
+    "RunOnceActivity.webstorm.code.vision.default.position.initialized": "true",
+    "SHELLCHECK.PATH": "",
+    "SettingsSearchHistory": "ai assiste\nmercurial\nmerge\nshortcu\nopen pull requ",
+    "ShowUsagesActions.splitterServiceKey": "0.2881166",
+    "TextEditorWithPreview.SplitterProportionKey": "0.46191514",
+    "Vcs.Log.Text.Filter.History": "6d8eaf0\n9b331c8\nsnippet\npatch",
+    "WelcomeFeature.SHORT_WELCOME_GUIDE_SHOWN": "true",
+    "annotate.short.names.type": "firstname",
+    "appcds.runOnSecondStart": "WS-223.8836.50-b354ef1aa8ac1aee68d8305dfa92ca07e7a92206ddeb7eb1dd36d629271bc1eb",
+    "ask.about.ctrl.y.shortcut.v2": "true",
+    "aws.ignore_deprecation_prompt": "true",
+    "bundled.plugins.list.saved.version": "WS-223.8836.50",
+    "com.intellij.history.integration.ui.views.FileHistoryDialog.0": "300",
+    "com.intellij.history.integration.ui.views.FileHistoryDialog.1": "800",
+    "com.intellij.history.integration.ui.views.SelectionHistoryDialog.0": "300",
+    "com.intellij.history.integration.ui.views.SelectionHistoryDialog.1": "800",
+    "database.data.extractors.output.dir": "/Users/tanvibhakta/Downloads",
+    "database.notebook.setting.id": "3db85fc9-71e1-4f57-8b0b-7af42acd3539",
+    "dir.diff.panel.splitter.proportion": "0.17025863",
+    "dir.diff.space.button.info": "1",
+    "enter_selection_count": "5",
+    "evaluation.feedback.enabled": "false",
+    "evlsprt.252": "1987658fc40",
+    "evlsprt3.221": "25",
+    "evlsprt3.223": "22",
+    "evlsprt3.241": "6",
+    "evlsprt3.251": "7",
+    "evlsprt3.252": "6",
+    "experimental.ui.first.promotion.localdate": "2024-04-16",
+    "experimental.ui.on.first.startup": "false",
+    "experimental.ui.onboarding.proposed.version": "251.23774.424",
+    "experimental.ui.used.version": "252.23892.411",
+    "export.settings.path": "/Users/tanvibhakta/Downloads/settings.zip",
+    "file.gist.reindex.count": "2295",
+    "fileTypeChangedCounter": "19",
+    "find.popup.splitter": "0.772791",
+    "fontSizeToResetConsole": "17.0",
+    "fontSizeToResetEditor": "17.0",
+    "got.it.tooltip.Plugins Auto-Update": "1",
+    "got.it.tooltip.builtin.web.server.reload.on.save": "1",
+    "got.it.tooltip.cody.autocomplete.gotIt": "1",
+    "got.it.tooltip.copilot.inlayGotIt": "1",
+    "got.it.tooltip.cwm.invitation.notification": "1",
+    "got.it.tooltip.database.schema.control.got.it": "1",
+    "got.it.tooltip.js.debugger.terminal.start.debugger.from.url": "1",
+    "got.it.tooltip.reader.mode.got.it": "1",
+    "got.it.tooltip.speed.search.shown": "1",
+    "got.it.tooltip.terminal.smart_command_execution": "1",
+    "gotit.previous.run": "WS-221.5787.30",
+    "ide.memory.adjusted": "true",
+    "idea.islands.enabled": "true",
+    "ift.learning.panel.opened.in": "221.5787.30",
+    "ignoreUltimateEdition": "true",
+    "js.chrome.debugger.port.98ca6316-2f89-46d9-a9e5-fa9e2b0625b3": "51269",
+    "js.live.template.contexts.migrated": "true",
+    "js.rename.search.for.text.occurrences": "true",
+    "js.rename.search.in.comments": "true",
+    "llm.installer.auto.activation.executed": "true",
+    "llm.installer.last.toolwindow.state": "AI_ASSISTANT",
+    "migrated.non.roamable.values.from.general.settings": "true",
+    "plugins.preselection.path": "/Users/tanvibhakta/Downloads",
+    "previousColorScheme": "_@user_Dark",
+    "promo.ignore.ultimate.edition": "true",
+    "pycharm.pro.suggestion.dismissed": "true",
+    "registry.to.advanced.settings.migration.build": "WS-252.23892.411",
+    "settings.code.style.selected.tab.JavaScript": "Code Generation",
+    "tasks.pass.word.conversion.enforced": "true",
+    "terminal.gen.one.option.visible": "false",
+    "ts.lib.d.ts.version": "5.7.3",
+    "vcs.branch.view.splitter.proportion": "0.14311594",
+    "vcs.history.diff.splitter.proportion": "0.4483373",
+    "vcs.log.changes.splitter.proportion": "0.54019743",
+    "vcs.log.details.splitter.proportion": "0.6215539"
+  },
+  "keyToStringList": {
+    "AIHubNotificationManager.gotItNotifications": [
+      "FREE_ENABLED"
+    ],
+    "AIHubNotificationManager.lastAllNotifications": [],
+    "AIHubNotificationManager.notifications": [],
+    "AIHubNotificationManager.seenNotifications": [],
+    "file.chooser.recent.files": [
+      "/Users/tanvibhakta/Code/remixicon-react/node_modules/remixicon/icons",
+      "/Users/tanvibhakta/Code/appsmith/app/client/src"
+    ],
+    "fileTypeDetectors": [
+      "com.intellij.ide.scratch.ScratchFileServiceImpl$Detector",
+      "com.intellij.docker.dockerFile.DockerFileTypeDetector",
+      "com.intellij.javascript.debugger.sourcemap.SourceMapFileType$MyFileTypeDetector",
+      "com.intellij.database.vfs.DbStorageFileType$Detector",
+      "com.jetbrains.nodejs.util.NodeFileTypeDetector$JavaScriptFileTypeDetector",
+      "com.jetbrains.nodejs.util.NodeFileTypeDetector$TypeScriptFileTypeDetector",
+      "org.jetbrains.plugins.textmate.TextMateFileType$TextMateFileDetector"
+    ]
+  }
+}]]></component>
+  <component name="SearchOptions">
+    <option name="fuState">
+      <list />
+    </option>
+    <option name="suState">
+      <list />
+    </option>
+  </component>
+  <component name="TabdirConfiguration">
+    <option name="charsInName" value="5" />
+    <option name="countMaxDirsFromStart" value="true" />
+    <option name="dirSeparator" value="|" />
+    <option name="filesExtensions" value="" />
+    <option name="maxDirsToShow" value="3" />
+    <option name="projectConfigEnabled" value="false" />
+    <option name="reduceDirNames" value="true" />
+    <option name="relativeTo" />
+    <option name="removeDuplicates" value="false" />
+    <option name="titleFormat" value="[{0}] {1}" />
+    <option name="useExtensions" value="Do not use" />
+  </component>
+</application>

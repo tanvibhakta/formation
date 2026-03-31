@@ -1,0 +1,84 @@
+ulimit -n 10240
+
+export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+export JAVA_HOME=$(/usr/libexec/java_home -v 17.0.7)
+
+# Lazy load nvm (loads on first use of node/npm/nvm/npx)
+export NVM_DIR="$HOME/.nvm"
+lazy_nvm() {
+  unset -f nvm node npm npx
+  [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+  load-nvmrc
+}
+nvm() { lazy_nvm; nvm "$@"; }
+node() { lazy_nvm; node "$@"; }
+npm() { lazy_nvm; npm "$@"; }
+npx() { lazy_nvm; npx "$@"; }
+
+# Auto-switch node version when entering a directory with .nvmrc
+autoload -U add-zsh-hook
+load-nvmrc() {
+  local nvmrc_path
+  nvmrc_path="$(nvm_find_nvmrc 2>/dev/null)"
+  if [ -z "$nvmrc_path" ]; then
+    # nvm not loaded yet, check manually
+    if [ -f ".nvmrc" ]; then
+      lazy_nvm
+      nvmrc_path="$(nvm_find_nvmrc)"
+    fi
+  fi
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$(nvm version)" ]; then
+      nvm use
+    fi
+  elif [ -n "$(PWD=$OLDPWD nvm_find_nvmrc 2>/dev/null)" ] && [ "$(nvm version)" != "$(nvm version default)" ]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+
+# Lazy load pyenv (loads on first use of pyenv/python/python3/pip)
+export PATH="$HOME/.pyenv/bin:$PATH"
+lazy_pyenv() {
+  unset -f pyenv python python3 pip pip3
+  eval "$(pyenv init --path)"
+  eval "$(pyenv init -)"
+}
+pyenv() { lazy_pyenv; pyenv "$@"; }
+python() { lazy_pyenv; python "$@"; }
+python3() { lazy_pyenv; python3 "$@"; }
+pip() { lazy_pyenv; pip "$@"; }
+pip3() { lazy_pyenv; pip3 "$@"; }
+
+. "$HOME/.cargo/env"
+
+# Secrets (API keys, credentials) loaded from ~/.secrets
+[ -f ~/.secrets ] && source ~/.secrets
+
+export PATH=$HOME/Code/flutter/bin:$PATH
+
+cw() {
+local w=$(git worktree list | grep "\[$1\]" | awk '{print $1}'); [ -n "$w" ] && (cd "$w" && claude) || (git worktree add "../Base-$1" "$1" && cd "../Base-$1" && claude);
+}
+
+
+# pnpm
+export PNPM_HOME="/Users/tanvibhakta/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# OpenClaw Completion
+source "/Users/tanvibhakta/.openclaw/completions/openclaw.zsh"
+
+# bun completions
+[ -s "/Users/tanvibhakta/.bun/_bun" ] && source "/Users/tanvibhakta/.bun/_bun"
+
+# direnv
+eval "$(direnv hook zsh)"

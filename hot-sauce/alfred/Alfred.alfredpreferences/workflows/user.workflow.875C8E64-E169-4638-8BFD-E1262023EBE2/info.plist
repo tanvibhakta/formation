@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string></string>
+	<key>category</key>
+	<string>Tools</string>
+	<key>connections</key>
+	<dict>
+		<key>98B06623-ACED-431C-8ECD-8BCC197B4E9D</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>D315F8A6-B0F5-4EB1-9747-C2E3BC5C2C2A</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Tanvi Bhakta</string>
+	<key>description</key>
+	<string></string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Create Weeknote</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>weeknote</string>
+				<key>subtext</key>
+				<string></string>
+				<key>text</key>
+				<string>Create weeknote from template</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>98B06623-ACED-431C-8ECD-8BCC197B4E9D</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string># Get current date information
+DAY=$(date +"%d" | sed 's/^0//')
+MONTH=$(date +"%b")
+YEAR=$(date +"%Y")
+
+# Add the appropriate suffix to the day
+if [ $DAY -eq 1 ] || [ $DAY -eq 21 ] || [ $DAY -eq 31 ]; then
+    SUFFIX="st"
+elif [ $DAY -eq 2 ] || [ $DAY -eq 22 ]; then
+    SUFFIX="nd"
+elif [ $DAY -eq 3 ] || [ $DAY -eq 23 ]; then
+    SUFFIX="rd"
+else
+    SUFFIX="th"
+fi
+
+FILENAME="Week of $MONTH $DAY$SUFFIX, $YEAR.md"
+
+# Create the file with the template
+cat &gt; "$FILENAME" &lt;&lt; EOF
+## Work 
+## Life 
+## Health
+## Learning
+## Media Diet
+### Reading
+### Watching
+### Listening 
+### Around the web
+EOF
+
+FILEPATH="/Users/tanvibhakta/Dropbox/iA Writer/tanvibhakta.in/Weeknotes/$FILENAME"
+
+# Move the file to the correct dropbox directory
+mv "$FILENAME" "$FILEPATH"
+
+# Open the file (uses the default markdown editor)
+open -a "iA Writer" "$FILEPATH"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>D315F8A6-B0F5-4EB1-9747-C2E3BC5C2C2A</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string></string>
+	<key>uidata</key>
+	<dict>
+		<key>98B06623-ACED-431C-8ECD-8BCC197B4E9D</key>
+		<dict>
+			<key>xpos</key>
+			<real>125</real>
+			<key>ypos</key>
+			<real>215</real>
+		</dict>
+		<key>D315F8A6-B0F5-4EB1-9747-C2E3BC5C2C2A</key>
+		<dict>
+			<key>xpos</key>
+			<real>335</real>
+			<key>ypos</key>
+			<real>220</real>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array/>
+	<key>webaddress</key>
+	<string>tanvibhakta.in</string>
+</dict>
+</plist>

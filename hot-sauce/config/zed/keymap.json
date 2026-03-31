@@ -1,0 +1,53 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      // "shift shift": "file_finder::Toggle"
+    },
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      // "j k": "vim::NormalBefore"
+    },
+  },
+  {
+    "context": "(Workspace && !Terminal)",
+    "bindings": {
+      "cmd-shift-n": "workspace::NewFile"
+    }
+  },
+  {
+    "context": "(Editor && mode == full)",
+    "bindings": {
+      "cmd-shift-n": null
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-shift-n": null
+    }
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "ctrl-shift-up": "editor::GoToPreviousHunk",
+      "ctrl-shift-down": "editor::GoToHunk"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "alt-shift-t": ["task::Spawn", { "task_name": "Open today's note" }],
+      "alt-shift-s": ["task::Spawn", { "task_name": "New scratch file" }]
+    }
+  }
+]

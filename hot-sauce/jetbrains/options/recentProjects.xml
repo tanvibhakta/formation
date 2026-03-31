@@ -1,0 +1,802 @@
+<application>
+  <component name="RecentProjectsManager">
+    <option name="additionalInfo">
+      <map>
+        <entry key="$USER_HOME$/Code/telegram-to-dynalist">
+          <value>
+            <RecentProjectMetaInfo frameTitle="telegram-to-dynalist – README.md" projectWorkspaceId="2ewPFDUCp01WIWyS5qQjXWEGh5p">
+              <option name="activationTimestamp" value="1716459469158" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-241.14494.235" />
+              <option name="buildTimestamp" value="1711554960000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="6" />
+              </option>
+              <frame x="164" y="77" width="1400" height="1000" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1714398801302" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/desi-deck">
+          <value>
+            <RecentProjectMetaInfo frameTitle="desi-deck – profile.html" projectWorkspaceId="2hhFr0em8HTiaWSoAjCIpJvSbOY">
+              <option name="activationTimestamp" value="1718720248988" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-241.14494.235" />
+              <option name="buildTimestamp" value="1711554960000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="2" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1718038597035" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/react-data-grid">
+          <value>
+            <RecentProjectMetaInfo frameTitle="react-data-grid – DataGrid.tsx" projectWorkspaceId="2iPyv0vVEISbiwfgmXKeMvrgbtd">
+              <option name="activationTimestamp" value="1720086783539" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-241.17890.13" />
+              <option name="buildTimestamp" value="1717517100000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="4" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1720014752118" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$APPLICATION_CONFIG_DIR$/light-edit">
+          <value>
+            <RecentProjectMetaInfo frameTitle="Application - /Library" hidden="true" projectWorkspaceId="2iyaJp0j50rx6EY3Fia1XsdwXf4">
+              <option name="activationTimestamp" value="1758266741689" />
+              <frame x="-113" y="-1055" width="960" height="1055" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/redux-essentials-example-app">
+          <value>
+            <RecentProjectMetaInfo frameTitle="redux-essentials-example-app – postsSlice.ts" projectWorkspaceId="2k9UtAIncyKGzA4FalnsRlST8Pj">
+              <option name="activationTimestamp" value="1722841771429" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-241.17890.13" />
+              <option name="buildTimestamp" value="1717517100000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="6" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1722695498127" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/appsmith">
+          <value>
+            <RecentProjectMetaInfo frameTitle="appsmith – actionSelectorActions.ts" projectWorkspaceId="2Agqfq2zqce7xzQhPIs9SP9Ts38">
+              <option name="activationTimestamp" value="1722841769157" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-241.17890.13" />
+              <option name="buildTimestamp" value="1717517100000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="6" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1055" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1722838826426" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/rss-bridge">
+          <value>
+            <RecentProjectMetaInfo frameTitle="rss-bridge" projectWorkspaceId="2pQubJGseCjSPkb1nK1DThNtfIP">
+              <option name="activationTimestamp" value="1733487118276" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-241.17890.13" />
+              <option name="buildTimestamp" value="1717517100000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="7" />
+              </option>
+              <frame x="0" y="38" width="864" height="1079" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1732710691560" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/kaboodle/client/apps/web">
+          <value>
+            <RecentProjectMetaInfo frameTitle="Makefile" projectWorkspaceId="2pqJwK1ALNAurf8ENpL3aOMkKwl">
+              <option name="activationTimestamp" value="1733487909393" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-241.17890.13" />
+              <option name="buildTimestamp" value="1717517100000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="1" />
+              </option>
+              <frame x="164" y="77" width="1400" height="1000" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1733487909504" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/mausambi.in">
+          <value>
+            <RecentProjectMetaInfo frameTitle="mausambi.in – sheets.astro" projectWorkspaceId="2qKI9DUXKSszphtuEn3TMgUsGRT">
+              <option name="activationTimestamp" value="1734941289869" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-241.17890.13" />
+              <option name="buildTimestamp" value="1717517100000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="2" />
+              </option>
+              <frame x="576" y="38" width="1152" height="1079" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1734406019085" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/ragchallenge-app">
+          <value>
+            <RecentProjectMetaInfo frameTitle="ragchallenge-app – package.json" projectWorkspaceId="2qUENJ8zLyUjsz3YOPITReqAvOO">
+              <option name="activationTimestamp" value="1738904024611" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-241.17890.13" />
+              <option name="buildTimestamp" value="1717517100000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="4" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1734708711231" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/ragchallenge-service">
+          <value>
+            <RecentProjectMetaInfo frameTitle="ragchallenge-service – README.md" projectWorkspaceId="2qU54w49O6YbaJljHu8CqK0jSyH">
+              <option name="activationTimestamp" value="1735306760251" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-241.17890.13" />
+              <option name="buildTimestamp" value="1717517100000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="3" />
+              </option>
+              <frame x="164" y="77" width="1400" height="1000" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1735295028554" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/fiddle">
+          <value>
+            <RecentProjectMetaInfo frameTitle="fiddle" projectWorkspaceId="2utnaEYD1QvgGyk732ZpVJ0PHbY">
+              <option name="activationTimestamp" value="1744711569183" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-241.17890.13" />
+              <option name="buildTimestamp" value="1717517100000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="6" />
+              </option>
+              <frame x="164" y="77" width="1400" height="1000" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1743076800411" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/tutorial-with-astro">
+          <value>
+            <RecentProjectMetaInfo frameTitle="tutorial-with-astro – tsconfig.json" projectWorkspaceId="2pqIKlCk3QusgfiTmJwA4pku7xV">
+              <option name="activationTimestamp" value="1745925932030" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-251.23774.424" />
+              <option name="buildTimestamp" value="1744634040000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="0" />
+              </option>
+              <frame x="864" y="38" width="864" height="1079" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1745407798168" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/kaboodle">
+          <value>
+            <RecentProjectMetaInfo frameTitle="kaboodle – Select.tsx" projectWorkspaceId="2i3aCAb5okfPFgffPAruNPJa4o8">
+              <option name="activationTimestamp" value="1750917383388" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-251.23774.424" />
+              <option name="buildTimestamp" value="1744634040000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="3" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1749899545460" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/backend2.0/graphqlservice/src">
+          <value>
+            <RecentProjectMetaInfo frameTitle="src – userResolver.ts" projectWorkspaceId="2z25ODkVoqFWIPKz0T1IFDiMumf">
+              <option name="activationTimestamp" value="1750954626869" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-251.23774.424" />
+              <option name="buildTimestamp" value="1744634040000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="7" />
+              </option>
+              <frame x="0" y="0" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1750916292199" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/pinky-promise-patient-app">
+          <value>
+            <RecentProjectMetaInfo frameTitle="pinky-promise-patient-app – constants.dart" projectWorkspaceId="2z26RKCBz3j4tEeq2SRj9uQZvCH">
+              <option name="activationTimestamp" value="1750943094443" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-251.23774.424" />
+              <option name="buildTimestamp" value="1744634040000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="8" />
+              </option>
+              <frame x="0" y="0" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1750916810297" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/cardinal40-take-home">
+          <value>
+            <RecentProjectMetaInfo frameTitle="cardinal40-take-home – README.md" projectWorkspaceId="2zackC9hFQCZ5WkuGW7DWIBi8hN">
+              <option name="activationTimestamp" value="1752477165023" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-251.23774.424" />
+              <option name="buildTimestamp" value="1744634040000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="0" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1751972764316" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/llm-toys">
+          <value>
+            <RecentProjectMetaInfo frameTitle="llm-toys – ~/Library/Application Support/JetBrains/WebStorm2025.1/scratches/scratch_16.md" projectWorkspaceId="30MKLW1EGGC4e7dwNcrvazEUd3l">
+              <option name="activationTimestamp" value="1753815033918" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-251.23774.424" />
+              <option name="buildTimestamp" value="1744634040000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="1" />
+              </option>
+              <frame x="-209" y="-1055" width="1920" height="1055" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1753431945302" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/koolio-react-app-develop">
+          <value>
+            <RecentProjectMetaInfo frameTitle="TranscriptView.tsx – AudioVisualizer.tsx" projectWorkspaceId="30bGyhQhwFHstT3RhKZ9hhU0gVO">
+              <option name="activationTimestamp" value="1754363533865" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-251.23774.424" />
+              <option name="buildTimestamp" value="1744634040000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="2" />
+              </option>
+              <frame x="-113" y="-1055" width="1728" height="1055" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1754300404144" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/KnowledgeKeeper_Frontend">
+          <value>
+            <RecentProjectMetaInfo frameTitle="KnowledgeKeeper_Frontend – InfoToolTip.tsx" projectWorkspaceId="30tmk4N3pn1lfW6YqGQH76x089G">
+              <option name="activationTimestamp" value="1755630812135" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="3" />
+              </option>
+              <frame x="0" y="38" width="864" height="1079" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1755604766832" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/scripts">
+          <value>
+            <RecentProjectMetaInfo frameTitle="scripts" projectWorkspaceId="32RzfdTLYujfMeverKAff5XsGbH">
+              <option name="activationTimestamp" value="1757442244907" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="5" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1757398276747" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/kite-public">
+          <value>
+            <RecentProjectMetaInfo frameTitle="kite-public – en.json" projectWorkspaceId="33QflSFJOieJeActZoL0QaNpZiV">
+              <option name="activationTimestamp" value="1759257948455" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="6" />
+              </option>
+              <frame x="0" y="0" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1759254367038" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/Base-tanvi/admin-ux-improvements">
+          <value>
+            <RecentProjectMetaInfo frameTitle="admin-ux-improvements – Commit: 19-clickable-resour..." projectWorkspaceId="353yCZmVe0foJphHyH78Rk78DFq">
+              <option name="activationTimestamp" value="1762431434839" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="7" />
+              </option>
+              <frame x="-113" y="-1055" width="1280" height="1055" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1762352922908" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/devbox">
+          <value>
+            <RecentProjectMetaInfo frameTitle="devbox – CLAUDE.md" projectWorkspaceId="36K0BvyL0yswSfkuGTBbNoBN2Dt">
+              <option name="activationTimestamp" value="1764836543325" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="8" />
+              </option>
+              <frame x="164" y="77" width="1400" height="1000" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1764739823746" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-alt-179">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-alt-179 – README.md" projectWorkspaceId="36b3LP03WM46hZUthEakHFnTPKh">
+              <option name="activationTimestamp" value="1765261421533" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="0" />
+              </option>
+              <frame x="164" y="77" width="1400" height="1000" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1765261387037" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/alt-209-the-user-should-not-be-able-to-chat-with-the-agent-without">
+          <value>
+            <RecentProjectMetaInfo frameTitle="alt-209-the-user-should-not-be-able-to-chat-with-the-agent-without" projectWorkspaceId="36bKJCQ0yT3cXhD3CfIBSYdFPlo">
+              <option name="activationTimestamp" value="1765365030500" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="1" />
+              </option>
+              <frame x="96" y="50" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1765278210794" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-wt-test">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-wt-test" projectWorkspaceId="36c1dtRQIDK7Eqp5PLSgfehoyOd">
+              <option name="activationTimestamp" value="1765293710529" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="2" />
+              </option>
+              <frame x="0" y="0" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1765291135801" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/alt-177-set-up-swagger-for-web-service-for-the-proxy-endpoints">
+          <value>
+            <RecentProjectMetaInfo frameTitle="alt-177-set-up-swagger-for-web-service-for-the-proxy-endpoints – .env" projectWorkspaceId="36gK8cGpiEKLe3xSSRjwZHK7mDv">
+              <option name="activationTimestamp" value="1765440603823" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="3" />
+              </option>
+              <frame x="0" y="38" width="1564" height="1040" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1765422615840" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/alt-207-get-a-first-pass-of-integrating-tavus-apis">
+          <value>
+            <RecentProjectMetaInfo frameTitle="alt-207-get-a-first-pass-of-integrating-tavus-apis – settings.json" projectWorkspaceId="36gvkqOixz7CMjPFkDpqPiayXun">
+              <option name="activationTimestamp" value="1765445736366" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="4" />
+              </option>
+              <frame x="0" y="38" width="1564" height="1040" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1765441174555" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/alt-222-figure-out-how-easy-it-is-to-do-tavus-video-embedding-in-our">
+          <value>
+            <RecentProjectMetaInfo frameTitle="alt-222-figure-out-how-easy-it-is-to-do-tavus-video-embedding-in-our – ~/Library/Application Support/JetBrains/WebStorm2025.2/scratches/scratch_34.txt" projectWorkspaceId="36hYybhl9ySQqNZwXRHLxYxm1Ld">
+              <option name="activationTimestamp" value="1765873491235" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="5" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1765768967341" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/alt-229-create-a-side-scroller-game-experience-prototype-similar-to">
+          <value>
+            <RecentProjectMetaInfo frameTitle="alt-229-create-a-side-scroller-game-experience-prototype-similar-to – ~/Code/alt.inc/base-tanvi/alt-229-create-a-side-scroller-game-experience-prototype-similar-to/.tmp/logs/alt-wt0.log" projectWorkspaceId="36xDKizB9XExPtIGTli24zSFYMU">
+              <option name="activationTimestamp" value="1766040336468" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="6" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1765939266238" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi/worktree-updates">
+          <value>
+            <RecentProjectMetaInfo frameTitle="worktree-updates" projectWorkspaceId="370fKF0PsGd0Fo30ynXzFJsQdNR">
+              <option name="activationTimestamp" value="1766045351609" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="7" />
+              </option>
+              <frame x="164" y="77" width="1400" height="1000" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1766044844116" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-fix-nextjs-security-upgrade">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-fix-nextjs-security-upgrade – README.md" projectWorkspaceId="37BkiNh0aWkt5ScZHAtjs1YoBJz">
+              <option name="activationTimestamp" value="1766411261634" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="8" />
+              </option>
+              <frame x="164" y="77" width="1564" height="1040" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1766383977622" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/formation">
+          <value>
+            <RecentProjectMetaInfo frameTitle="formation – casks" projectWorkspaceId="30HIhHcqpDbitbQEVuyi2YAd0Sd">
+              <option name="activationTimestamp" value="1766820669558" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="0" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1766819946243" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-240-move-the-chat-implementation-to-within-phaser">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-240-move-the-chat-implementation-to-within-phaser – .env" projectWorkspaceId="37gx3JcxaKDuosySTXRx4kvccWV">
+              <option name="activationTimestamp" value="1767582051872" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="0" />
+              </option>
+              <frame x="0" y="0" width="1920" height="1055" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1767338314989" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-275-create-a-dover-join-us-clone">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-275-create-a-dover-join-us-clone" projectWorkspaceId="37vDwzJcx4VY53Z4ofRI1f1xpGn">
+              <option name="activationTimestamp" value="1767782474384" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="1" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1767774893301" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-288-write-a-build-script-to-strip-all-non-public-code-paths-from">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-288-write-a-build-script-to-strip-all-non-public-code-paths-from – Commit: middleware.ts" projectWorkspaceId="37vTLyEF2jAzm5AeDXN0JHjang9">
+              <option name="activationTimestamp" value="1767888405984" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="2" />
+              </option>
+              <frame x="0" y="0" width="1564" height="1040" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1767782492670" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-287-click-on-any-of-the-characters-on-the-screen-to-be-able-to">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-287-click-on-any-of-the-characters-on-the-screen-to-be-able-to" projectWorkspaceId="37yw3NfKXdVWv2hTEh931QbDskO">
+              <option name="activationTimestamp" value="1767961262711" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="3" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1767888419292" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-277-mobile-experience">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-277-mobile-experience" projectWorkspaceId="381JkYrU1SfbMQXDBlEoP9jHhDg">
+              <option name="activationTimestamp" value="1767978779686" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="4" />
+              </option>
+              <frame x="96" y="50" width="1728" height="1079" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1767969457619" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-prescreen-ui-fixes">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-prescreen-ui-fixes – Commit: ChatPanel.tsx" projectWorkspaceId="384rNGRleWwSgAcMJjWUEag8bcd">
+              <option name="activationTimestamp" value="1768127214027" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="5" />
+              </option>
+              <frame x="0" y="0" width="1564" height="1040" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1768069642318" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-351-use-alt-faces-in-the-avatar-instead-of-the-initials">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-351-use-alt-faces-in-the-avatar-instead-of-the-initials – Commit: ChatPanel.tsx" projectWorkspaceId="38FSuHvBhsp9hRr2l4KlyR7UWd6">
+              <option name="activationTimestamp" value="1768643206682" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="6" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1768394046979" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/the-hold">
+          <value>
+            <RecentProjectMetaInfo frameTitle="the-hold – .env" projectWorkspaceId="38WYTYCI6jitag1va6nnb6lq1kQ">
+              <option name="activationTimestamp" value="1769758114983" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="7" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1768916802172" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-358-allow-the-user-to-stop-the-alt-animations">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-358-allow-the-user-to-stop-the-alt-animations" projectWorkspaceId="38b1lJp6LOM0RNqafNRMgTuXbbZ">
+              <option name="activationTimestamp" value="1769059682644" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="8" />
+              </option>
+              <frame x="164" y="77" width="1400" height="1000" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1769053606028" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-400-prescreen-application-should-support-multiple-job">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-400-prescreen-application-should-support-multiple-job – GameChatLayout.tsx" projectWorkspaceId="38q76KkT4Gq9OEvg3GmUdjF38y6">
+              <option name="activationTimestamp" value="1769758106268" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="0" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1769515070744" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-401-localstorage-agents-not-being-cleared-correctly-on-forcenew">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-401-localstorage-agents-not-being-cleared-correctly-on-forcenew – ~/Library/Application Support/JetBrains/WebStorm2025.2/scratches/scratch_41.md" projectWorkspaceId="38qOvNVnzbep3zhbOXMzU311lJz">
+              <option name="activationTimestamp" value="1769758081720" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="1" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1769523863198" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/Base">
+          <value>
+            <RecentProjectMetaInfo frameTitle="Base – .env" projectWorkspaceId="31lcvwMvS834hw59JlJs4l73nnc">
+              <option name="activationTimestamp" value="1769767453893" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="4" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1769767441509" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-423-rapid_api-linkedin-call-should-happen-imediately-after-a">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-423-rapid_api-linkedin-call-should-happen-imediately-after-a – 2025-01-13-prescreen-analytics-design.md" projectWorkspaceId="391eqX3jKRIMnuQDIc6ZuTYO62d">
+              <option name="activationTimestamp" value="1769869217368" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="4" />
+              </option>
+              <frame x="164" y="77" width="1400" height="1000" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1769868194960" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-404-reduce-lcp-of-prescreen-page">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-404-reduce-lcp-of-prescreen-page – ~/Library/Application Support/JetBrains/WebStorm2025.2/scratches/scratch_42.md" projectWorkspaceId="38w5CM0Du6WplbiiDrL2vLHAvLJ">
+              <option name="activationTimestamp" value="1770028589111" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="2" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1770014977778" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/alt.inc/base-tanvi-alt-396-analytics-fixes">
+          <value>
+            <RecentProjectMetaInfo frameTitle="base-tanvi-alt-396-analytics-fixes – .env" projectWorkspaceId="38wANuq3NftorXEQOu9Preq2vre">
+              <option name="activationTimestamp" value="1770126149439" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="3" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1770028615941" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Code/website/tanvibhakta.in">
+          <value>
+            <RecentProjectMetaInfo frameTitle="lollapalooza-2026.md – week-of-feb-1st-2026.md" opened="true" projectWorkspaceId="2pf38c9d9y7OTKN4pN0wGzFdw3K">
+              <option name="activationTimestamp" value="1770562403810" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="WS-252.23892.411" />
+              <option name="buildTimestamp" value="1754032200000" />
+              <option name="colorInfo">
+                <RecentProjectColorInfo associatedIndex="8" />
+              </option>
+              <frame x="0" y="38" width="1728" height="1079" extendedState="6" />
+              <option name="productionCode" value="WS" />
+              <option name="projectOpenTimestamp" value="1770562407759" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="lastOpenedProject" value="$USER_HOME$/Code/website/tanvibhakta.in" />
+    <option name="lastProjectLocation" value="$USER_HOME$/Code" />
+  </component>
+</application>

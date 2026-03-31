@@ -1,0 +1,16 @@
+<keymap version="1" name="macOS copy" parent="Mac OS X 10.5+">
+  <action id="ActivateTerminalToolWindow">
+    <keyboard-shortcut first-keystroke="alt f12" />
+    <keyboard-shortcut first-keystroke="meta j" />
+  </action>
+  <action id="Annotate">
+    <keyboard-shortcut first-keystroke="shift meta alt b" />
+  </action>
+  <action id="InsertLiveTemplate" />
+  <action id="NextTab">
+    <keyboard-shortcut first-keystroke="shift meta close_bracket" />
+  </action>
+  <action id="PreviousTab">
+    <keyboard-shortcut first-keystroke="shift meta open_bracket" />
+  </action>
+</keymap>
