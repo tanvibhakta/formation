@@ -176,12 +176,8 @@ for plist_file in "$HOTSAUCE_DIR"/plists/*.plist; do
     name="$(basename "$plist_file")"
     domain="${PLIST_DOMAINS[$name]}"
     if [ -n "$domain" ]; then
-        if ask "Import $name preferences for $domain?" Y; then
-            defaults import "$domain" "$plist_file"
-            print_success "Imported $name → $domain"
-        else
-            print_success_muted "$name skipped"
-        fi
+        defaults import "$domain" "$plist_file"
+        print_success "Imported $name → $domain"
     else
         print_warning "Unknown plist: $name (no domain mapping)"
     fi
@@ -195,16 +191,12 @@ echo ""
 echo "  ── WebStorm ──"
 LATEST_WS=$(ls -d "$HOME/Library/Application Support/JetBrains/WebStorm"* 2>/dev/null | sort -V | tail -1)
 if [ -n "$LATEST_WS" ]; then
-    if ask "Copy WebStorm settings to $(basename "$LATEST_WS")?" Y; then
-        for settings_dir in keymaps codestyles options; do
-            if [ -d "$HOTSAUCE_DIR/jetbrains/$settings_dir" ]; then
-                cp -R "$HOTSAUCE_DIR/jetbrains/$settings_dir" "$LATEST_WS/"
-                print_success "Copied $settings_dir → $(basename "$LATEST_WS")"
-            fi
-        done
-    else
-        print_success_muted "WebStorm settings skipped"
-    fi
+    for settings_dir in keymaps codestyles options; do
+        if [ -d "$HOTSAUCE_DIR/jetbrains/$settings_dir" ]; then
+            cp -R "$HOTSAUCE_DIR/jetbrains/$settings_dir" "$LATEST_WS/"
+            print_success "Copied $settings_dir → $(basename "$LATEST_WS")"
+        fi
+    done
 else
     print_warning "No WebStorm installation found"
 fi
@@ -275,11 +267,7 @@ fi
 echo ""
 echo "  ── macOS System Defaults ──"
 if [ -f "$HOTSAUCE_DIR/macos-defaults.sh" ]; then
-    if ask "Apply macOS system defaults (dock, trackpad, finder, hot corners)?" Y; then
-        bash "$HOTSAUCE_DIR/macos-defaults.sh"
-    else
-        print_success_muted "macOS defaults skipped"
-    fi
+    bash "$HOTSAUCE_DIR/macos-defaults.sh"
 else
     print_warning "macos-defaults.sh not found. Skipping."
 fi
