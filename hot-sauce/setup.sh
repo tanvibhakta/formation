@@ -210,6 +210,81 @@ else
 fi
 
 ###############################################################################
+# CLAUDE CODE
+# Symlinks skills, commands, hooks, and config into ~/.claude
+###############################################################################
+echo ""
+echo "  ── Claude Code ──"
+CLAUDE_SRC="$HOTSAUCE_DIR/claude"
+CLAUDE_DST="$HOME/.claude"
+
+if [ -d "$CLAUDE_SRC" ]; then
+    mkdir -p "$CLAUDE_DST"
+
+    # Symlink directories — new skills/commands/hooks created in ~/.claude will
+    # live inside formation and be version-controlled automatically
+    for dir in skills commands hooks; do
+        src="$CLAUDE_SRC/$dir"
+        dst="$CLAUDE_DST/$dir"
+        [ -d "$src" ] || continue
+        if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+            print_success_muted "~/.claude/$dir already linked"
+        elif [ -e "$dst" ]; then
+            if ask "~/.claude/$dir already exists. Replace with symlink?" N; then
+                mv "$dst" "${dst}.backup"
+                print_warning "Backed up $dst → ${dst}.backup"
+                ln -s "$src" "$dst"
+                print_success "Linked ~/.claude/$dir"
+            else
+                print_success_muted "~/.claude/$dir left unchanged"
+            fi
+        else
+            ln -s "$src" "$dst"
+            print_success "Linked ~/.claude/$dir"
+        fi
+    done
+
+    # Symlink individual files
+    for file in CLAUDE.md settings.json statusline-command.sh; do
+        src="$CLAUDE_SRC/$file"
+        dst="$CLAUDE_DST/$file"
+        [ -f "$src" ] || continue
+        if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+            print_success_muted "~/.claude/$file already linked"
+        elif [ -e "$dst" ]; then
+            if ask "~/.claude/$file already exists. Replace with symlink?" N; then
+                mv "$dst" "${dst}.backup"
+                print_warning "Backed up $dst → ${dst}.backup"
+                ln -s "$src" "$dst"
+                print_success "Linked ~/.claude/$file"
+            else
+                print_success_muted "~/.claude/$file left unchanged"
+            fi
+        else
+            ln -s "$src" "$dst"
+            print_success "Linked ~/.claude/$file"
+        fi
+    done
+else
+    print_warning "hot-sauce/claude not found. Skipping Claude Code setup."
+fi
+
+###############################################################################
+# MACOS SYSTEM DEFAULTS
+###############################################################################
+echo ""
+echo "  ── macOS System Defaults ──"
+if [ -f "$HOTSAUCE_DIR/macos-defaults.sh" ]; then
+    if ask "Apply macOS system defaults (dock, trackpad, finder, hot corners)?" Y; then
+        bash "$HOTSAUCE_DIR/macos-defaults.sh"
+    else
+        print_success_muted "macOS defaults skipped"
+    fi
+else
+    print_warning "macos-defaults.sh not found. Skipping."
+fi
+
+###############################################################################
 # DONE
 ###############################################################################
 echo ""

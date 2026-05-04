@@ -56,7 +56,14 @@ pip3() { lazy_pyenv; pip3 "$@"; }
 
 . "$HOME/.cargo/env"
 
-# Secrets (API keys, credentials) loaded from ~/.secrets
+# Secrets (API keys, credentials) are loaded from ~/.secrets on every shell
+# start. ~/.secrets is gitignored and lives only on this machine; the committed
+# template lives at hot-sauce/dotfiles/secrets.template in the formation repo.
+# To add a new secret:
+#   1. Add `export NEW_KEY=` (empty value) to dotfiles/secrets.template and commit.
+#   2. Add `export NEW_KEY=<value>` to ~/.secrets locally — never commit values.
+# Sourcing here means every CLI in any worktree picks up the same env, so tools
+# like `neonctl` and `linear` find their keys without per-repo config.
 [ -f ~/.secrets ] && source ~/.secrets
 
 export PATH=$HOME/Code/flutter/bin:$PATH
