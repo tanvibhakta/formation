@@ -85,6 +85,15 @@ defaults write NSGlobalDomain InitialKeyRepeat -int 15
 print_success "Keyboard preferences set"
 
 echo ""
+echo "  ── Screen Saver & Display Sleep ──"
+# Disable idle screensaver entirely.
+# -currentHost is required: screensaver settings live in the per-host ByHost plist.
+defaults -currentHost write com.apple.screensaver idleTime -int 0
+# Display never sleeps from idle. -a applies to all power sources (battery + AC + UPS).
+sudo pmset -a displaysleep 0
+print_success "Screen saver and display sleep disabled"
+
+echo ""
 echo "  ── Apply changes ──"
 # Restart affected apps to pick up changes
 killall Dock 2>/dev/null || true
