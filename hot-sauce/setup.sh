@@ -262,6 +262,37 @@ else
 fi
 
 ###############################################################################
+# HAMMERSPOON
+# Symlinks init.lua so config edits land in the repo, not in ~/.hammerspoon.
+# Reload the config from the Hammerspoon menu bar after first link.
+###############################################################################
+echo ""
+echo "  ── Hammerspoon ──"
+HS_SRC="$HOTSAUCE_DIR/hammerspoon/init.lua"
+HS_DST="$HOME/.hammerspoon/init.lua"
+
+if [ -f "$HS_SRC" ]; then
+    mkdir -p "$HOME/.hammerspoon"
+    if [ -L "$HS_DST" ] && [ "$(readlink "$HS_DST")" = "$HS_SRC" ]; then
+        print_success_muted "~/.hammerspoon/init.lua already linked"
+    elif [ -e "$HS_DST" ]; then
+        if ask "~/.hammerspoon/init.lua already exists. Replace with symlink?" N; then
+            mv "$HS_DST" "${HS_DST}.backup"
+            print_warning "Backed up $HS_DST → ${HS_DST}.backup"
+            ln -s "$HS_SRC" "$HS_DST"
+            print_success "Linked ~/.hammerspoon/init.lua"
+        else
+            print_success_muted "~/.hammerspoon/init.lua left unchanged"
+        fi
+    else
+        ln -s "$HS_SRC" "$HS_DST"
+        print_success "Linked ~/.hammerspoon/init.lua"
+    fi
+else
+    print_warning "hot-sauce/hammerspoon/init.lua not found. Skipping."
+fi
+
+###############################################################################
 # MACOS SYSTEM DEFAULTS
 ###############################################################################
 echo ""
