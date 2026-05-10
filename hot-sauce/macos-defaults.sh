@@ -85,13 +85,19 @@ defaults write NSGlobalDomain InitialKeyRepeat -int 15
 print_success "Keyboard preferences set"
 
 echo ""
-echo "  ── Screen Saver & Display Sleep ──"
+echo "  ── Screen Saver, Lock Screen & Display Sleep ──"
 # Disable idle screensaver entirely.
 # -currentHost is required: screensaver settings live in the per-host ByHost plist.
 defaults -currentHost write com.apple.screensaver idleTime -int 0
+# Engage the lock-screen auth prompt on explicit locks (Ctrl+Cmd+Q, lid close,
+# hot corner). Despite the name, askForPassword=1 is what enables Touch ID on
+# the lock screen on FileVault-protected Macs — the prompt offers Touch ID first
+# with password as fallback. With idleTime=0 above, this never fires from idle.
+defaults -currentHost write com.apple.screensaver askForPassword -int 1
+defaults -currentHost write com.apple.screensaver askForPasswordDelay -int 0
 # Display never sleeps from idle. -a applies to all power sources (battery + AC + UPS).
 sudo pmset -a displaysleep 0
-print_success "Screen saver and display sleep disabled"
+print_success "Screen saver, lock screen, and display sleep configured"
 
 echo ""
 echo "  ── Apply changes ──"
