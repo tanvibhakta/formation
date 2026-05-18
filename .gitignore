@@ -3,3 +3,7 @@
 # Never commit secrets
 .secrets
 *.secrets
+
+# gh CLI writes tokens to hosts.yml — must never be tracked
+hot-sauce/config/gh/hosts.yml
+hot-sauce/config/gh/*.backup
