@@ -1,0 +1,12 @@
+<application>
+  <component name="github-copilot">
+    <option name="signinNotificationShown" value="true" />
+    <option name="enableCompletions" value="false" />
+    <languageAllowList>
+      <map>
+        <entry key="*" value="true" />
+      </map>
+    </languageAllowList>
+    <option name="checkForUpdate" value="false" />
+  </component>
+</application>

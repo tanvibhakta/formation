@@ -1,0 +1,5 @@
+<application>
+  <component name="PySdkSettings">
+    <option name="PREFERRED_VIRTUALENV_BASE_SDK" value="$USER_HOME$/.pyenv/versions/3.12.4/bin/python" />
+  </component>
+</application>

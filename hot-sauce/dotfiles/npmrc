@@ -1,0 +1,5 @@
+# npm auth token is stored in ~/.secrets and set via NPM_TOKEN env var
+# To authenticate, run: npm login
+# Or add to ~/.secrets: export NPM_TOKEN=npm_xxxxx
+# Then uncomment the line below:
+# //registry.npmjs.org/:_authToken=${NPM_TOKEN}

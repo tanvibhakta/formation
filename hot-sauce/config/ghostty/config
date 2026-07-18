@@ -1,0 +1,40 @@
+# Natural Text Editing Configuration
+
+# Theme
+theme = Catppuccin Mocha
+
+# Transparency + blur
+background-opacity = 0.9
+background-blur-radius = 20
+
+# Copy on select
+copy-on-select = clipboard
+
+# Clean titlebar
+macos-titlebar-style = hidden
+
+# Enable Option key as Alt (required for word navigation)
+macos-option-as-alt = true
+
+# Word Navigation (Option + Arrow)
+keybind = alt+left=esc:b
+keybind = alt+right=esc:f
+
+# Line Navigation (Cmd + Arrow)
+keybind = cmd+left=text:\x01
+keybind = cmd+right=text:\x05
+
+# Delete Word Backward (Option + Delete)
+keybind = alt+backspace=text:\x17
+
+# Delete Word Forward (Option + Fn + Delete)
+keybind = alt+delete=esc:d
+
+# Delete to Beginning of Line (Cmd + Delete)
+keybind = cmd+backspace=text:\x15
+
+# Delete to End of Line (Cmd + Fn + Delete)
+keybind = cmd+delete=text:\x0b
+
+# Equalize split panes
+keybind = super+shift+e=equalize_splits

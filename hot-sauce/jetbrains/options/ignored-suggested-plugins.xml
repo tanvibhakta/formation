@@ -1,0 +1,12 @@
+<application>
+  <component name="IgnoredPluginSuggestions">
+    <option name="pluginIds">
+      <list>
+        <option value="com.jetbrains.edu" />
+        <option value="org.intellij.plugins.postcss" />
+        <option value="me.rerere.unocss-intellij" />
+        <option value="com.intellij.react" />
+      </list>
+    </option>
+  </component>
+</application>

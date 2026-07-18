@@ -1,0 +1,21 @@
+<application>
+  <component name="libraryTable">
+    <library name="Python 3.12 virtualenv at ~/Code/alt.inc/Base/.venv interpreter library">
+      <CLASSES>
+        <root url="file:///opt/homebrew/Cellar/python@3.12/3.12.12/Frameworks/Python.framework/Versions/3.12/lib/python3.12" />
+        <root url="file:///opt/homebrew/Cellar/python@3.12/3.12.12/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload" />
+        <root url="file://$USER_HOME$/Code/alt.inc/Base/.venv/lib/python3.12/site-packages" />
+        <root url="file://$USER_HOME$/Library/Caches/JetBrains/WebStorm2025.2/python_stubs/1598997704" />
+        <root url="file://$APPLICATION_PLUGINS_DIR$/python-ce/helpers/typeshed/stdlib" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file:///opt/homebrew/Cellar/python@3.12/3.12.12/Frameworks/Python.framework/Versions/3.12/lib/python3.12" />
+        <root url="file:///opt/homebrew/Cellar/python@3.12/3.12.12/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload" />
+        <root url="file://$USER_HOME$/Code/alt.inc/Base/.venv/lib/python3.12/site-packages" />
+        <root url="file://$USER_HOME$/Library/Caches/JetBrains/WebStorm2025.2/python_stubs/1598997704" />
+        <root url="file://$APPLICATION_PLUGINS_DIR$/python-ce/helpers/typeshed/stdlib" />
+      </SOURCES>
+    </library>
+  </component>
+</application>

@@ -1,0 +1,28 @@
+<application>
+  <component name="ProjectJdkTable">
+    <jdk version="2">
+      <name value="Python 3.12 virtualenv at ~/Code/alt.inc/Base/.venv" />
+      <type value="Python SDK" />
+      <version value="Python 3.12.12" />
+      <homePath value="$USER_HOME$/Code/alt.inc/Base/.venv/bin/python" />
+      <roots>
+        <classPath>
+          <root type="composite">
+            <root url="file:///opt/homebrew/Cellar/python@3.12/3.12.12/Frameworks/Python.framework/Versions/3.12/lib/python3.12" type="simple" />
+            <root url="file:///opt/homebrew/Cellar/python@3.12/3.12.12/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload" type="simple" />
+            <root url="file://$USER_HOME$/Code/alt.inc/Base/.venv/lib/python3.12/site-packages" type="simple" />
+            <root url="file://$USER_HOME$/Library/Caches/JetBrains/WebStorm2025.2/python_stubs/1598997704" type="simple" />
+            <root url="file://$APPLICATION_PLUGINS_DIR$/python-ce/helpers/typeshed/stdlib" type="simple" />
+          </root>
+        </classPath>
+        <sourcePath>
+          <root type="composite" />
+        </sourcePath>
+      </roots>
+      <additional SDK_UUID="e8a445b4-aadc-4da8-a5f0-a006e5e52bbf">
+        <setting name="FLAVOR_ID" value="VirtualEnvSdkFlavor" />
+        <setting name="FLAVOR_DATA" value="{}" />
+      </additional>
+    </jdk>
+  </component>
+</application>

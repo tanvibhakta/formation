@@ -567,8 +567,11 @@ install_brews() {
         print_success_muted "$brew already installed. Skipped."
     else
         echo_install "Installing $brew"
-        brew install $brew >/dev/null
-        print_in_green "${bold}✓ installed!${normal}\n"
+        if brew install $brew >/dev/null; then
+            print_in_green "${bold}✓ installed!${normal}\n"
+        else
+            print_warning "$brew failed to install. Skipping."
+        fi
     fi
 }
 
@@ -577,8 +580,11 @@ install_application_via_brew() {
         print_success_muted "$cask already installed. Skipped."
     else
         echo_install "Installing $cask"
-        brew install --cask $cask --appdir=/Applications >/dev/null
-        print_in_green "${bold}✓ installed!${normal}\n"
+        if brew install --cask $cask --appdir=/Applications >/dev/null; then
+            print_in_green "${bold}✓ installed!${normal}\n"
+        else
+            print_warning "$cask failed to install. Skipping."
+        fi
     fi
 }
 
