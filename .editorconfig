@@ -1,0 +1,22 @@
+# Keep indentation stable across editors.
+#
+# Zed silently re-indented config/zed/tasks.json from spaces to tabs, producing
+# a whole-file diff with zero semantic change. Editors honour this file (Zed
+# included), so that class of churn stops here rather than being cleaned up by
+# hand each time.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.{sh,bash,zsh}]
+indent_size = 4
+
+# Trailing spaces are meaningful in Markdown (hard line break).
+[*.md]
+trim_trailing_whitespace = false
