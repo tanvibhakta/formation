@@ -6,6 +6,7 @@
 [user]
 	name = Tanvi Bhakta
 	email = tanvibhakta@gmail.com
+	signingkey = /Users/tanvibhakta/.ssh/id_ed25519.pub
 [core]
 	excludesfile = /Users/tanvibhakta/.gitignore
 [init]
@@ -14,3 +15,7 @@
 	autosquash = true
 [push]
 	autoSetupRemote = true
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = true

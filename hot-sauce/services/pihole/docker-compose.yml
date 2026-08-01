@@ -1,0 +1,41 @@
+###############################################################################
+# PI-HOLE — network-wide DNS ad blocking
+#
+# Intended for the always-on MacBook only. Read README.md before starting this:
+# once devices point at this box for DNS, they lose the internet whenever it is
+# asleep, off, or not on the LAN.
+#
+# Docker Desktop on macOS has no host networking, so we publish ports instead of
+# using `network_mode: host`. Two consequences are baked in below:
+#
+#   1. FTLCONF_dns_listeningMode must be 'all'. Queries arrive via Docker's
+#      bridge gateway, and Pi-hole otherwise refuses them as non-local.
+#   2. Pi-hole sees every query as coming from that same gateway address, so
+#      per-client stats and per-client group filtering do not work. Fine for
+#      plain blocking; don't expect useful "which device is chatty" data.
+###############################################################################
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      # Web UI on 8080, leaving port 80 free for nginx and local dev servers.
+      - "8080:80/tcp"
+    environment:
+      TZ: 'Asia/Kolkata'
+      # Sourced from .env, which is gitignored. Fails loudly rather than
+      # silently booting an admin interface with no password.
+      FTLCONF_webserver_api_password: '${PIHOLE_PASSWORD:?run ./setup.sh to generate .env}'
+      FTLCONF_dns_listeningMode: 'all'
+      # Upstream resolvers, semicolon-separated. Cloudflare primary + secondary.
+      FTLCONF_dns_upstreams: '1.1.1.1;1.0.0.1'
+    volumes:
+      # v6 keeps config and the query database here. The separate etc-dnsmasq.d
+      # mount you'll see in older guides is only needed when upgrading from v5.
+      - './etc-pihole:/etc/pihole'
+    # Comes back with Docker Desktop — which means Docker Desktop itself has to
+    # be set to open at login, or DNS for the whole house dies after a reboot.
+    restart: unless-stopped

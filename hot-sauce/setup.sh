@@ -115,6 +115,29 @@ for dir in "$HOTSAUCE_DIR"/config/*/; do
 done
 
 ###############################################################################
+# GHOSTTY MACOS SHADOW CONFIG
+# On macOS, ~/Library/Application Support/com.mitchellh.ghostty/ is loaded
+# AFTER ~/.config/ghostty/, so anything there silently overrides the tracked
+# config in this repo. Ghostty writes a template into it on first launch
+# whenever it finds no config at all — which is exactly the state a new laptop
+# is in before this script runs. Move it aside so the repo stays authoritative.
+###############################################################################
+echo ""
+echo "  ── Ghostty shadow config ──"
+GHOSTTY_SHADOW_DIR="$HOME/Library/Application Support/com.mitchellh.ghostty"
+shadow_found=0
+for shadow in "$GHOSTTY_SHADOW_DIR/config" "$GHOSTTY_SHADOW_DIR/config.ghostty"; do
+    if [ -e "$shadow" ] && [ ! -L "$shadow" ]; then
+        mv "$shadow" "${shadow}.backup"
+        print_warning "Backed up $shadow → ${shadow}.backup"
+        shadow_found=1
+    fi
+done
+if [ "$shadow_found" -eq 0 ]; then
+    print_success_muted "No shadowing config; ~/.config/ghostty is authoritative"
+fi
+
+###############################################################################
 # GH CLI CONFIG
 # gh stores auth separately in hosts.yml, so config.yml is safe to symlink
 ###############################################################################
@@ -260,6 +283,32 @@ if [ -d "$CLAUDE_SRC" ]; then
 else
     print_warning "hot-sauce/claude not found. Skipping Claude Code setup."
 fi
+
+###############################################################################
+# EXTERNAL SKILL SOURCES
+# Some skills are symlinks into repos this one does not own. Git stores the
+# link target verbatim, so on a fresh machine the skill dangles silently until
+# its source repo exists. Clone the sources so the link resolves.
+###############################################################################
+echo ""
+echo "  ── External skill sources ──"
+clone_skill_source() {
+    local dst="$1" url="$2" name="$(basename "$1")"
+
+    if [ -d "$dst/.git" ]; then
+        print_success_muted "$name already cloned"
+    elif [ -e "$dst" ]; then
+        print_warning "$dst exists but is not a git repo. Leaving it alone."
+    elif git clone --quiet "$url" "$dst" 2>/dev/null; then
+        print_success "Cloned $name → $dst"
+    else
+        print_warning "Could not clone $url. The learn skill will not work until you clone it manually."
+    fi
+}
+
+clone_skill_source "$HOME/Code/tanvi-learning" "https://github.com/tanvibhakta/tanvi-learning.git"
+# Private: this repo is public, so skills naming internal systems live here.
+clone_skill_source "$HOME/Code/formation-private" "https://github.com/tanvibhakta/formation-private.git"
 
 ###############################################################################
 # HAMMERSPOON

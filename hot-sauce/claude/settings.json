@@ -1,4 +1,113 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__slack",
+      "mcp__chrome-devtools",
+      "Bash(/Users/tanvibhakta/.hermes/hermes-agent/venv/bin/hermes send:*)",
+      "Bash(codex exec:*)",
+      "Bash(*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "Agent(*)",
+      "WebSearch",
+      "WebFetch(*)",
+      "Skill(*)",
+      "mcp__playwright__*",
+      "mcp__chrome-devtools__*",
+      "mcp__plugin_linear_linear__list_teams",
+      "mcp__plugin_linear_linear__list_projects",
+      "mcp__plugin_linear_linear__list_issue_labels",
+      "mcp__plugin_linear_linear__list_issue_statuses",
+      "mcp__plugin_linear_linear__list_comments",
+      "mcp__plugin_linear_linear__extract_images",
+      "mcp__plugin_linear_linear__save_issue",
+      "mcp__plugin_linear_linear__list_issues",
+      "mcp__plugin_linear_linear__get_issue",
+      "mcp__plugin_linear_linear__get_project",
+      "mcp__plugin_linear_linear__create_document",
+      "mcp__plugin_linear_linear__list_users",
+      "mcp__plugin_linear_linear__list_project_labels",
+      "mcp__plugin_linear_linear__get_authenticated_user",
+      "mcp__Neon__list_projects",
+      "mcp__Neon__describe_project",
+      "mcp__Neon__get_connection_string",
+      "mcp__Neon__fetch",
+      "mcp__Neon__create_branch",
+      "Bash(bun run *)",
+      "Bash(bun vitest *)",
+      "Bash(git stash *)",
+      "Bash(bun x *)",
+      "Bash(bunx drizzle-kit *)",
+      "Bash(bun add *)",
+      "Bash(bunx playwright *)",
+      "Bash(bun run dev:gateway)",
+      "Bash(bun run dev:public-web)",
+      "Bash(bun run --filter @vibechk/public-web *)",
+      "Bash(bun run test:e2e)",
+      "Bash(bun run --parallel *)",
+      "Bash(bun run db:*)",
+      "Bash(lsof *)",
+      "mcp__Neon__run_sql",
+      "mcp__Neon__describe_table_schema",
+      "Read(/Users/tanvibhakta/Code/alt.inc/Base/**)",
+      "Bash(echo \"EXIT_CODE:$?\")",
+      "Bash(bunx biome *)",
+      "Bash(echo \"BIOME_EXIT:$?\")",
+      "Bash(echo \"FINAL_EXIT:$?\")",
+      "Bash(mv /Users/tanvibhakta/.claude/projects/-Users-tanvibhakta-Code-alt-inc-vibechk--claude-worktrees-refine-phaser-layer4-prompt/b7af8157-1baf-415e-827d-d0adce53feb6.jsonl /Users/tanvibhakta/.claude/projects/-Users-tanvibhakta-Code-alt-inc-vibechk/)",
+      "Bash(mv /Users/tanvibhakta/.claude/projects/-Users-tanvibhakta-Code-alt-inc-vibechk--claude-worktrees-refine-phaser-layer4-prompt/b7af8157-1baf-415e-827d-d0adce53feb6 /Users/tanvibhakta/.claude/projects/-Users-tanvibhakta-Code-alt-inc-vibechk/)",
+      "Bash(cp .claude/settings.json /tmp/settings-with-stellar.json.bak)",
+      "Read(//tmp/**)",
+      "Bash(git config *)",
+      "Bash(CLOUDFLARE_API_TOKEN=$\\(git config --file \"$\\(git rev-parse --git-common-dir\\)/config\" --get vibechk.cloudflareApiToken\\) bunx wrangler tail vibechk-gateway-tanvibhakta-refine-phaser-laye --format=json)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr diff *)",
+      "Bash(git fetch *)",
+      "Bash(git worktree list)",
+      "Bash(git status *)",
+      "Bash(git branch *)",
+      "Bash(git rev-parse *)",
+      "Bash(git merge-base *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "Bash(git grep *)",
+      "Bash(rg *)",
+      "Bash(sed *)",
+      "Bash(nl *)",
+      "Bash(ls *)",
+      "Bash(wc *)",
+      "Bash(cat *)",
+      "Bash(bun run typecheck)",
+      "Bash(bun run lint:ci)",
+      "Bash(bun run check:assert)",
+      "Bash(bun run test *)",
+      "Bash(bun run test:unit)",
+      "Bash(bun run test:build)",
+      "Bash(gh issue *)",
+      "mcp__Neon__get_neon_auth_config",
+      "mcp__Neon__run_sql_transaction",
+      "mcp__Neon__get_database_tables",
+      "mcp__Neon__describe_branch",
+      "Bash(mkdir -p ~/.claude/skills/learn)",
+      "Read(//Users/tanvibhakta/.claude/skills/**)",
+      "Bash(cp .claude/skills/smoke-test-apply-flow/SKILL.md .agents/skills/smoke-test-apply-flow/SKILL.md)",
+      "Bash(git add *)",
+      "mcp__Neon__delete_branch",
+      "mcp__plugin_slack_slack__slack_read_thread",
+      "mcp__plugin_slack_slack__slack_read_file",
+      "mcp__plugin_slack_slack__slack_search_public_and_private",
+      "mcp__plugin_slack_slack__slack_send_message"
+    ],
+    "deny": [],
+    "ask": [],
+    "defaultMode": "auto",
+    "additionalDirectories": [
+      "/Users/tanvibhakta/Code/alt.inc/Base"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -11,7 +120,35 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/chrome-mcp-reap.sh\" orphans",
+            "timeout": 30,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/chrome-mcp-reap.sh\" session",
+            "timeout": 30
+          }
+        ]
+      }
     ]
+  },
+  "worktree": {
+    "baseRef": "fresh"
   },
   "statusLine": {
     "type": "command",
@@ -24,12 +161,10 @@
     "frontend-design@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
     "ralph-loop@claude-plugins-official": true,
-    "linear@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "slack@claude-plugins-official": true,
-    "azath-workflows@azath": true,
-    "posthog@claude-plugins-official": true
+    "azath-workflows@azath": true
   },
   "extraKnownMarketplaces": {
     "azath": {
@@ -39,6 +174,16 @@
       }
     }
   },
+  "cleanupPeriodDays": 3650,
   "alwaysThinkingEnabled": true,
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
+  "editorMode": "normal",
+  "verbose": false,
+  "preferredNotifChannel": "terminal_bell",
+  "terminalProgressBarEnabled": true,
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
   "voiceEnabled": false
 }

@@ -1,7 +1,7 @@
 [
   {
     "label": "Open today's note",
-    "command": "dir=\"$HOME/notes/daily/$(date +%Y)/$(date +%m-%B)\" && file=\"$dir/$(date +%d).md\" && mkdir -p \"$dir\" && [ -f \"$file\" ] || printf '# %s %s\\n\\n' \"$(date +%Y-%m-%d)\" \"$(date +%A)\" > \"$file\" && zed \"$file\"",
+    "command": "dir=\"$HOME/notes/daily/$(date +%Y)/$(date +%m-%B)\" && file=\"$dir/$(date +%d).md\" && mkdir -p \"$dir\" && [ -f \"$file\" ] || printf '# %s %s\\n\\n' \"$(date +%Y-%m-%d)\" \"$(date +%A)\" > \"$file\" && zed --existing \"$file\"",
     "hide": "always"
   },
   {

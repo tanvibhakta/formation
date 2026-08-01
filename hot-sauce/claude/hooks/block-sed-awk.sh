@@ -5,8 +5,11 @@
 HOOK_INPUT=$(cat)
 COMMAND=$(echo "$HOOK_INPUT" | jq -r '.tool_input.command // empty')
 
-# Match sed or awk used as file-editing commands (not as part of other words like "based")
-if echo "$COMMAND" | grep -qE '(^|[|;&\s])sed\s|(^|[|;&\s])awk\s'; then
+# Match sed or awk used as command tokens (start of command, or after a pipe/
+# separator), not as substrings of other words. NOTE: \s inside a POSIX bracket
+# expression is LITERAL '\' + 's' (that bug made "bypassed per" match); use
+# [:space:] classes instead.
+if echo "$COMMAND" | grep -qE '(^|[|;&[:space:]])(sed|awk)[[:space:]]'; then
   cat <<'MSG' >&2
 BLOCKED: Do not use sed/awk to edit files.
 
@@ -22,7 +25,7 @@ fi
 # Block git -C <path> when the working directory is already the target repo.
 # Using -C creates a different command string that won't match existing permission
 # allow-rules, forcing the user to re-approve every time.
-if echo "$COMMAND" | grep -qE '(^|[|;&])git\s+-C\s'; then
+if echo "$COMMAND" | grep -qE '(^|[|;&[:space:]])git[[:space:]]+-C[[:space:]]'; then
   cat <<'MSG' >&2
 BLOCKED: Do not use `git -C <path>`.
 
