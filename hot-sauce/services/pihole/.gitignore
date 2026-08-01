@@ -1,0 +1,6 @@
+# Admin password, generated per-machine by setup.sh
+.env
+
+# Pi-hole config + query database. Machine-local, and the query log is a record
+# of every domain every device on the network has looked up.
+etc-pihole/
