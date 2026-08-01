@@ -307,6 +307,8 @@ clone_skill_source() {
 }
 
 clone_skill_source "$HOME/Code/tanvi-learning" "https://github.com/tanvibhakta/tanvi-learning.git"
+# Private: this repo is public, so skills naming internal systems live here.
+clone_skill_source "$HOME/Code/formation-private" "https://github.com/tanvibhakta/formation-private.git"
 
 ###############################################################################
 # HAMMERSPOON
