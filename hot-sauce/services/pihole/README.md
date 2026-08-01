@@ -23,10 +23,12 @@ and then proves DNS actually resolves before telling you it worked.
 Admin UI lands on `http://<host-ip>:8080/admin` — 8080 rather than 80 so nginx
 and local dev servers keep working.
 
-Give the host a manual IP **outside** the router's DHCP pool, which on this
-network is `192.168.0.100`–`192.168.0.199`. Something like `192.168.0.50` is
-safe. Inside the pool the router can hand the same address to another device
-after a reboot, which breaks DNS for everything at once.
+The host is **`192.168.0.107`**, set manually. That address sits inside the
+router's DHCP pool (`192.168.0.100`–`192.168.0.199`), so pin it on the router
+too: `Advanced → Network → LAN Settings → Address Reservation → Add`, mapping
+the host's MAC to `192.168.0.107`. Without the reservation the router can lease
+`.107` to something else while the Mac is off, and you get an address clash that
+looks like random DNS failure.
 
 ## Pointing devices at it
 
@@ -48,7 +50,8 @@ a manual IP.
 
 ### Google TV / Android TV
 
-Network → your Wi-Fi → IP settings → Static. Set both DNS fields to the host IP.
+Network → your Wi-Fi → IP settings → Static. Set both DNS fields to
+`192.168.0.107`.
 
 ### Router (all devices at once) — possible, but ACT hides the fields
 
