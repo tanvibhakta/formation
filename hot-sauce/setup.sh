@@ -115,6 +115,29 @@ for dir in "$HOTSAUCE_DIR"/config/*/; do
 done
 
 ###############################################################################
+# GHOSTTY MACOS SHADOW CONFIG
+# On macOS, ~/Library/Application Support/com.mitchellh.ghostty/ is loaded
+# AFTER ~/.config/ghostty/, so anything there silently overrides the tracked
+# config in this repo. Ghostty writes a template into it on first launch
+# whenever it finds no config at all — which is exactly the state a new laptop
+# is in before this script runs. Move it aside so the repo stays authoritative.
+###############################################################################
+echo ""
+echo "  ── Ghostty shadow config ──"
+GHOSTTY_SHADOW_DIR="$HOME/Library/Application Support/com.mitchellh.ghostty"
+shadow_found=0
+for shadow in "$GHOSTTY_SHADOW_DIR/config" "$GHOSTTY_SHADOW_DIR/config.ghostty"; do
+    if [ -e "$shadow" ] && [ ! -L "$shadow" ]; then
+        mv "$shadow" "${shadow}.backup"
+        print_warning "Backed up $shadow → ${shadow}.backup"
+        shadow_found=1
+    fi
+done
+if [ "$shadow_found" -eq 0 ]; then
+    print_success_muted "No shadowing config; ~/.config/ghostty is authoritative"
+fi
+
+###############################################################################
 # GH CLI CONFIG
 # gh stores auth separately in hosts.yml, so config.yml is safe to symlink
 ###############################################################################

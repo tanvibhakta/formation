@@ -1,40 +1,95 @@
-# Natural Text Editing Configuration
+# ==============================================================================
+# Ghostty — single source of truth
+#
+# Tracked in formation; symlinked to ~/.config/ghostty by hot-sauce/setup.sh.
+#
+# DO NOT edit ~/Library/Application Support/com.mitchellh.ghostty/config.
+# On macOS that path is loaded AFTER this one, so anything in it silently
+# overrides everything here. Ghostty auto-creates it as a template on first
+# launch when no config exists; setup.sh backs it out of the way so this file
+# stays authoritative. That shadowing went unnoticed Feb–Jul 2026, during which
+# every edit landed in the untracked copy and none of this file applied.
+#
+# Machine-specific values belong in local.conf — see the bottom of this file.
+# ==============================================================================
 
-# Theme
-theme = Catppuccin Mocha
+# ── Appearance ────────────────────────────────────────────────────────────────
+theme = Dracula+
 
-# Transparency + blur
-background-opacity = 0.9
+background-opacity = 1
+# Only visible when background-opacity < 1.
 background-blur-radius = 20
 
-# Copy on select
+font-size = 19
+font-thicken = true
+adjust-cell-height = 2
+
+macos-titlebar-style = tabs
+window-padding-x = 8
+window-padding-y = 8
+window-padding-balance = true
+
+# ── Behaviour ─────────────────────────────────────────────────────────────────
 copy-on-select = clipboard
+scrollback-limit = 10000000000
 
-# Clean titlebar
-macos-titlebar-style = hidden
+# Cmd+W closes a tab instantly, with no dialog.
+#
+# Ghostty has exactly ONE confirmation knob and it governs tab-close and quit
+# TOGETHER, so "confirm on Cmd+Q but not Cmd+W" is not expressible in config.
+# Cmd+Q is disarmed with a key sequence instead — see Keybinds below.
+#
+# Context: a stray Cmd+Q killed 10 live Claude Code sessions on 2026-07-29,
+# silently, because this was `false` and nothing guarded the quit path.
+confirm-close-surface = false
 
-# Enable Option key as Alt (required for word navigation)
+# ── Keybinds · natural text editing ───────────────────────────────────────────
+# Option must act as Alt for word navigation to work.
 macos-option-as-alt = true
 
-# Word Navigation (Option + Arrow)
+# Word navigation (Option + Arrow)
 keybind = alt+left=esc:b
 keybind = alt+right=esc:f
 
-# Line Navigation (Cmd + Arrow)
+# Line navigation (Cmd + Arrow)
 keybind = cmd+left=text:\x01
 keybind = cmd+right=text:\x05
 
-# Delete Word Backward (Option + Delete)
+# Delete word backward (Option + Delete)
 keybind = alt+backspace=text:\x17
 
-# Delete Word Forward (Option + Fn + Delete)
+# Delete word forward (Option + Fn + Delete)
 keybind = alt+delete=esc:d
 
-# Delete to Beginning of Line (Cmd + Delete)
+# Delete to beginning of line (Cmd + Delete)
 keybind = cmd+backspace=text:\x15
 
-# Delete to End of Line (Cmd + Fn + Delete)
+# Delete to end of line (Cmd + Fn + Delete)
 keybind = cmd+delete=text:\x0b
 
-# Equalize split panes
+# ── Keybinds · tabs, splits, scrollback ───────────────────────────────────────
+# Ensure Cmd+T opens a tab, not a window.
+keybind = cmd+t=new_tab
 keybind = super+shift+e=equalize_splits
+keybind = cmd+shift+h=write_scrollback_file:open
+
+# Disarm Cmd+Q: a single press is inert, press it TWICE in a row to quit.
+# This is the only way to protect the quit path without also putting a
+# confirmation dialog on Cmd+W.
+keybind = cmd+q>cmd+q=quit
+
+# ── Machine-local overrides ───────────────────────────────────────────────────
+# The canonical Ghostty include mechanism.
+#
+# The path is relative to THIS file, so it carries no absolute paths and no
+# username — it resolves correctly on any machine. The leading `?` marks the
+# file optional: when it is absent, which is the normal case, Ghostty stays
+# silent instead of erroring.
+#
+# Included files load AFTER the file that includes them, so anything set in
+# local.conf wins over everything above. Put per-machine values there — a
+# different font-size for an external display, a machine-specific theme —
+# and keep this file identical across every laptop.
+#
+# local.conf is gitignored, so it never travels between machines.
+config-file = ?local.conf
