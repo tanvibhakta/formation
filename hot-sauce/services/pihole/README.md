@@ -45,15 +45,32 @@ a manual IP.
 
 Network → your Wi-Fi → IP settings → Static. Set both DNS fields to the host IP.
 
-### Router (all devices at once)
+### Router (all devices at once) — try this first
 
-`Network → DHCP Server → Primary/Secondary DNS` — **not** the WAN DNS page.
-WAN DNS only changes what the router itself resolves against; it doesn't get
-handed to clients.
+`Advanced → Network → DHCP Server → Primary/Secondary DNS` — **not** the WAN
+DNS page under Internet. WAN DNS only changes what the router itself resolves
+against; it never reaches clients. An earlier attempt at this setup burned a
+day on WAN DNS, static WAN IP, and Dynamic DNS without ever opening the DHCP
+page, so start here.
 
-On the ACT-supplied TP-Link Archer C5 this page has previously returned 403,
-which is consistent with locked-down ISP firmware. If it does, skip it — the
-per-device and Tailscale routes below don't need the router's cooperation.
+Caveats once it's set:
+
+- Clients keep their old DNS until the DHCP lease renews. Reboot the device to
+  force it, and verify from the device rather than from the router.
+- Google TV honors DHCP DNS but silently falls back to `8.8.8.8` when the
+  supplied resolver stops answering — a dead Pi-hole reads as "ads are back",
+  not "internet is down".
+- DoH/DoT bypasses DNS entirely: Firefox, iOS Private Relay, and Android's
+  **Private DNS** setting. Switch Private DNS to Off on devices you care about.
+- The real fix for hardcoded resolvers is a NAT redirect of outbound port 53 to
+  Pi-hole. Consumer TP-Link firmware doesn't offer it; don't go looking.
+
+If the DHCP DNS field genuinely isn't exposed, note that the usual workaround
+does **not** apply here: "turn off the router's DHCP and let Pi-hole serve DHCP
+instead" needs broadcast traffic and host networking, and Docker Desktop on
+macOS has neither. While the host is a Mac, that route is closed. Fall back to
+per-device DNS or Tailscale below, or put the ISP router in bridge mode behind
+one you control.
 
 ### Tailscale (most robust, works outside the house)
 
