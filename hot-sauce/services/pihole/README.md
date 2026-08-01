@@ -23,6 +23,11 @@ and then proves DNS actually resolves before telling you it worked.
 Admin UI lands on `http://<host-ip>:8080/admin` — 8080 rather than 80 so nginx
 and local dev servers keep working.
 
+Give the host a manual IP **outside** the router's DHCP pool, which on this
+network is `192.168.0.100`–`192.168.0.199`. Something like `192.168.0.50` is
+safe. Inside the pool the router can hand the same address to another device
+after a reboot, which breaks DNS for everything at once.
+
 ## Pointing devices at it
 
 ### The one rule
@@ -45,13 +50,42 @@ a manual IP.
 
 Network → your Wi-Fi → IP settings → Static. Set both DNS fields to the host IP.
 
-### Router (all devices at once) — try this first
+### Router (all devices at once) — possible, but ACT hides the fields
 
-`Advanced → Network → DHCP Server → Primary/Secondary DNS` — **not** the WAN
-DNS page under Internet. WAN DNS only changes what the router itself resolves
-against; it never reaches clients. An earlier attempt at this setup burned a
-day on WAN DNS, static WAN IP, and Dynamic DNS without ever opening the DHCP
-page, so start here.
+The page is `Advanced → Network → LAN Settings` (the "DHCP Server" heading is on
+that page; it is not its own menu item). **Not** the WAN DNS page under Internet
+— WAN DNS is only what the router itself resolves against and never reaches
+clients. An earlier attempt burned a day on WAN DNS, static WAN IP, and Dynamic
+DNS for exactly that reason.
+
+On this router — Archer C5 v4, firmware `3.16.0 0.9.1 v6015.0 Build 240806` —
+the Primary/Secondary DNS fields are **present but deliberately hidden**:
+
+- `input#dnsserver1` and `input#dnsserver2` live inside `form#formIPv4`, four
+  octet cells each, carrying an inline `style="display: none"`, inside a parent
+  `div.nd.pure-control-group` that is also `display: none`.
+- They are live, not vestigial. They read back `49.205.72.130` and
+  `183.82.243.66` — exactly the DNS the router hands out over DHCP. Only the UI
+  is suppressed; the backend still serves these values.
+
+So they can probably be set by unhiding the row in devtools and saving:
+
+```js
+['dnsserver1', 'dnsserver2'].forEach(id => {
+  const el = document.getElementById(id);
+  el.style.display = '';
+  const row = el.closest('.pure-control-group');
+  row.style.display = ''; row.classList.remove('nd');
+});
+```
+
+Whether the firmware *persists* an edited value is untested — it may ignore or
+re-assert ACT's servers on save or reboot. Try it only after Pi-hole is up and
+verified, never before: pointing DHCP at a resolver that isn't answering takes
+DNS down for every device at once.
+
+**Recovery**, if it misbehaves: same page, restore Primary `49.205.72.130` and
+Secondary `183.82.243.66`, save. Worth having open in a second tab first.
 
 Caveats once it's set:
 
