@@ -11,6 +11,31 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/chrome-mcp-reap.sh\" orphans",
+            "timeout": 30,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/chrome-mcp-reap.sh\" session",
+            "timeout": 30
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
