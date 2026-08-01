@@ -4,6 +4,12 @@
 .secrets
 *.secrets
 
-# gh CLI writes tokens to hosts.yml — must never be tracked
+# setup.sh symlinks hot-sauce/config/<app> → ~/.config/<app>, so applications
+# write their runtime state directly into this repo. That state is machine-local
+# and must never be tracked.
+#
+# gh CLI writes auth tokens to hosts.yml.
 hot-sauce/config/gh/hosts.yml
 hot-sauce/config/gh/*.backup
+# Zed's prompt library: an LMDB database plus a live lock file.
+hot-sauce/config/zed/prompts/
