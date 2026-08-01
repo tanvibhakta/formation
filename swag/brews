@@ -15,6 +15,7 @@ mkcert
 nginx
 pnpm
 rbenv
+ripgrep
 scrcpy
 shellcheck
 tailscale
