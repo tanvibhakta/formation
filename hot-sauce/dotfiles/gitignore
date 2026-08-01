@@ -2,3 +2,5 @@
 .idea
 .yalc
 .linear.toml
+
+**/.claude/settings.local.json
