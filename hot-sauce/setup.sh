@@ -285,6 +285,30 @@ else
 fi
 
 ###############################################################################
+# EXTERNAL SKILL SOURCES
+# Some skills are symlinks into repos this one does not own. Git stores the
+# link target verbatim, so on a fresh machine the skill dangles silently until
+# its source repo exists. Clone the sources so the link resolves.
+###############################################################################
+echo ""
+echo "  ── External skill sources ──"
+clone_skill_source() {
+    local dst="$1" url="$2" name="$(basename "$1")"
+
+    if [ -d "$dst/.git" ]; then
+        print_success_muted "$name already cloned"
+    elif [ -e "$dst" ]; then
+        print_warning "$dst exists but is not a git repo. Leaving it alone."
+    elif git clone --quiet "$url" "$dst" 2>/dev/null; then
+        print_success "Cloned $name → $dst"
+    else
+        print_warning "Could not clone $url. The learn skill will not work until you clone it manually."
+    fi
+}
+
+clone_skill_source "$HOME/Code/tanvi-learning" "https://github.com/tanvibhakta/tanvi-learning.git"
+
+###############################################################################
 # HAMMERSPOON
 # Symlinks init.lua so config edits land in the repo, not in ~/.hammerspoon.
 # Reload the config from the Hammerspoon menu bar after first link.
