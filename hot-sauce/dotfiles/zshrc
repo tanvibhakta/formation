@@ -89,3 +89,62 @@ source "/Users/tanvibhakta/.openclaw/completions/openclaw.zsh"
 
 # direnv
 eval "$(direnv hook zsh)"
+
+# --- vibechk: Blacksmith testbox routing -------------------------------------
+# VIBECHK_TESTBOX_ID routes the pre-commit gate (check:assert + full suite) to a
+# remote box. The id is EPHEMERAL: the box dies on its idle timeout and the gate
+# fails closed on a dead one, so a pinned literal would block every commit until
+# hand-edited. It also cannot live in the repo -- .dev-env/testbox.env refuses any
+# key but the DB three, and a gitignored .envrc makes the gate refuse to route at
+# all. So resolve it live, per shell, when you sit down to work.
+#
+# Every resolution is ALSO cached, because everything in this file is
+# interactive-only: an agent's tool call, and any hook git spawns outside a login
+# shell, read .zshenv and never this. Before the cache they saw no id and verified
+# on this machine without a word — the exact failure the routing exists to prevent.
+# .zshenv reads the cache back; only these three writers keep it true.
+_vibechk_testbox_cache="$HOME/.cache/vibechk/testbox-id"
+
+_vibechk_testbox_route() {
+  export VIBECHK_TESTBOX_ID="$1"
+  mkdir -p "${_vibechk_testbox_cache:h}" && print -r -- "$1" > "$_vibechk_testbox_cache"
+}
+
+tbx() {
+  local id
+  id="$(blacksmith testbox list 2>/dev/null | awk '$3=="vibechk" && $1 ~ /^tbx_/ {print $1; exit}')"
+  if [[ -z "$id" ]]; then
+    echo "tbx: no live vibechk box, warming one..." >&2
+    id="$(blacksmith testbox warmup ci-e2e-browser-testbox.yml --idle-timeout 45 2>/dev/null | grep -oE 'tbx_[a-z0-9]+' | head -1)"
+  fi
+  if [[ -z "$id" ]]; then
+    echo "tbx: could not resolve or warm a box (try: blacksmith auth login)" >&2
+    return 1
+  fi
+  _vibechk_testbox_route "$id"
+  echo "routing pre-commit to $id  (agents and hooks pick this up via ~/.zshenv)"
+}
+
+# Stop the box this shell is routed to and drop the routing.
+tbx-stop() {
+  [[ -n "$VIBECHK_TESTBOX_ID" ]] && blacksmith testbox stop --id "$VIBECHK_TESTBOX_ID"
+  unset VIBECHK_TESTBOX_ID
+  # Clear the cache too, or .zshenv re-exports a dead id into every new shell.
+  rm -f "$_vibechk_testbox_cache"
+  echo "testbox stopped; commits verify locally again"
+}
+
+# Auto-ROUTE on entering the repo, but never auto-WARM: if a box is already live
+# this shell picks it up with no ceremony; if none is, you stay local until you
+# run `tbx`. Warming on cd would start billing without you asking. Guarded on the
+# variable, so this costs one CLI call per shell, not one per cd.
+autoload -Uz add-zsh-hook
+_vibechk_testbox_autoroute() {
+  [[ -n "$VIBECHK_TESTBOX_ID" ]] && return
+  [[ "$PWD" == */vibechk* ]] || return
+  local id
+  id="$(blacksmith testbox list 2>/dev/null | awk '$3=="vibechk" && $1 ~ /^tbx_/ {print $1; exit}')"
+  [[ -n "$id" ]] && _vibechk_testbox_route "$id" && echo "testbox: routed to $id"
+}
+add-zsh-hook chpwd _vibechk_testbox_autoroute
+_vibechk_testbox_autoroute

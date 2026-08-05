@@ -1,1 +1,19 @@
 . "$HOME/.cargo/env"
+
+# Blacksmith testbox routing has to reach NON-INTERACTIVE shells. .zshrc is
+# interactive-only, so an agent's tool call — and any git hook spawned outside a
+# login shell — saw no id and silently verified on this machine instead, which is
+# the one outcome the routing exists to prevent.
+#
+# File read, never a CLI call: this runs for every zsh, so `blacksmith testbox
+# list` here would put a network round-trip on each one. .zshrc resolves the id
+# and caches it; this only picks it up.
+#
+# A cached id whose box has died fails the gate closed ("has been shut down —
+# warmup a new one"). That is correct and deliberate: falling back to a local run
+# would hand this machine the workload the box exists to take.
+if [[ -z "$VIBECHK_TESTBOX_ID" && -r "$HOME/.cache/vibechk/testbox-id" ]]; then
+  read -r _vibechk_tbx < "$HOME/.cache/vibechk/testbox-id"
+  [[ "$_vibechk_tbx" =~ ^tbx_[a-z0-9]+$ ]] && export VIBECHK_TESTBOX_ID="$_vibechk_tbx"
+  unset _vibechk_tbx
+fi
