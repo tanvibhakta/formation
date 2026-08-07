@@ -129,9 +129,21 @@ tbx() {
 tbx-stop() {
   [[ -n "$VIBECHK_TESTBOX_ID" ]] && blacksmith testbox stop --id "$VIBECHK_TESTBOX_ID"
   unset VIBECHK_TESTBOX_ID
-  # Clear the cache too, or .zshenv re-exports a dead id into every new shell.
+  # The cache deliberately KEEPS the dead id. Clearing it looks tidier and is worse:
+  # an unset id runs the suite here and says nothing, which is indistinguishable from
+  # a machine that chose local. A dead id fails the next commit closed with "has been
+  # shut down — warmup a new one", which names the problem. `tbx` overwrites it.
+  echo "testbox stopped; next commit fails closed until you run tbx (use tbx-local to go local)"
+}
+
+# Deliberately move THIS MACHINE to local verification, as opposed to merely being
+# between boxes. Separated from tbx-stop because they are different intentions and
+# only this one should leave the id unset.
+tbx-local() {
+  [[ -n "$VIBECHK_TESTBOX_ID" ]] && blacksmith testbox stop --id "$VIBECHK_TESTBOX_ID"
+  unset VIBECHK_TESTBOX_ID
   rm -f "$_vibechk_testbox_cache"
-  echo "testbox stopped; commits verify locally again"
+  echo "this machine now verifies locally; run tbx to route again"
 }
 
 # Auto-ROUTE on entering the repo, but never auto-WARM: if a box is already live
