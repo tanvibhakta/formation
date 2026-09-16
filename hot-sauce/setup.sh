@@ -299,16 +299,16 @@ clone_skill_source() {
         print_success_muted "$name already cloned"
     elif [ -e "$dst" ]; then
         print_warning "$dst exists but is not a git repo. Leaving it alone."
-    elif git clone --quiet "$url" "$dst" 2>/dev/null; then
+    elif GIT_TERMINAL_PROMPT=0 git clone --quiet "$url" "$dst" 2>/dev/null; then
         print_success "Cloned $name → $dst"
     else
         print_warning "Could not clone $url. The learn skill will not work until you clone it manually."
     fi
 }
 
-clone_skill_source "$HOME/Code/tanvi-learning" "https://github.com/tanvibhakta/tanvi-learning.git"
+clone_skill_source "$HOME/Code/tanvi-learning" "git@github.com:tanvibhakta/tanvi-learning.git"
 # Private: this repo is public, so skills naming internal systems live here.
-clone_skill_source "$HOME/Code/formation-private" "https://github.com/tanvibhakta/formation-private.git"
+clone_skill_source "$HOME/Code/formation-private" "git@github.com:tanvibhakta/formation-private.git"
 
 ###############################################################################
 # HAMMERSPOON

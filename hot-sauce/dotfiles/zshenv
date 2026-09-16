@@ -1,4 +1,4 @@
-. "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 # Blacksmith testbox routing has to reach NON-INTERACTIVE shells. .zshrc is
 # interactive-only, so an agent's tool call — and any git hook spawned outside a

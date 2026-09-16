@@ -529,20 +529,25 @@ ssh_key_setup() {
 }
 
 pnpm_setup() {
-    # Check if PNPM_HOME is already set in shell config
-    if [ -z "$PNPM_HOME" ]; then
+    # Run pnpm's own setup to write the shell config block (idempotent —
+    # a no-op if it's already there). This does not reliably export
+    # PNPM_HOME into the current (bash) session, so we do that ourselves below.
+    if ! grep -q 'PNPM_HOME' "$HOME/.zshrc" 2>/dev/null; then
         print_warning "Running pnpm setup to configure environment..."
         pnpm setup
-        # Source the updated shell config to get PNPM_HOME in current session
-        if [ -f "$HOME/.bashrc" ]; then
-            source "$HOME/.bashrc"
-        elif [ -f "$HOME/.zshrc" ]; then
-            source "$HOME/.zshrc"
-        fi
         print_success "pnpm setup completed"
     else
-        print_success_muted "pnpm already configured. PNPM_HOME=$PNPM_HOME"
+        print_success_muted "pnpm already configured in ~/.zshrc"
     fi
+
+    # Ensure PNPM_HOME is exported, on PATH, and the directory exists for the
+    # rest of THIS script run (macOS default location: ~/Library/pnpm).
+    export PNPM_HOME="${PNPM_HOME:-$HOME/Library/pnpm}"
+    mkdir -p "$PNPM_HOME"
+    case ":$PATH:" in
+        *":$PNPM_HOME:"*) ;;
+        *) export PATH="$PNPM_HOME:$PATH" ;;
+    esac
 }
 
 mas_setup() {

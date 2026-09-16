@@ -6,7 +6,7 @@
 [user]
 	name = Tanvi Bhakta
 	email = tanvibhakta@gmail.com
-	signingkey = /Users/tanvibhakta/.ssh/id_ed25519.pub
+	signingkey = /Users/tanvibhakta/.ssh/id_rsa.pub
 [core]
 	excludesfile = /Users/tanvibhakta/.gitignore
 [init]
@@ -19,3 +19,5 @@
 	format = ssh
 [commit]
 	gpgsign = true
+[url "git@github.com:"]
+	insteadOf = https://github.com/
