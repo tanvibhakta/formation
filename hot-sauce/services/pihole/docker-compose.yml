@@ -22,8 +22,8 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      # Web UI on 8080, leaving port 80 free for nginx and local dev servers.
-      - "8080:80/tcp"
+      # Web UI on 8053, leaving port 80 free for nginx and local dev servers.
+      - "8053:80/tcp"
     environment:
       TZ: 'Asia/Kolkata'
       # Sourced from .env, which is gitignored. Fails loudly rather than

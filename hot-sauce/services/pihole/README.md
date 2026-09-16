@@ -20,7 +20,7 @@ port 53, warns if the machine is still on DHCP, offers to disable sleep,
 generates a random admin password into a gitignored `.env`, starts the container,
 and then proves DNS actually resolves before telling you it worked.
 
-Admin UI lands on `http://<host-ip>:8080/admin` — 8080 rather than 80 so nginx
+Admin UI lands on `http://<host-ip>:8053/admin` — 8053 rather than 80 so nginx
 and local dev servers keep working.
 
 The host is **`192.168.0.107`**, set manually. That address sits inside the
@@ -118,6 +118,45 @@ one you control.
 Every tailnet device then uses Pi-hole from anywhere, bypassing the router
 entirely. Google TV and Android TV can run Tailscale natively; Samsung Tizen and
 LG webOS cannot.
+
+The host's tailnet node is **`pihole` = `100.74.173.13`** (this is the address in
+the DNS console's Global Nameserver field). It's the Homebrew `tailscaled`
+system daemon's node — see the pitfalls below.
+
+**Run exactly one Tailscale install on the host.** This Mac had both the GUI
+`Tailscale.app` (with its root network-extension) *and* the Homebrew
+`tailscaled` system daemon. They can't cleanly share the tunnel, so one keeps
+stopping — and when the host's node drops, every device with Override-local-DNS
+loses *all* DNS, not just ad-blocking. Symptom on a client: raw IPs ping fine
+(`ping 8.8.8.8` works) but names don't resolve (`ping google.com` →
+"unknown host"). We standardized on the **Homebrew system daemon** because it
+runs as root, survives reboot and logout, and needs no GUI session:
+
+```sh
+osascript -e 'tell application "Tailscale" to quit'   # stop the GUI app
+sudo brew services restart tailscale                  # match daemon to CLI version
+sudo tailscale up --accept-dns=false                  # log in; browser opens
+tailscale set --accept-dns=false --hostname=pihole    # if 'up' flags don't stick
+```
+
+- **`--accept-dns=false` on the host is required.** The host runs Pi-hole; it
+  must not accept the tailnet's "use Pi-hole for DNS" override, or it routes its
+  own DNS through the tunnel back to itself. Verify with
+  `tailscale debug prefs | grep CorpDNS` — want `false`.
+- **Disable key expiry on the node** in the admin console (Machines → `pihole` →
+  ⋯ → Disable key expiry). Node keys expire in ~180 days by default; when the
+  key expires the node silently drops off the tailnet and takes DNS down for
+  every Override-local-DNS client. This is the Tailscale equivalent of the
+  disable-sleep step.
+- **No automatic fallback, by design.** DNS dies when the host does, same
+  tradeoff as the LAN setup. The manual escape hatch is to toggle Tailscale
+  **off** on the client — it reverts to carrier/Wi-Fi DNS (ads return, but the
+  internet works).
+
+Debugging an Android client is fastest over `adb` (USB debugging on):
+`adb shell settings get global private_dns_mode` (want `off`),
+`adb shell ping -c1 <host-tailnet-ip>` (tunnel reachable?),
+`adb shell ping -c1 google.com` (DNS resolving?).
 
 ## What this will and won't block
 
