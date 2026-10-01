@@ -14,6 +14,11 @@ hot-sauce/config/gh/*.backup
 # Zed's prompt library: an LMDB database plus a live lock file.
 hot-sauce/config/zed/prompts/
 
+# Claude Code's skills sync writes its bucket state and deleted-skill trash under
+# ~/.claude/skills, which is this repo. Both are runtime state.
+hot-sauce/claude/skills/.trash/
+hot-sauce/claude/skills/synced/
+
 # Per-machine Ghostty overrides, pulled in via `config-file = ?local.conf`.
 # Deliberately untracked so it never travels between laptops.
 hot-sauce/config/ghostty/local.conf
