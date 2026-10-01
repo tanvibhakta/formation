@@ -6,6 +6,12 @@
 # stay open for the life of the session and sometimes linger after it dies. This reaper
 # closes them at the right moments.
 #
+# Keep Chrome on --isolated. A shared-profile flag (--autoConnect, or a persistent
+# --userDataDir) collapses every parallel session onto ONE browser, and they then fight
+# over tabs — which is the exact failure this reaper's per-session tree walks exist to
+# avoid. Authenticated browsing that genuinely needs a signed-in profile goes to the
+# firefox-devtools MCP (--autoProfile, one shared profile, inherently serial) instead.
+#
 # Modes:
 #   session  (SessionEnd):   kill THIS session's chrome-devtools-mcp tree + its Chrome.
 #   orphans  (SessionStart): kill chrome-devtools-mcp trees whose owning `claude`
