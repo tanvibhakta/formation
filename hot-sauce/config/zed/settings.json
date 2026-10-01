@@ -7,6 +7,18 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "agent_servers": {
+    "claude-acp": {
+      "type": "registry"
+    },
+    "pi-acp": {
+      "type": "registry"
+    },
+    "codex-acp": {
+      "type": "registry"
+    }
+  },
+  "cli_default_open_behavior": "new_window",
   "git_panel": {
     "tree_view": true
   },
@@ -22,14 +34,17 @@
     }
   },
   "agent": {
+    "expand_terminal_card": false,
+    "expand_edit_card": true,
     "default_model": {
-      "provider": "anthropic",
-      "model": "claude-3-7-sonnet-latest"
+      "effort": "medium",
+      "enable_thinking": true,
+      "provider": "openai-subscribed",
+      "model": "gpt-6-astra"
     },
     "model_parameters": [],
-    "play_sound_when_agent_done": true,
+    "play_sound_when_agent_done": "when_hidden",
   },
-  "base_keymap": "JetBrains",
   "ui_font_size": 16,
   "buffer_font_size": 16,
   "minimap": {
