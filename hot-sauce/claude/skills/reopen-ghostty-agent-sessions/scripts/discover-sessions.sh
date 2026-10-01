@@ -28,8 +28,10 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -z "$CUTOFF" ]; then
-  # kern.boottime is when the machine came back up, i.e. the moment of the crash
-  boot_epoch=$(sysctl -n kern.boottime | sed -n 's/.*sec = \([0-9]*\).*/\1/p' 2>/dev/null)
+  # kern.boottime is when the machine came back up, i.e. the moment of the crash.
+  # Output is "{ sec = 1789559884, usec = 352203 }". Anchor on the leading brace:
+  # a leading .* would match greedily through "usec" and yield the microseconds.
+  boot_epoch=$(sysctl -n kern.boottime | sed -n 's/^{ *sec = \([0-9]*\).*/\1/p' 2>/dev/null)
   [ -z "$boot_epoch" ] && { echo "could not read boot time" >&2; exit 1; }
   CUT_EPOCH="$boot_epoch"
 elif [ "$CUTOFF" = "now" ]; then
