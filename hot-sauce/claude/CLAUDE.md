@@ -5,6 +5,7 @@
 
 ## Working With Tanvi
 - **Ask decision questions in prose, not `AskUserQuestion`.** Her client renders only the dialog and drops the message text that precedes it, so a question needing context arrives contextless. Reserve `AskUserQuestion` for choices fully self-contained in the option labels.
+- **Load the `teach` skill before explaining any concept** — answering "why" or "how does X work", walking through code, or after she says "what" or "I don't understand". It sets the chunk size (one small idea per message), the explanation order, and how to build metaphors, and it logs what she learned to `~/Code/tanvi-learning/inbox/`.
 - **`open` every image.** After producing a screenshot, diagram, or visual comparison, run `open "<abs-path>"` — files delivered only via `SendUserFile` are not reliably viewable in her setup.
 
 ## Shell And Tooling
