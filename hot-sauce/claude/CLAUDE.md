@@ -10,7 +10,7 @@
 ## Shell And Tooling
 - **Use `rg`, never `grep`, for code search — and never pass `-r`.** `rg` recurses by default; `-r` is `--replace`, so `rg -rn foo` silently rewrites every match to the literal `n`. The output reads as mangled data rather than as a mistake.
 - **Never pipe a gate command through `tail`/`head` inside an `&&` chain.** A pipeline's exit status is the last command's, so `bun run check | tail -3` reports `tail`'s success and the chain proceeds over a real failure. Run the gate bare and redirect, or capture to a file and inspect after the exit check.
-- **Never write long prose into a Bash heredoc.** The `block-sed-awk` PreToolUse hook matches the whole command string, so ordinary words containing `sed` — "passed", "based", "used" — trip it with no sed anywhere. Write commit messages and PR bodies with the Write tool, then `git commit -F <file>` / `gh pr create --body-file <file>`. Use the Read tool for file ranges, never `sed -n`.
+- **The `block-sed-awk` hook blocks only file-writing forms** — `sed -i`, `awk -i inplace`, `perl -i`, or sed/awk redirected to a file. Read-only `sed -n` / `awk` filters pass, in Claude Code and Codex alike (one shared script). Edit files with the Edit tool; view a file's line range with Read offset/limit.
 - **Scratch files go in `~/Code/llm-workspace/YYYYMMDD-<task>/`, never `/tmp`** — a reboot wiped `/tmp` mid-task. Every hand-off filename carries `$(date +%Y%m%d-%H%M%S)-$$`, because concurrent sessions collide on fixed names.
 
 ## Background Commands

@@ -5,19 +5,27 @@
 HOOK_INPUT=$(cat)
 COMMAND=$(echo "$HOOK_INPUT" | jq -r '.tool_input.command // empty')
 
-# Match sed or awk used as command tokens (start of command, or after a pipe/
-# separator), not as substrings of other words. NOTE: \s inside a POSIX bracket
-# expression is LITERAL '\' + 's' (that bug made "bypassed per" match); use
-# [:space:] classes instead.
-if echo "$COMMAND" | grep -qE '(^|[|;&[:space:]])(sed|awk)[[:space:]]'; then
+# Block sed/awk/perl only when they write a file: in-place flags, or a redirect to a
+# file. Blocking every sed/awk sent agents into retry loops on plain reads (76 blocks
+# in one week, all of them reads). Quoted strings are stripped first, so a '>' inside
+# an awk program or "sed -i" inside a commit message is not taken for a command.
+UNQUOTED=$(printf '%s' "$COMMAND" | perl -0pe "s/'[^']*'//g; s/\"(?:\\\\.|[^\"\\\\])*\"//g")
+EDITING=$(printf '%s\n' "$UNQUOTED" | tr '|;&' '\n\n\n' | perl -ne '
+  next unless /^\s*(?:\w+=\S*\s+)*(?:sudo\s+)?(g?sed|g?awk|perl)\s/;
+  my $tool = $1;
+  s{\d*>>?\s*/dev/(?:null|stdout|stderr)}{}g;
+  s{\d>>?}{}g;
+  if (($tool =~ /sed/ && /\s(?:-[a-zA-Z]*i|--in-place)/)
+      || ($tool =~ /awk/ && /\s-i\s*inplace/)
+      || ($tool eq "perl" && /\s-[a-zA-Z]*i/)
+      || ($tool ne "perl" && />/)) { print; exit }')
+if [ -n "$EDITING" ]; then
   cat <<'MSG' >&2
-BLOCKED: Do not use sed/awk to edit files.
+BLOCKED: this sed/awk/perl command writes a file (-i, -i inplace, or a > redirect).
 
-1. Use the Edit tool instead.
-2. If Edit fails due to whitespace mismatch, re-read the file with Read to get exact indentation, then retry Edit with the correct old_string.
-3. If the file has inconsistent formatting, run the project formatter first (e.g. `bun run lint:fix` or `bun run format`) and then re-read and retry Edit.
-
-NEVER fall back to sed/awk.
+1. To edit a file, use the Edit tool. If Edit fails on whitespace, re-read with Read to get exact indentation and retry.
+2. To view a line range, use Read with offset/limit.
+3. To filter output, read-only sed -n / awk / rg / jq / cut are fine, without -i or a redirect to a file.
 MSG
   exit 2
 fi
