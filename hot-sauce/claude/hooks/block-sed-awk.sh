@@ -47,4 +47,30 @@ MSG
   exit 2
 fi
 
+# Block committing while HEAD is the default branch — vibechk only. Work there belongs
+# on a branch in a worktree. This fires even with `git commit --no-verify`, which is
+# the gap the lefthook commit-msg/pre-commit hooks cannot cover. Checks the cwd's
+# repo, so a session inside a worktree is judged by that worktree's own HEAD. Other
+# repos (dotfiles, scratch projects) commit to main directly, so they are left alone.
+if echo "$COMMAND" | grep -qE '(^|[|;&[:space:]])git[[:space:]]+([^|;&]*[[:space:]])?commit([[:space:]]|$)' \
+  && git remote get-url origin 2>/dev/null | grep -qE '[:/]Alt-AI-Inc/vibechk(\.git)?$'; then
+  BRANCH=$(git symbolic-ref --quiet --short HEAD 2>/dev/null)
+  if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+    cat <<MSG >&2
+BLOCKED: refusing to commit while HEAD is "$BRANCH".
+
+All work goes on a branch, in a worktree — never in the main checkout. The main
+clone is also swept back to the default branch by a scheduled git-pull job, so a
+branch created there can be switched out from under you and the commit lands on
+$BRANCH.
+
+Instead:
+1. Use EnterWorktree to get an isolated worktree with its own HEAD.
+2. If you already have commits stranded on $BRANCH: point a branch at them
+   (git branch <name> <sha>), then reset $BRANCH back (git branch -f $BRANCH origin/$BRANCH).
+MSG
+    exit 2
+  fi
+fi
+
 exit 0
