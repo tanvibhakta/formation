@@ -260,7 +260,7 @@ if [ -d "$CLAUDE_SRC" ]; then
     done
 
     # Symlink individual files
-    for file in CLAUDE.md settings.json statusline-command.sh; do
+    for file in CLAUDE.md statusline-command.sh; do
         src="$CLAUDE_SRC/$file"
         dst="$CLAUDE_DST/$file"
         [ -f "$src" ] || continue
@@ -280,6 +280,14 @@ if [ -d "$CLAUDE_SRC" ]; then
             print_success "Linked ~/.claude/$file"
         fi
     done
+
+    # settings.json is built, not linked: it merges the public settings.json with
+    # the gitignored settings.private.json. See build-settings.sh.
+    if "$CLAUDE_SRC/build-settings.sh"; then
+        print_success "Built ~/.claude/settings.json"
+    else
+        print_warning "~/.claude/settings.json has unsaved edits; left unchanged (see above)"
+    fi
 else
     print_warning "hot-sauce/claude not found. Skipping Claude Code setup."
 fi

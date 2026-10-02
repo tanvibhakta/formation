@@ -14,6 +14,10 @@ hot-sauce/config/gh/*.backup
 # Zed's prompt library: an LMDB database plus a live lock file.
 hot-sauce/config/zed/prompts/
 
+# Private half of ~/.claude/settings.json (employer-specific); merged in by
+# hot-sauce/claude/build-settings.sh. This repo is public.
+hot-sauce/claude/settings.private.json
+
 # Claude Code's skills sync writes its bucket state and deleted-skill trash under
 # ~/.claude/skills, which is this repo. Both are runtime state.
 hot-sauce/claude/skills/.trash/

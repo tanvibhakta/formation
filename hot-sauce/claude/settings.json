@@ -1,17 +1,19 @@
 {
+  "cleanupPeriodDays": 3650,
+  "env": {
+    "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": "1000"
+  },
   "permissions": {
     "allow": [
       "mcp__slack",
       "mcp__chrome-devtools",
       "Bash(/Users/tanvibhakta/.hermes/hermes-agent/venv/bin/hermes send:*)",
       "Bash(codex exec:*)",
-      "Bash(*)",
       "Read(*)",
       "Write(*)",
       "Edit(*)",
       "Glob(*)",
       "Grep(*)",
-      "Agent(*)",
       "WebSearch",
       "WebFetch(*)",
       "Skill(*)",
@@ -164,7 +166,8 @@
     "code-review@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "slack@claude-plugins-official": true,
-    "azath-workflows@azath": true
+    "azath-workflows@azath": true,
+    "clangd-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "azath": {
@@ -174,7 +177,6 @@
       }
     }
   },
-  "cleanupPeriodDays": 3650,
   "alwaysThinkingEnabled": true,
   "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
