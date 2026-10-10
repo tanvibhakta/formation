@@ -72,6 +72,9 @@ cw() {
 local w=$(git worktree list | grep "\[$1\]" | awk '{print $1}'); [ -n "$w" ] && (cd "$w" && claude) || (git worktree add "../Base-$1" "$1" && cd "../Base-$1" && claude);
 }
 
+# rm moves to the macOS Trash. Flags are dropped (trash handles dirs without -r);
+# missing paths are skipped like -f. Real delete: `command rm`.
+rm() { local a=() x; for x; do [[ $x != -* && ( -e $x || -L $x ) ]] && a+=("$x"); done; (( ! $#a )) || /usr/bin/trash "${a[@]}"; }
 
 # pnpm
 export PNPM_HOME="/Users/tanvibhakta/Library/pnpm"
@@ -80,9 +83,6 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
-
-# OpenClaw Completion
-source "/Users/tanvibhakta/.openclaw/completions/openclaw.zsh"
 
 # bun completions
 [ -s "/Users/tanvibhakta/.bun/_bun" ] && source "/Users/tanvibhakta/.bun/_bun"
