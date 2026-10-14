@@ -350,6 +350,39 @@ else
 fi
 
 ###############################################################################
+# LAUNCH AGENTS
+# Scheduled jobs. launchd, not cron: cron drops runs while the Mac sleeps,
+# launchd runs a missed StartCalendarInterval job on wake. launchd does not
+# expand ~ or $HOME, so each plist is rendered with absolute paths into
+# ~/Library/LaunchAgents and reloaded only when the rendered file changed.
+###############################################################################
+echo ""
+echo "  ── Launch agents ──"
+LA_DST_DIR="$HOME/Library/LaunchAgents"
+mkdir -p "$LA_DST_DIR" "$HOME/Library/Logs"
+for template in "$HOTSAUCE_DIR"/launchagents/*.plist; do
+    [ -f "$template" ] || continue
+    name="$(basename "$template")"
+    label="${name%.plist}"
+    dst="$LA_DST_DIR/$name"
+    rendered="$(sed -e "s|__HOTSAUCE__|$HOTSAUCE_DIR|g" -e "s|__HOME__|$HOME|g" "$template")"
+
+    if [ -f "$dst" ] && [ "$(cat "$dst")" = "$rendered" ] \
+        && launchctl print "gui/$(id -u)/$label" &>/dev/null; then
+        print_success_muted "$label already loaded"
+        continue
+    fi
+
+    printf '%s\n' "$rendered" > "$dst"
+    launchctl bootout "gui/$(id -u)/$label" &>/dev/null || true
+    if launchctl bootstrap "gui/$(id -u)" "$dst"; then
+        print_success "Loaded $label"
+    else
+        print_error "Could not load $label (disabled? see: launchctl print-disabled gui/$(id -u))"
+    fi
+done
+
+###############################################################################
 # MACOS SYSTEM DEFAULTS
 ###############################################################################
 echo ""
