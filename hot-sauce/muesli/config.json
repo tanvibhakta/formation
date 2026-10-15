@@ -53,7 +53,7 @@
   "enable_push_to_talk": true,
   "enable_quil_mode": false,
   "enable_screen_context": false,
-  "hotkey_trigger_threshold_ms": 250,
+  "hotkey_trigger_threshold_ms": 120,
   "icloud_sync_enabled": false,
   "idle_timeout": 120,
   "indic_asr_language": "hi",
@@ -75,7 +75,7 @@
     "keyCode": 65535,
     "label": "⇧⌘M"
   },
-  "meeting_recording_hotkey_trigger_threshold_ms": 600,
+  "meeting_recording_hotkey_trigger_threshold_ms": 200,
   "meeting_recording_save_policy": "never",
   "meeting_summary_backend": "ollama",
   "meeting_summary_model": "",
