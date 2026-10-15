@@ -60,4 +60,8 @@ for bundleID, _ in pairs(watchedApps) do
   if app then attachObserver(app) end
 end
 
+-- ~/.hammerspoon/init.lua is a symlink into formation; load sibling modules from there.
+local configDir = hs.fs.pathToAbsolute(hs.configdir .. "/init.lua"):match("(.*)/")
+dofile(configDir .. "/muesli-clipboard.lua")
+
 hs.alert.show("Copy-on-select active")
