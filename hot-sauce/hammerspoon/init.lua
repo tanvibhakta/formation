@@ -63,5 +63,6 @@ end
 -- ~/.hammerspoon/init.lua is a symlink into formation; load sibling modules from there.
 local configDir = hs.fs.pathToAbsolute(hs.configdir .. "/init.lua"):match("(.*)/")
 dofile(configDir .. "/muesli-clipboard.lua")
+dofile(configDir .. "/muesli-sounds.lua")
 
 hs.alert.show("Copy-on-select active")

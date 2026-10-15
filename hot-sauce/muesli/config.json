@@ -127,7 +127,7 @@
   "show_meeting_transcript_on_indicator_hover": true,
   "show_next_meeting_in_menu_bar": false,
   "show_scheduled_meeting_notifications": true,
-  "sound_enabled": true,
+  "sound_enabled": false,
   "stt_backend": "parakeet-unified",
   "stt_model": "FluidInference/parakeet-unified-en-0.6b-coreml",
   "summary_model": "",
