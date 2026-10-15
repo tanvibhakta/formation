@@ -4,6 +4,7 @@
 4. Fix system python fuckery happening locally, see what needs to be updated here
 5. Write a cron job so it runs monthly
 6. Add to the script a part where it checks all currently installed brews, casks, apps, and global packages and asks if we want to add any of those to this list
+7. On upgrading to macOS 26+, swap `jordanbaird-ice` for `thaw` in `swag/casks`. Ice is unmaintained (last stable release Oct 2024); Thaw is its active successor but requires macOS 26.
 
 From a few years ago:
 1. How do I get apps to use settings files I've stored on other platforms like iCloud and Dropbox during setup?
