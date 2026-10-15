@@ -350,6 +350,43 @@ else
 fi
 
 ###############################################################################
+# MUESLI
+# Muesli rewrites config.json in place, which would replace a symlink, so the
+# tracked settings are merged over the live file instead (tracked keys win;
+# API keys and per-machine state stay as they are). Muesli must be quit first,
+# or it overwrites the merge on its next save. Refresh the tracked copy with
+# hot-sauce/muesli/export.sh. On a fresh Mac, finish Muesli's onboarding first
+# and rerun this, so onboarding can't reset the hotkeys.
+###############################################################################
+echo ""
+echo "  ── Muesli ──"
+MUESLI_SRC="$HOTSAUCE_DIR/muesli/config.json"
+MUESLI_DIR="$HOME/Library/Application Support/Muesli"
+MUESLI_DST="$MUESLI_DIR/config.json"
+
+if [ ! -f "$MUESLI_SRC" ]; then
+    print_warning "hot-sauce/muesli/config.json not found. Skipping."
+elif [ -f "$MUESLI_DST" ] && [ "$(jq -S . "$MUESLI_DST")" = "$(jq -S -s '.[0] * .[1]' "$MUESLI_DST" "$MUESLI_SRC")" ]; then
+    print_success_muted "Muesli settings already applied"
+else
+    muesli_was_running=false
+    if pgrep -x Muesli &>/dev/null; then
+        muesli_was_running=true
+        osascript -e 'quit app "Muesli"'
+        while pgrep -x Muesli &>/dev/null; do sleep 0.5; done
+    fi
+    mkdir -p "$MUESLI_DIR"
+    if [ -f "$MUESLI_DST" ]; then
+        cp "$MUESLI_DST" "$MUESLI_DST.backup"
+        jq -s '.[0] * .[1]' "$MUESLI_DST.backup" "$MUESLI_SRC" > "$MUESLI_DST"
+    else
+        cp "$MUESLI_SRC" "$MUESLI_DST"
+    fi
+    print_success "Applied Muesli settings"
+    $muesli_was_running && open -a Muesli
+fi
+
+###############################################################################
 # LAUNCH AGENTS
 # Scheduled jobs. launchd, not cron: cron drops runs while the Mac sleeps,
 # launchd runs a missed StartCalendarInterval job on wake. launchd does not

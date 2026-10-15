@@ -97,7 +97,6 @@ The setup process will install:
 * [ForkLift](https://www.binarynights.com/forklift/) FTP client
 * [Hyper](https://hyper.is/) for an alternative terminal.
 * [ImageOptim](https://imageoptim.com/mac) for image optimization.
-* [iTerm](https://www.iterm2.com/) for a better terminal.
 * [Kaleidoscope](https://www.kaleidoscopeapp.com/) for a better diff tool.
 * [Virtual Box](https://www.virtualbox.org/) powerful virtualization tool
 * [Visual Studio Code](https://code.visualstudio.com/) IDE
