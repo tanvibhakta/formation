@@ -6,9 +6,11 @@
 	<integer>1</integer>
 	<key>custom</key>
 	<string>on alfred_script(q)
-	tell application "iTerm"
+	tell application "Ghostty"
 		activate
-		do script q
+		set cfg to new surface configuration
+		set initial input of cfg to q &amp; return
+		new window with configuration cfg
 	end tell
 end alfred_script</string>
 </dict>
