@@ -71,9 +71,9 @@
   "meeting_recording_file_format": "m4a",
   "meeting_recording_hotkey": {
     "combinationKeyCode": 46,
-    "combinationModifiers": 524288,
+    "combinationModifiers": 1310720,
     "keyCode": 65535,
-    "label": "⌥M"
+    "label": "⌃⌘M"
   },
   "meeting_recording_hotkey_trigger_threshold_ms": 600,
   "meeting_recording_save_policy": "never",
