@@ -30,8 +30,8 @@ services:
       # silently booting an admin interface with no password.
       FTLCONF_webserver_api_password: '${PIHOLE_PASSWORD:?run ./setup.sh to generate .env}'
       FTLCONF_dns_listeningMode: 'all'
-      # Upstream resolvers, semicolon-separated. Cloudflare primary + secondary.
-      FTLCONF_dns_upstreams: '1.1.1.1;1.0.0.1'
+      # Upstream resolvers, semicolon-separated. Google primary + secondary.
+      FTLCONF_dns_upstreams: '8.8.8.8;8.8.4.4'
     volumes:
       # v6 keeps config and the query database here. The separate etc-dnsmasq.d
       # mount you'll see in older guides is only needed when upgrading from v5.
