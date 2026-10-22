@@ -271,7 +271,12 @@
 				<key>runningsubtext</key>
 				<string>Fetching results...</string>
 				<key>script</key>
-				<string>if [ -z "$GITHUB_ACCESS_TOKEN" ]; then
+				<string># Token comes from gh's keychain login at run time, so it never lives in this
+# git-tracked plist. A value set in Alfred still wins.
+[ -z "$GITHUB_ACCESS_TOKEN" ] &amp;&amp; GITHUB_ACCESS_TOKEN="$(/opt/homebrew/bin/gh auth token 2&gt;/dev/null)"
+export GITHUB_ACCESS_TOKEN
+
+if [ -z "$GITHUB_ACCESS_TOKEN" ]; then
   echo '{"items":[{"title":"You need to log in first","subtitle":"Hit Enter to generate a new personal access token","arg":"unauthorized"}]}'
 else
   apps/cli user-repos $1
@@ -394,7 +399,12 @@ fi</string>
 				<key>runningsubtext</key>
 				<string>Fetching results...</string>
 				<key>script</key>
-				<string>if [ -z "$GITHUB_ACCESS_TOKEN" ]; then
+				<string># Token comes from gh's keychain login at run time, so it never lives in this
+# git-tracked plist. A value set in Alfred still wins.
+[ -z "$GITHUB_ACCESS_TOKEN" ] &amp;&amp; GITHUB_ACCESS_TOKEN="$(/opt/homebrew/bin/gh auth token 2&gt;/dev/null)"
+export GITHUB_ACCESS_TOKEN
+
+if [ -z "$GITHUB_ACCESS_TOKEN" ]; then
   echo '{"items":[{"title":"You need to log in first","subtitle":"Hit Enter to generate a new personal access token","arg":"unauthorized"}]}'
 else
   apps/cli user-pulls $1
@@ -506,7 +516,12 @@ fi</string>
 				<key>runningsubtext</key>
 				<string>Fetching results...</string>
 				<key>script</key>
-				<string>apps/cli search $@</string>
+				<string># Token comes from gh's keychain login at run time, so it never lives in this
+# git-tracked plist. A value set in Alfred still wins.
+[ -z "$GITHUB_ACCESS_TOKEN" ] &amp;&amp; GITHUB_ACCESS_TOKEN="$(/opt/homebrew/bin/gh auth token 2&gt;/dev/null)"
+export GITHUB_ACCESS_TOKEN
+
+apps/cli search $@</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -864,7 +879,7 @@ https://github.com/edgarjs/alfred-github-repos/issues</string>
 		<key>CACHE_TTL_SEC_REPO</key>
 		<string>86400</string>
 		<key>GITHUB_ACCESS_TOKEN</key>
-		<string>REPLACE_WITH_GITHUB_PAT</string>
+		<string></string>
 		<key>GITHUB_API_HOST</key>
 		<string>api.github.com</string>
 		<key>GITHUB_HOST</key>

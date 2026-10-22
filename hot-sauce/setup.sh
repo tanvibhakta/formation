@@ -165,16 +165,39 @@ fi
 
 ###############################################################################
 # ALFRED
-# Set Alfred's sync folder to point at our repo copy
+# Point Alfred's sync folder at our repo copy, so workflow installs and
+# preference changes land in git. GitHub Repos fetches its token from
+# `gh auth token` at run time; never "log in" through that workflow, because
+# that saves the token into its tracked info.plist.
 ###############################################################################
 echo ""
 echo "  ── Alfred ──"
 if [ -d "$HOTSAUCE_DIR/alfred/Alfred.alfredpreferences" ]; then
-    if command -v defaults &>/dev/null; then
-        defaults write com.runningwithcrayons.Alfred-Preferences syncfolder -string "$HOTSAUCE_DIR/alfred"
-        print_success "Alfred sync folder set to $HOTSAUCE_DIR/alfred"
+    # Alfred 5 reads its sync folder from prefs.json and overwrites the
+    # `defaults` syncfolder key on launch, so that key alone does nothing.
+    # Alfred must be quit while prefs.json is edited, or it writes it back.
+    alfred_prefs_json="$HOME/Library/Application Support/Alfred/prefs.json"
+    alfred_target="$HOTSAUCE_DIR/alfred/Alfred.alfredpreferences"
+    # Parse rather than grep: Alfred rewrites the file as `"current" : "\/Users\/…"`.
+    if [ -f "$alfred_prefs_json" ] && python3 -c 'import json,sys; sys.exit(json.load(open(sys.argv[1])).get("current") != sys.argv[2])' "$alfred_prefs_json" "$alfred_target" 2>/dev/null; then
+        print_success "Alfred sync folder already $HOTSAUCE_DIR/alfred"
     else
-        print_warning "defaults command not found — set Alfred sync folder manually"
+        was_running=false
+        pgrep -x Alfred &>/dev/null && was_running=true
+        osascript -e 'tell application id "com.runningwithcrayons.Alfred" to quit' 2>/dev/null || true
+        sleep 2
+        mkdir -p "$(dirname "$alfred_prefs_json")"
+        python3 - "$alfred_prefs_json" "$alfred_target" "${HOTSAUCE_DIR/#$HOME/~}/alfred" <<'PY'
+import json, os, sys
+path, target, folder = sys.argv[1:]
+d = json.load(open(path)) if os.path.exists(path) else {}
+d["current"] = target
+d.setdefault("syncfolders", {})["5"] = folder
+json.dump(d, open(path, "w"), indent=2)
+PY
+        defaults write com.runningwithcrayons.Alfred-Preferences syncfolder -string "$HOTSAUCE_DIR/alfred"
+        $was_running && open -a "Alfred 5"
+        print_success "Alfred sync folder set to $HOTSAUCE_DIR/alfred"
     fi
 else
     print_warning "Alfred preferences not found in hot-sauce/alfred/"

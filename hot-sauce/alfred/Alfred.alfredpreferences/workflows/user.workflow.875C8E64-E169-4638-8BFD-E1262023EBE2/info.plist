@@ -78,26 +78,27 @@ else
 fi
 
 FILENAME="Week of $MONTH $DAY$SUFFIX, $YEAR.md"
+DIRPATH="/Users/tanvibhakta/Dropbox/iA Writer/tanvibhakta.in/Weeknotes"
+FILEPATH="$DIRPATH/$FILENAME"
 
-# Create the file with the template
-cat &gt; "$FILENAME" &lt;&lt; EOF
-## Work 
-## Life 
+mkdir -p "$DIRPATH"
+
+# Only create the file if it doesn't already exist
+if [ ! -f "$FILEPATH" ]; then
+cat &gt; "$FILEPATH" &lt;&lt; EOF
+## Work
+## Life
 ## Health
 ## Learning
 ## Media Diet
 ### Reading
 ### Watching
-### Listening 
+### Listening
 ### Around the web
 EOF
+fi
 
-FILEPATH="/Users/tanvibhakta/Dropbox/iA Writer/tanvibhakta.in/Weeknotes/$FILENAME"
-
-# Move the file to the correct dropbox directory
-mv "$FILENAME" "$FILEPATH"
-
-# Open the file (uses the default markdown editor)
+# Open the file in iA Writer
 open -a "iA Writer" "$FILEPATH"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>

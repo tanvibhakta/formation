@@ -1,0 +1,1058 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.github.vanstrouble.alfred.caffeinedose</string>
+	<key>category</key>
+	<string>Tools</string>
+	<key>connections</key>
+	<dict>
+		<key>12D1AB3B-1CA8-420D-BDFD-ACC07F74212D</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>1BAAF107-A0E4-479A-A115-5E4F0A2E3A0A</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>1BAAF107-A0E4-479A-A115-5E4F0A2E3A0A</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>A7E04954-4F21-4963-B285-8C3A0ED1B1D1</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>58A9AFD8-3811-48A0-A3D7-D293C2E98AF0</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>1BAAF107-A0E4-479A-A115-5E4F0A2E3A0A</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>921AA255-FBD8-42EC-AA9A-4AB62F80DF09</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>12D1AB3B-1CA8-420D-BDFD-ACC07F74212D</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>A72FB2C7-3E3A-4718-9252-81B9F781C030</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>1BAAF107-A0E4-479A-A115-5E4F0A2E3A0A</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>A7E04954-4F21-4963-B285-8C3A0ED1B1D1</key>
+		<array/>
+		<key>B2EA2BD8-9E61-48BA-B304-68FB076962E0</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>58A9AFD8-3811-48A0-A3D7-D293C2E98AF0</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>vanstrouble</string>
+	<key>description</key>
+	<string>Keep your Mac awake using the native Caffeinate command.</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Caffeine Dose</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>{var:toogle_keyword}</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Please wait…</string>
+				<key>script</key>
+				<string>#!/bin/zsh --no-rcs
+
+if pgrep -x "caffeinate" &gt;/dev/null 2&gt;&amp;1; then
+    echo '{"items":[{"title":"Turn Off","subtitle":"Allow computer to sleep","arg":"deactivate","icon":{"path":"icon.png"}}]}'
+else
+    echo '{"items":[{"title":"Turn On","subtitle":"Prevent sleep indefinitely","arg":"indefinite","icon":{"path":"icon.png"},"mods":{"cmd":{"subtitle":"⌘ Allow display sleep","arg":"indefinite","variables":{"display_sleep_allow":"true"}}}}]}'
+fi
+</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>skipuniversalaction</key>
+				<true/>
+				<key>subtext</key>
+				<string>Prevent your computer from going to sleep</string>
+				<key>title</key>
+				<string>{const:alfred_workflow_name}</string>
+				<key>type</key>
+				<integer>5</integer>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>A72FB2C7-3E3A-4718-9252-81B9F781C030</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<true/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>#!/bin/zsh --no-rcs
+
+# Unified action processor for Caffeine Dose Alfred Workflow
+# Handles inputs from both cfs_filter.js and toggle_filter.zsh
+# Migrated from cfs_processing.zsh + toggle_processing.zsh for better maintainability
+
+# Global time format preference - read once at startup
+# "0" = 12-hour format (AM/PM), "1" = 24-hour format
+readonly TIME_FORMAT=${alfred_time_format:-0}
+
+# Function to send notifications using notificator
+function notification {
+    if [[ -n "$2" ]]; then
+        ./notificator --message "${1}" --title "${alfred_workflow_name}" --sound "$2"
+    else
+        ./notificator --message "${1}" --title "${alfred_workflow_name}"
+    fi
+}
+
+# Calculate end time by adding minutes to current time
+calculate_end_time() {
+    local minutes=$1
+
+    if [[ "$TIME_FORMAT" == "0" ]]; then
+        # 12-hour format with AM/PM
+        local time_output=$(date -v+"$minutes"M +"%l:%M %p")
+        echo "${time_output# }"
+    else
+        # 24-hour format
+        date -v+"$minutes"M +"%H:%M"
+    fi
+}
+
+# Extract and validate hour and minute from TIME:HH:MM format
+parse_time_format() {
+    local time_str=${1#TIME:}
+    local hour=${time_str%%:*}
+    local minute=${time_str#*:}
+
+    if [[ ! "$hour" =~ ^[0-9]+$ || ! "$minute" =~ ^[0-9]+$ || $hour -gt 23 || $minute -gt 59 ]]; then
+        notification "Error: Invalid time format: $time_str"
+        exit 1
+    fi
+
+    echo "$hour $minute"
+}
+
+# Calculate minutes from now until target time (handles next-day wrap)
+calculate_minutes_until_target() {
+    local target_minutes=$(( $1 * 60 + $2 ))
+    local current_minutes=$(( $(date +"%-H") * 60 + $(date +"%-M") ))
+    local duration=$(( target_minutes - current_minutes ))
+
+    [[ $duration -le 0 ]] &amp;&amp; duration=$(( duration + 1440 ))
+    echo "$duration"
+}
+
+# Format time for display based on user preference
+format_display_time() {
+    local hour=$1 minute=$2 time_format=${3:-0}
+
+    if [[ "$time_format" == "0" ]]; then
+        local display_hour=$(( hour == 0 ? 12 : hour &gt; 12 ? hour - 12 : hour ))
+        local ampm
+        if [[ $hour -ge 12 ]]; then
+            ampm="PM"
+        else
+            ampm="AM"
+        fi
+        printf "%d:%02d %s" $display_hour $minute $ampm
+    else
+        printf "%02d:%02d" $hour $minute
+    fi
+}
+
+# Generate and send notification message
+output_message() {
+    local time_text="$1"
+    [[ "$2" == "true" ]] &amp;&amp; time_text="around $time_text"
+    local suffix=$([[ "$3" == "true" ]] &amp;&amp; echo " (Display can sleep)" || echo "")
+
+    notification "Keeping awake until ${time_text}${suffix}"
+}
+
+# Kill existing caffeinate processes and their wrapper subshells
+kill_existing_caffeinate() {
+    pkill -x "caffeinate" 2&gt;/dev/null
+}
+
+# Start caffeinate session (timed or indefinite)
+start_caffeinate_session() {
+    local duration=$1 allow_display_sleep=$2 indefinite=$3
+
+    [[ -z "$indefinite" &amp;&amp; ( ! "$duration" =~ ^[0-9]+$ || $duration -eq 0 ) ]] &amp;&amp; {
+        notification "Error: Invalid duration: $duration minutes"
+        exit 1
+    }
+
+    kill_existing_caffeinate
+
+    # Build caffeinate arguments dynamically
+    local -a caff_args=(-i)
+    [[ "$allow_display_sleep" != "true" ]] &amp;&amp; caff_args=(-d -i)
+
+    if [[ "$indefinite" == "true" ]]; then
+        nohup caffeinate "${caff_args[@]}" &gt;/dev/null 2&gt;&amp;1 &amp;
+        notification "Keeping awake indefinitely$([[ "$allow_display_sleep" == "true" ]] &amp;&amp; echo " (Display can sleep)")"
+    else
+        local timeout_seconds=$(( duration * 60 ))
+        (
+            caffeinate "${caff_args[@]}" -t "$timeout_seconds"
+            [[ $? -eq 0 ]] &amp;&amp; notification "Caffeinate session ended" "Boop"
+        ) &amp;
+    fi
+}
+
+# Handle TIME:HH:MM input format
+handle_target_time() {
+    read -r hour minute &lt;&lt;&lt; "$(parse_time_format "$1")"
+    local duration=$(calculate_minutes_until_target "$hour" "$minute")
+
+    start_caffeinate_session "$duration" "$2"
+    output_message "$(format_display_time "$hour" "$minute" "$TIME_FORMAT")" "false" "$2"
+}
+
+# Handle numeric minute duration input
+handle_duration() {
+    start_caffeinate_session "$1" "$2"
+    output_message "$(calculate_end_time "$1")" "true" "$2"
+}
+
+# Main processing logic
+main() {
+    local INPUT="$1"
+    local display_sleep="${display_sleep_allow:-false}"
+
+    [[ -z "$INPUT" || "$INPUT" == "0" ]] &amp;&amp; {
+        notification "Error: Invalid input. Please provide a valid duration."
+        exit 1
+    }
+
+    case "$INPUT" in
+        indefinite)
+            start_caffeinate_session "" "$display_sleep" "true"
+            ;;
+        deactivate)
+            kill_existing_caffeinate
+            notification "Caffeinate deactivated" "Boop"
+            ;;
+        TIME:*)
+            handle_target_time "$INPUT" "$display_sleep"
+            ;;
+        [1-9]*)
+            [[ "$INPUT" =~ ^[0-9]+$ ]] &amp;&amp; handle_duration "$INPUT" "$display_sleep" || {
+                notification "Error: Invalid input format: $INPUT"
+                exit 1
+            }
+            ;;
+        *)
+            notification "Error: Invalid input format: $INPUT"
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>A7E04954-4F21-4963-B285-8C3A0ED1B1D1</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict/>
+			<key>type</key>
+			<string>alfred.workflow.utility.junction</string>
+			<key>uid</key>
+			<string>1BAAF107-A0E4-479A-A115-5E4F0A2E3A0A</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>#!/bin/zsh --no-rcs
+
+allow_sleep="false"
+case "${hotkey_allow_sleep:l}" in
+    true|1|yes|on)
+        allow_sleep="true"
+        ;;
+esac
+
+if pgrep -x "caffeinate" &gt;/dev/null 2&gt;&amp;1; then
+    echo "{\"alfredworkflow\":{\"arg\":\"deactivate\",\"variables\":{\"display_sleep_allow\":\"$allow_sleep\"}}}"
+else
+    echo "{\"alfredworkflow\":{\"arg\":\"indefinite\",\"variables\":{\"display_sleep_allow\":\"$allow_sleep\"}}}"
+fi</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>12D1AB3B-1CA8-420D-BDFD-ACC07F74212D</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>921AA255-FBD8-42EC-AA9A-4AB62F80DF09</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>B2EA2BD8-9E61-48BA-B304-68FB076962E0</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>{var:cfs_keyword}</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Please wait…</string>
+				<key>script</key>
+				<string>#!/usr/bin/env osascript -l JavaScript
+
+// JXA implementation of cfs_filter functionality
+// Migrated from zsh to improve performance for Alfred workflow
+
+ObjC.import("Foundation");
+
+// Global time format preference - read once at startup
+// "0" = 12-hour format (AM/PM), "1" = 24-hour format
+const TIME_FORMAT_VAR = $.NSProcessInfo.processInfo.environment.objectForKey("alfred_time_format");
+const TIME_FORMAT = TIME_FORMAT_VAR ? TIME_FORMAT_VAR.js : "0"; // Default to 12-hour
+
+// Global display sleep preference - read once at startup
+const DISPLAY_SLEEP_ALLOW_VAR = $.NSProcessInfo.processInfo.environment.objectForKey("display_sleep_allow");
+const DISPLAY_SLEEP_ALLOW = DISPLAY_SLEEP_ALLOW_VAR ? DISPLAY_SLEEP_ALLOW_VAR.js === "true" : false;
+
+// Global icon path - easy to change if needed
+const ICON_PATH = "icon.png";
+
+function convertTo24hFormat(hour, ampm) {
+	hour = parseInt(hour) || 0;
+	if (/[pP]/.test(ampm) &amp;&amp; hour &lt; 12) return hour + 12;
+	if (/[aA]/.test(ampm) &amp;&amp; hour === 12) return 0;
+	return hour;
+}
+
+function calculateFutureTime(totalMinutes, currentHour, currentMinute) {
+	const futureTotal = currentHour * 60 + currentMinute + totalMinutes;
+	const futureHour = Math.floor(futureTotal / 60) % 24;
+	const futureMinute = futureTotal % 60;
+	return `TIME:${String(futureHour).padStart(2, '0')}:${String(futureMinute).padStart(2, '0')}`;
+}
+
+function formatTime(dateOrTimestamp, includeSeconds = false) {
+	const date = typeof dateOrTimestamp === "number" ? new Date(dateOrTimestamp) : dateOrTimestamp;
+	const formatter = $.NSDateFormatter.alloc.init;
+	formatter.setDateFormat(TIME_FORMAT === "0"
+		? (includeSeconds ? "h:mm:ss a" : "h:mm a")
+		: (includeSeconds ? "HH:mm:ss" : "HH:mm"));
+	return formatter.stringFromDate(date).js.replace(/^\s+/, "");
+}
+
+function calculateEndTime(minutes) {
+	return formatTime(Date.now() + minutes * 60000, true);
+}
+
+function getNearestFutureTime(hour, minute, currentHour, currentMinute) {
+	const currentTotal = currentHour * 60 + currentMinute;
+	const amHour = hour === 12 ? 0 : hour;
+	const pmHour = hour &lt; 12 ? hour + 12 : hour;
+	const amDiff = amHour * 60 + minute - currentTotal;
+	const pmDiff = pmHour * 60 + minute - currentTotal;
+	if (amDiff &lt; 0 &amp;&amp; pmDiff &gt; 0) return pmDiff;
+	if (amDiff &gt; 0) return amDiff;
+	return amDiff + 1440;
+}
+
+function formatDuration(totalMinutes) {
+	const hours = Math.floor(totalMinutes / 60);
+	const minutes = totalMinutes % 60;
+	const hText = hours === 1 ? "1 hour" : `${hours} hours`;
+	const mText = minutes === 1 ? "1 minute" : `${minutes} minutes`;
+	if (hours &gt; 0 &amp;&amp; minutes &gt; 0) return `${hText} ${mText}`;
+	if (hours &gt; 0) return hText;
+	return mText;
+}
+
+function formatRemainingTime(remainingSeconds, displaySleepInfo) {
+	if (remainingSeconds &lt; 60) return `${remainingSeconds}s left${displaySleepInfo}`;
+	if (remainingSeconds &lt; 3600) {
+		const m = Math.floor(remainingSeconds / 60);
+		const s = remainingSeconds % 60;
+		return `${m}m${s &gt; 0 ? ` ${s}s` : ''} left${displaySleepInfo}`;
+	}
+	const h = Math.floor(remainingSeconds / 3600);
+	const m = Math.floor((remainingSeconds % 3600) / 60);
+	return `${h}h${m &gt; 0 ? ` ${m}m` : ''} left${displaySleepInfo}`;
+}
+
+// Optimized function to check caffeinate status (performance critical for instant display)
+function checkStatus() {
+	const errorResponse =
+		"Caffeinate deactivated|Run a command to start caffeinate|false";
+
+	try {
+		// Single optimized subprocess call - combine pgrep + ps for efficiency
+		const task = $.NSTask.alloc.init;
+		task.setLaunchPath("/bin/sh");
+		task.setArguments([
+			"-c",
+			"pgrep -x caffeinate | head -1 | xargs -I {} ps -o lstart=,command= -p {}",
+		]);
+
+		const pipe = $.NSPipe.pipe;
+		task.setStandardOutput(pipe);
+		task.launch;
+		task.waitUntilExit;
+
+		const data = pipe.fileHandleForReading.readDataToEndOfFile;
+		const output = $.NSString.alloc
+			.initWithDataEncoding(data, $.NSUTF8StringEncoding)
+			.js.trim();
+
+		if (!output) {
+			return errorResponse;
+		}
+
+		// Parse output more efficiently
+		const caffinateIndex = output.indexOf("caffeinate");
+		if (caffinateIndex === -1) {
+			return errorResponse;
+		}
+
+		const startTime = output.substring(0, caffinateIndex).trim();
+		const caffinateArgs = output.substring(caffinateIndex + 10).trim();
+		const startDate = new Date(startTime);
+		const durationSeconds = Math.floor((Date.now() - startDate.getTime()) / 1000);
+		const displaySleepInfo = caffinateArgs.includes("-d") ? " - Display stays awake" : " - Display can sleep";
+
+		const tIndex = caffinateArgs.indexOf("-t");
+		if (tIndex !== -1) {
+			const afterT = caffinateArgs.substring(tIndex + 2).trim();
+			const spaceIndex = afterT.indexOf(" ");
+			const totalSeconds = parseInt(spaceIndex === -1 ? afterT : afterT.substring(0, spaceIndex));
+
+			if (!isNaN(totalSeconds)) {
+				const remainingSeconds = Math.max(0, totalSeconds - durationSeconds);
+				const endDate = new Date(startDate.getTime() + totalSeconds * 1000);
+				const endTimeStr = formatTime(endDate);
+				const title = `Caffeinate active until ${endTimeStr}`;
+				const subtitle = formatRemainingTime(remainingSeconds, displaySleepInfo);
+				const needsRerun = remainingSeconds &lt;= 3600 ? "true" : "false";
+				return `${title}|${subtitle}|${needsRerun}`;
+			}
+		}
+
+		return `Caffeinate active indefinitely|Session running indefinitely${displaySleepInfo}|false`;
+	} catch (error) {
+		return errorResponse;
+	}
+}
+
+function parseTimeInput(hour, minute = 0, ampm = "") {
+	const now = new Date();
+	const currentHour = now.getHours();
+	const currentMinute = now.getMinutes();
+
+	if (ampm) {
+		const convertedHour = convertTo24hFormat(hour, ampm);
+		return `TIME:${String(convertedHour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+	}
+	const totalMinutes = getNearestFutureTime(hour, minute, currentHour, currentMinute);
+	return minute &gt; 0 ? calculateFutureTime(totalMinutes, currentHour, currentMinute) : String(totalMinutes);
+}
+
+function parseInput(input) {
+	if (!input || input.trim() === "") return "simple_status";
+
+	const parts = input.trim().split(/\s+/);
+
+	if (parts.length === 2) {
+		const hours = parseInt(parts[0]);
+		const minutes = parseInt(parts[1]);
+		if (!isNaN(hours) &amp;&amp; !isNaN(minutes) &amp;&amp; hours &gt;= 0 &amp;&amp; minutes &gt;= 0) {
+			return String(hours * 60 + minutes);
+		}
+		return "0";
+	}
+
+	if (parts.length === 1) {
+		const part = parts[0];
+		if (part === "s") return "status";
+		if (part === "i") return "indefinite";
+		if (part === "d") return "deactivate";
+		if (/^\d+$/.test(part)) return part;
+
+		if (part.endsWith("h") &amp;&amp; part.length &gt; 1) {
+			const hours = parseInt(part.slice(0, -1));
+			if (!isNaN(hours) &amp;&amp; hours &gt;= 0) return String(hours * 60);
+		}
+
+		if (part.includes(":")) return parseTimeFormat(part);
+
+		const lastChar = part.toLowerCase().slice(-1);
+		const secondLastChar = part.toLowerCase().slice(-2, -1);
+		if (lastChar === "a" || lastChar === "p" || (lastChar === "m" &amp;&amp; (secondLastChar === "a" || secondLastChar === "p"))) {
+			return parseAMPMFormat(part);
+		}
+
+		const hour = parseInt(part);
+		if (!isNaN(hour) &amp;&amp; hour &gt;= 0 &amp;&amp; hour &lt;= 23) return parseTimeInput(hour);
+		return "0";
+	}
+	return "0";
+}
+
+function parseTimeFormat(part) {
+	const colonIndex = part.indexOf(":");
+
+	if (colonIndex === part.length - 1) {
+		const hour = parseInt(part.slice(0, -1));
+		if (!isNaN(hour) &amp;&amp; hour &gt;= 0 &amp;&amp; hour &lt;= 23) {
+			const now = new Date();
+			const totalMinutes = getNearestFutureTime(hour, 0, now.getHours(), now.getMinutes());
+			const futureTime = calculateFutureTime(totalMinutes, now.getHours(), now.getMinutes());
+			return futureTime.replace(/:(\d+)$/, ":00");
+		}
+		return "0";
+	}
+
+	const timeParts = part.split(":");
+	if (timeParts.length !== 2) return "0";
+
+	let minutePart = timeParts[1];
+	let ampm = "";
+	const lastChar = minutePart.toLowerCase().slice(-1);
+	const secondLastChar = minutePart.toLowerCase().slice(-2, -1);
+
+	if (lastChar === "a" || lastChar === "p") {
+		ampm = lastChar;
+		minutePart = minutePart.slice(0, -1);
+	} else if (lastChar === "m" &amp;&amp; (secondLastChar === "a" || secondLastChar === "p")) {
+		ampm = secondLastChar;
+		minutePart = minutePart.slice(0, -2);
+	}
+
+	const hour = parseInt(timeParts[0]);
+	const minute = parseInt(minutePart);
+	if (!isNaN(hour) &amp;&amp; !isNaN(minute) &amp;&amp; hour &gt;= 0 &amp;&amp; hour &lt;= 23 &amp;&amp; minute &gt;= 0 &amp;&amp; minute &lt;= 59) {
+		return parseTimeInput(hour, minute, ampm);
+	}
+	return "0";
+}
+
+function parseAMPMFormat(part) {
+	const lower = part.toLowerCase();
+	let hour, ampm;
+
+	if (lower.endsWith("am")) {
+		hour = parseInt(part.slice(0, -2));
+		ampm = "a";
+	} else if (lower.endsWith("pm")) {
+		hour = parseInt(part.slice(0, -2));
+		ampm = "p";
+	} else if (lower.endsWith("a")) {
+		hour = parseInt(part.slice(0, -1));
+		ampm = "a";
+	} else if (lower.endsWith("p")) {
+		hour = parseInt(part.slice(0, -1));
+		ampm = "p";
+	} else {
+		return "0";
+	}
+
+	if (!isNaN(hour) &amp;&amp; hour &gt;= 1 &amp;&amp; hour &lt;= 12) return parseTimeInput(hour, 0, ampm);
+	return "0";
+}
+
+function createAlfredResponse(title, subtitle, arg, needsRerun = false, allowMods = true, valid = true) {
+	const item = {
+		title: title,
+		subtitle: subtitle,
+		arg: arg,
+		icon: { path: ICON_PATH },
+		valid: valid,
+	};
+
+	if (allowMods &amp;&amp; arg !== "status" &amp;&amp; arg !== "0") {
+		item.mods = {
+			cmd: {
+				subtitle: "⌘ Allow display sleep",
+				arg: arg,
+				variables: { display_sleep_allow: "true" },
+			},
+		};
+	}
+
+	const response = {
+		items: [item],
+	};
+
+	if (needsRerun) {
+		response.rerun = 1;
+	}
+
+	return JSON.stringify(response);
+}
+
+function generateOutput(inputResult) {
+	if (inputResult === "simple_status") {
+		const [originalTitle] = checkStatus().split("|");
+		const isActive = originalTitle !== "Caffeinate deactivated";
+		const displayTitle = isActive ? originalTitle : "Caffeine Dose";
+		const subtitle = isActive
+			? "Set a new time, check status ('s'), or deactivate ('d')"
+			: "Caffeinate deactivated • Set a time to keep your Mac awake";
+		return createAlfredResponse(displayTitle, subtitle, "status", false, false, false);
+	}
+
+	if (inputResult === "0") {
+		return createAlfredResponse("Invalid input", "Please provide a valid time format", "0", false, false, false);
+	}
+
+	if (inputResult === "indefinite") {
+		return createAlfredResponse("Active indefinitely", "Keep your Mac awake until manually disabled", "indefinite");
+	}
+
+	if (inputResult === "deactivate") {
+		const [statusTitle] = checkStatus().split("|");
+		const isActive = statusTitle !== "Caffeinate deactivated";
+		if (isActive) {
+			return createAlfredResponse("Deactivate caffeinate", "Stop keeping your Mac awake", "deactivate");
+		}
+		return createAlfredResponse("Caffeinate already deactivated", "No active session to stop", "deactivate", false, false, false);
+	}
+
+	if (inputResult === "status") {
+		const [title, subtitle, needsRerun] = checkStatus().split("|");
+		return createAlfredResponse(title, subtitle, "status", needsRerun === "true", false, false);
+	}
+
+	if (inputResult.startsWith("TIME:")) {
+		const targetTime = inputResult.substring(5);
+		let displayTime;
+		try {
+			const [hour, minute] = targetTime.split(":").map((n) =&gt; parseInt(n));
+			const tempDate = new Date();
+			tempDate.setHours(hour, minute, 0, 0);
+			displayTime = formatTime(tempDate);
+		} catch (error) {
+			displayTime = targetTime;
+		}
+		return createAlfredResponse(`Active until ${displayTime}`, "Keep awake until specified time", inputResult);
+	}
+
+	const minutes = parseInt(inputResult);
+	return createAlfredResponse(
+		`Active for ${formatDuration(minutes)}`,
+		`Keep awake until around ${calculateEndTime(minutes)}`,
+		inputResult,
+		true
+	);
+}
+
+function run(argv) {
+	return generateOutput(parseInput(argv[0] || ""));
+}
+</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Set a time to keep your Mac awake</string>
+				<key>title</key>
+				<string>Caffeine Dose</string>
+				<key>type</key>
+				<integer>7</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>58A9AFD8-3811-48A0-A3D7-D293C2E98AF0</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string># Caffeine Dose | Alfred Workflow
+
+Keeps your Mac awake using the `caffeinate` command-line utility. Start or stop sessions, set a duration or end time, and check status.
+
+## Usage
+
+Start typing your action in Alfred using your configured keyword (default: `caff` or `cfs`, or your preferred trigger).
+
+### Toggle Caffeinate (`caff`)
+Toggle caffeinate on or off to prevent macOS from sleeping.
+
+- **Keyword:** `caff` (default or your preferred trigger)
+- Hold Command (⌘) to allow display sleep.
+
+### Set Duration or Time (`cfs`)
+Set caffeinate for a specific duration or until a specific time. Also shows if caffeinate is active or inactive. Supports natural input for minutes, hours, and times.
+
+- **Keyword:** `cfs [duration or time]` (default or your preferred trigger)
+- Hold Command (⌘) to allow display sleep.
+
+**Examples:**
+- `cfs s` — Shows status, time left, and if display can sleep.
+- `cfs d` — Deactivates caffeinate.
+- `cfs i` — Keeps your Mac awake indefinitely.
+- `cfs 15` — Keeps your Mac awake for 15 minutes.
+- `cfs 2h` — Keeps your Mac awake for 2 hours.
+- `cfs 1 30` — Keeps your Mac awake for 1 hour and 30 minutes.
+- `cfs 8am` — Keeps your Mac awake until 8:00 AM.
+- `cfs 9:30` — Keeps your Mac awake until the next 9:30.
+- `cfs 11:40pm` — Keeps your Mac awake until 11:40 PM.
+
+Supports both 12-hour (AM/PM) and 24-hour time formats.
+
+### Customization
+
+- **Keywords:** Customize `caff` and `cfs` in workflow settings.
+- **Time format:** Set to 12-hour (AM/PM) or 24-hour in workflow settings.
+- **Hotkeys:** Set hotkeys for quick and direct actions, like toggling caffeinate or starting a session instantly.
+
+---
+
+Created by **Pedro Vázquez** (vanstrouble).</string>
+	<key>uidata</key>
+	<dict>
+		<key>12D1AB3B-1CA8-420D-BDFD-ACC07F74212D</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>2</integer>
+			<key>note</key>
+			<string>Verify deamon status</string>
+			<key>xpos</key>
+			<real>220</real>
+			<key>ypos</key>
+			<real>135</real>
+		</dict>
+		<key>1BAAF107-A0E4-479A-A115-5E4F0A2E3A0A</key>
+		<dict>
+			<key>xpos</key>
+			<real>580</real>
+			<key>ypos</key>
+			<real>45</real>
+		</dict>
+		<key>58A9AFD8-3811-48A0-A3D7-D293C2E98AF0</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>8</integer>
+			<key>xpos</key>
+			<real>220</real>
+			<key>ypos</key>
+			<real>275</real>
+		</dict>
+		<key>921AA255-FBD8-42EC-AA9A-4AB62F80DF09</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>2</integer>
+			<key>note</key>
+			<string>Turn On/Off</string>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>135</real>
+		</dict>
+		<key>A72FB2C7-3E3A-4718-9252-81B9F781C030</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>2</integer>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>15</real>
+		</dict>
+		<key>A7E04954-4F21-4963-B285-8C3A0ED1B1D1</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>10</integer>
+			<key>note</key>
+			<string>Action process</string>
+			<key>xpos</key>
+			<real>680</real>
+			<key>ypos</key>
+			<real>15</real>
+		</dict>
+		<key>B2EA2BD8-9E61-48BA-B304-68FB076962E0</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>8</integer>
+			<key>note</key>
+			<string>Launch Caffeine Dose directly</string>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>275</real>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>caff</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Switch the workflow on or off via keyboard input.</string>
+			<key>label</key>
+			<string>Keyboard Toggle Control</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>toogle_keyword</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>cfs</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Use the keyboard to set a custom wake duration or time.</string>
+			<key>label</key>
+			<string>Activate Wake Timer</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>cfs_keyword</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>0</string>
+				<key>pairs</key>
+				<array>
+					<array>
+						<string>12-hour (AM/PM)</string>
+						<string>0</string>
+					</array>
+					<array>
+						<string>24-hour</string>
+						<string>1</string>
+					</array>
+				</array>
+			</dict>
+			<key>description</key>
+			<string>Set your preferred time display: 12-hour (AM/PM) or 24-hour format.</string>
+			<key>label</key>
+			<string>Time Format Selection</string>
+			<key>type</key>
+			<string>popupbutton</string>
+			<key>variable</key>
+			<string>alfred_time_format</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<false/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string>Enabled</string>
+			</dict>
+			<key>description</key>
+			<string>Allow display sleep when activating Caffeinate with the hotkey.</string>
+			<key>label</key>
+			<string>Allow display sleep</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>hotkey_allow_sleep</string>
+		</dict>
+	</array>
+	<key>variables</key>
+	<dict>
+		<key>display_sleep_allow</key>
+		<string></string>
+	</dict>
+	<key>variablesdontexport</key>
+	<array/>
+	<key>version</key>
+	<string>3.1.0</string>
+	<key>webaddress</key>
+	<string>https://github.com/vanstrouble/caffeine-dose-alfred-workflow.git</string>
+</dict>
+</plist>
