@@ -315,6 +315,29 @@ else
     print_warning "hot-sauce/claude not found. Skipping Claude Code setup."
 fi
 
+# Other agents read the shared instructions directly; Claude imports them from
+# claude/CLAUDE.md, since Claude Code has no user-level AGENTS.md.
+AGENTS_SRC="$HOTSAUCE_DIR/agents/AGENTS.md"
+for dst in "$HOME/.codex/AGENTS.md" "$HOME/.gemini/GEMINI.md"; do
+    [ -f "$AGENTS_SRC" ] || break
+    mkdir -p "$(dirname "$dst")"
+    if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$AGENTS_SRC" ]; then
+        print_success_muted "$dst already linked"
+    elif [ -e "$dst" ]; then
+        if ask "$dst already exists. Replace with symlink?" N; then
+            mv "$dst" "${dst}.backup"
+            print_warning "Backed up $dst → ${dst}.backup"
+            ln -s "$AGENTS_SRC" "$dst"
+            print_success "Linked $dst"
+        else
+            print_success_muted "$dst left unchanged"
+        fi
+    else
+        ln -s "$AGENTS_SRC" "$dst"
+        print_success "Linked $dst"
+    fi
+done
+
 ###############################################################################
 # EXTERNAL SKILL SOURCES
 # Some skills are symlinks into repos this one does not own. Git stores the
