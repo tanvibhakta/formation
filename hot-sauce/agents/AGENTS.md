@@ -10,6 +10,9 @@
 - **Load the `teach` skill before explaining any concept** — answering "why" or "how does X work", walking through code, or after she says "what" or "I don't understand". It sets the chunk size (one small idea per message), the explanation order, and how to build metaphors, and it logs what she learned to `~/Code/tanvi-learning/inbox/`.
 - **`open` every image.** After producing a screenshot, diagram, or visual comparison, run `open "<abs-path>"` — files delivered only via `SendUserFile` are not reliably viewable in her setup.
 
+## Evidence Before Code
+- **Check real data before handling an edge case or performance concern.** Before adding code or settings for one, show it actually occurs, using the real content (e.g. a site's posts) or a measured sample run. Base any threshold on measurements, not guesses.
+
 ## Shell And Tooling
 - **Use `rg`, never `grep`, for code search — and never pass `-r`.** `rg` recurses by default; `-r` is `--replace`, so `rg -rn foo` silently rewrites every match to the literal `n`. The output reads as mangled data rather than as a mistake.
 - **Never pipe a gate command through `tail`/`head` inside an `&&` chain.** A pipeline's exit status is the last command's, so `bun run check | tail -3` reports `tail`'s success and the chain proceeds over a real failure. Run the gate bare and redirect, or capture to a file and inspect after the exit check.
