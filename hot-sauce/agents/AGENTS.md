@@ -10,6 +10,9 @@
 - **Load the `teach` skill before explaining any concept** — answering "why" or "how does X work", walking through code, or after she says "what" or "I don't understand". It sets the chunk size (one small idea per message), the explanation order, and how to build metaphors, and it logs what she learned to `~/Code/tanvi-learning/inbox/`.
 - **`open` every image.** After producing a screenshot, diagram, or visual comparison, run `open "<abs-path>"` — files delivered only via `SendUserFile` are not reliably viewable in her setup.
 
+## Browser Use
+- **Codex handles browser use; any other agent delegates to it via `codex exec`.**
+
 ## Evidence Before Code
 - **Check real data before handling an edge case or performance concern.** Before adding code or settings for one, show it actually occurs, using the real content (e.g. a site's posts) or a measured sample run. Base any threshold on measurements, not guesses.
 
