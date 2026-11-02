@@ -9,6 +9,7 @@ local logPath = supportDir .. "/dictation-latency.log"
 local soundDir = hs.fs.pathToAbsolute(debug.getinfo(1, "S").source:sub(2)):match("(.*)/") .. "/sounds"
 
 local VOLUME = 0.6
+local MAX_EVENT_AGE_SECONDS = 3
 
 local function load(name)
   local sound = hs.sound.getByFile(soundDir .. "/" .. name)
@@ -50,9 +51,16 @@ muesliSoundsWatcher = hs.pathwatcher.new(supportDir, function(paths)
       file:close()
       logOffset = size
 
+      -- Muesli trims this log by rewriting it with its newest 1 MB, which sends
+      -- the read back to the start of the file. Only chime for fresh lines, or
+      -- that trim replays days of old chimes back to back. Chimes normally fire
+      -- within 1.2s of their timestamp. UTC ISO timestamps sort as strings.
+      local cutoff = os.date("!%Y-%m-%dT%H:%M:%SZ", os.time() - MAX_EVENT_AGE_SECONDS)
       local events = {}
-      for kind in chunk:gmatch("event=sound_(%a+)_requested") do
-        table.insert(events, kind == "start" and "start" or "stop")
+      for ts, kind in chunk:gmatch("ts=(%S+) [^\n]-event=sound_(%a+)_requested") do
+        if ts >= cutoff then
+          table.insert(events, kind == "start" and "start" or "stop")
+        end
       end
       play(events)
       return
