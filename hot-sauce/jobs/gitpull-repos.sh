@@ -18,6 +18,8 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 REPOS=(
     "$HOME/Code/alt.inc/into"
     "$HOME/Code/alt.inc/into-software-factory"
+    "$HOME/Code/tanvibhakta.in"
+    "$HOME/Code/formation"
 )
 
 overall=0
@@ -27,7 +29,13 @@ for repo in "${REPOS[@]}"; do
         overall=1
         continue
     fi
-    git fetch -q origin main && git checkout -q main && git pull --ff-only -q origin main
+    # These clones are also worked in, so never move someone off their branch.
+    branch="$(git rev-parse --abbrev-ref HEAD)"
+    if [ "$branch" != "main" ]; then
+        echo "$(basename "$repo"): skipped, on $branch"
+        continue
+    fi
+    git fetch -q origin main && git pull --ff-only -q origin main
     status=$?
     [ "$status" -eq 0 ] || overall=$status
     echo "$(basename "$repo"): exit=$status main=$(git rev-parse --short main) origin/main=$(git rev-parse --short origin/main)"
