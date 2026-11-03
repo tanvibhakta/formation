@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.tanvi.gitpull-vibechk</string>
+	<string>com.tanvi.gitpull-repos</string>
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>
-		<string>__HOTSAUCE__/jobs/gitpull-vibechk.sh</string>
+		<string>__HOTSAUCE__/jobs/gitpull-repos.sh</string>
 	</array>
 	<key>StartCalendarInterval</key>
 	<dict>
@@ -15,8 +15,8 @@
 		<integer>7</integer>
 	</dict>
 	<key>StandardOutPath</key>
-	<string>__HOME__/Library/Logs/gitpull-vibechk.log</string>
+	<string>__HOME__/Library/Logs/gitpull-repos.log</string>
 	<key>StandardErrorPath</key>
-	<string>__HOME__/Library/Logs/gitpull-vibechk.log</string>
+	<string>__HOME__/Library/Logs/gitpull-repos.log</string>
 </dict>
 </plist>
