@@ -35,7 +35,9 @@ opened. Do not present the fallback as the real order.
 
 ## Step 1 — Pin the cutoff
 
-For a restart or crash, the machine's boot time *is* the moment of death:
+For a restart or crash, the sessions died some time before the machine booted, and a
+restart can take minutes. `discover-sessions.sh` handles this by default: it uses the newest
+transcript written before boot as the cutoff. To see the timeline yourself:
 
 ```bash
 sysctl -n kern.boottime
@@ -47,15 +49,22 @@ For an accidental close there is no boot event; use the wall-clock time the user
 ## Step 2 — Find what was live
 
 ```bash
-scripts/discover-sessions.sh                 # cutoff = last boot
+scripts/discover-sessions.sh                 # cutoff = last transcript write before boot
 scripts/discover-sessions.sh --within 10     # closed ~10 minutes ago
 scripts/discover-sessions.sh --at '2026-08-12 10:45' --window 3
 ```
 
-Output is `harness / last_write / session_id / cwd / label`, covering all three harnesses.
-It works on the signal that a live session's transcript is *warm*: agents flush on nearly
-every turn, so files written in the last few minutes before the cutoff were open, and a
-session closed an hour earlier was not.
+Output is `harness / last_write / session_id / resume_dir / label`, covering all three
+harnesses. It works on the signal that a live session's transcript is *warm*: agents flush
+on nearly every turn, so files written in the last few minutes before the cutoff were open,
+and a session closed an hour earlier was not.
+
+`resume_dir` is where to `cd` before resuming. For Claude Code it comes from the folder the
+transcript is stored under, not a recorded cwd, because `--resume` only looks in the folder
+matching the directory it is launched from. A session can change directory, enter a
+worktree, or outlive a repo move, so recorded cwds are often wrong for this. A `?` means no
+directory matches any more, usually a deleted worktree, and stderr names what is known. Ask
+the user where the work lives now rather than guessing.
 
 | Harness | Session store | Resume |
 |---|---|---|
@@ -85,9 +94,9 @@ the restored set is buried among decoys.
 ## Step 4 — Open them, in order
 
 ```bash
-scripts/open-session-tab.sh "cd '/path/to/cwd' && claude --resume <uuid>"
-scripts/open-session-tab.sh "cd '/path/to/cwd' && codex resume <uuid>"
-scripts/open-session-tab.sh "cd '/path/to/cwd' && omp --resume=<uuid>"
+scripts/open-session-tab.sh "cd '<resume_dir>' && claude --resume <uuid>"
+scripts/open-session-tab.sh "cd '<resume_dir>' && codex resume <uuid>"
+scripts/open-session-tab.sh "cd '<resume_dir>' && omp --resume=<uuid>"
 ```
 
 **One invocation per session, in left-to-right target order.** The script presses Cmd+9
@@ -98,10 +107,14 @@ That Cmd+9 is load-bearing: Ghostty's `window-new-tab-position` defaults to `cur
 new tab is inserted immediately *after the active tab*, not at the end. Without the jump,
 tabs interleave into the middle of the bar in the order you least expect.
 
-The script verifies a new shell actually appeared before typing anything. `cd` first —
-every harness resolves a session id against the working directory. Because the command is
-`cd X && resume`, a dropped keystroke in the `cd` silently short-circuits and the tab just
-sits at a prompt, which is why the next step is not optional.
+Run the invocations one after another and check each exit code. `cd` first — every harness
+resolves a session id against the working directory.
+
+The script verifies a new shell appeared before typing anything, then waits until the
+command is running before it exits 0. A dropped Cmd+T or dropped keystrokes (a real restore
+lost three of nine sessions this way) get a retry in a fresh tab, and a tab whose command
+never started is closed so it cannot hold a place in the order. If it exits 1, stop and find
+out why before opening the next session, or the order will be wrong.
 
 ## Step 5 — Verify
 
