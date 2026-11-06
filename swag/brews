@@ -22,3 +22,5 @@ tmux
 wget
 yt-dlp
 1password-cli
+bats-core
+parallel

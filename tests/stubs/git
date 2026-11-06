@@ -1,0 +1,13 @@
+#!/bin/bash
+. "${0%/*}/_log"
+# `git clone [opts] <url> <dest>`: create <dest>/.git (and bash-it's install.sh).
+# FAKE_GIT_CLONE_FAIL=1 → clone fails.
+if [ "$1" = "clone" ]; then
+  [ -n "$FAKE_GIT_CLONE_FAIL" ] && exit 128
+  dest="${@: -1}"
+  mkdir -p "$dest/.git"
+  case "$dest" in
+    *.bash_it) printf '#!/bin/sh\nexit 0\n' > "$dest/install.sh"; chmod +x "$dest/install.sh" ;;
+  esac
+fi
+exit 0

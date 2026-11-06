@@ -1,0 +1,15 @@
+#!/bin/bash
+. "${0%/*}/_log"
+# State: $FAKE/brew-formulae, $FAKE/brew-casks (one name per line).
+# FAKE_BREW_FAIL: space-separated names whose install fails.
+case "$1" in
+  list)
+    if [ "$2" = "--cask" ]; then cat "$FAKE/brew-casks" 2>/dev/null; else cat "$FAKE/brew-formulae" 2>/dev/null; fi ;;
+  install)
+    shift
+    file="$FAKE/brew-formulae"
+    [ "$1" = "--cask" ] && { file="$FAKE/brew-casks"; shift; }
+    case " $FAKE_BREW_FAIL " in *" $1 "*) echo "Error: $1 failed" >&2; exit 1 ;; esac
+    echo "$1" >> "$file" ;;
+esac
+exit 0

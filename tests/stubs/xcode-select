@@ -1,0 +1,8 @@
+#!/bin/bash
+. "${0%/*}/_log"
+# FAKE_XCODE_MISSING=1 → --print-path fails.
+if [ "$1" = "--print-path" ]; then
+  [ -n "$FAKE_XCODE_MISSING" ] && exit 2
+  mkdir -p "$FAKE/xcode"; echo "$FAKE/xcode"
+fi
+exit 0

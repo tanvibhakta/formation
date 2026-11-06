@@ -1,0 +1,9 @@
+#!/bin/bash
+. "${0%/*}/_log"
+# State: $FAKE/mas-installed ("<id> <Name>" per line). FAKE_MAS_SIGNED_OUT=1 → account fails.
+case "$1" in
+  account) [ -n "$FAKE_MAS_SIGNED_OUT" ] && exit 1; echo "tester@example.com" ;;
+  list) cat "$FAKE/mas-installed" 2>/dev/null ;;
+  install) echo "$2 Installed" >> "$FAKE/mas-installed" ;;
+esac
+exit 0

@@ -1,0 +1,11 @@
+#!/bin/bash
+. "${0%/*}/_log"
+# State: $FAKE/launchctl-loaded (labels). FAKE_LAUNCHCTL_FAIL=1 → bootstrap fails.
+loaded="$FAKE/launchctl-loaded"; touch "$loaded"
+case "$1" in
+  print) grep -qx "${2##*/}" "$loaded" ;;
+  bootout) label="${2##*/}"; grep -vx "$label" "$loaded" > "$loaded.tmp"; mv "$loaded.tmp" "$loaded" ;;
+  bootstrap)
+    [ -n "$FAKE_LAUNCHCTL_FAIL" ] && exit 5
+    name="$(basename "$3")"; echo "${name%.plist}" >> "$loaded" ;;
+esac

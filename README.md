@@ -209,6 +209,26 @@ See the `slay` script for examples.
 
 Formation functions such as `step` and `link` can be used in your `~/.hot-sauce`.
 
+## Tests
+
+```sh
+bats --jobs 10 tests/
+```
+
+Characterization tests for `slay`, `twirl` and `hot-sauce/setup.sh`. Takes about 20 seconds.
+Needs `bats-core` and `parallel` (both in `swag/brews`).
+
+Each test runs a script as a subprocess against a throwaway `$HOME`, with fake
+`brew`, `mas`, `git`, `launchctl`, `defaults` and friends first on `PATH`
+(`tests/stubs/`). The real machine is never touched. The tests don't care what
+shell the scripts are written in, so they also check a rewrite.
+
+Prompts normally read `/dev/tty`. The tests set `FORMATION_TTY=/dev/stdin` and
+pipe in answers; an unanswered prompt takes its default.
+
+Tests named `BUG (pinned)` record current, buggy behaviour. When you fix one of
+those bugs, its test fails: update that test on purpose.
+
 ## Known Issues
 Cask does not recognize applications installed outside of Homebrew Cask – in the case that the script fails, you can either remove the application from the install list or uninstall the application causing the failure and try again.
 

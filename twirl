@@ -462,8 +462,9 @@ ask() {
         # Ask the question (not using "read -p" as it uses stderr not stdout)
         echo -n "  [?] $1 [$prompt] "
 
-        # Read the answer (use /dev/tty in case stdin is redirected from somewhere else)
-        read reply </dev/tty
+        # Read the answer (use /dev/tty in case stdin is redirected from somewhere else).
+        # FORMATION_TTY lets the test suite feed answers; real runs never set it.
+        read reply <"${FORMATION_TTY:-/dev/tty}"
 
         # Default?
         if [ -z "$reply" ]; then

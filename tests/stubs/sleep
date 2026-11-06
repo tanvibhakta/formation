@@ -1,0 +1,7 @@
+#!/bin/bash
+# Not logged. The only `sleep 60` is ask_for_sudo's background keep-alive loop
+# (`while true; do sudo -n true; sleep 60; ...; done &`). A real 60s sleep
+# would hold the test's output pipe open; an instant one would make the loop
+# spin. So end the loop: our parent is that loop's subshell.
+if [ "$1" = "60" ]; then kill "$PPID" 2>/dev/null; exit 0; fi
+exit 0

@@ -1,0 +1,3 @@
+#!/bin/bash
+[ "$*" = "-n true" ] && exit 0  # keep-alive loop; not logged
+. "${0%/*}/_log"

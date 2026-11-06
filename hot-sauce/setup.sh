@@ -26,7 +26,7 @@ else
         elif [ "${2:-}" = "N" ]; then prompt="y/N"; default=N;
         else prompt="y/n"; default=; fi
         echo -n "  [?] $1 [$prompt] "
-        read reply </dev/tty
+        read reply <"${FORMATION_TTY:-/dev/tty}"  # FORMATION_TTY: test suite only
         [ -z "$reply" ] && reply=$default
         case "$reply" in Y*|y*) return 0 ;; *) return 1 ;; esac
     }

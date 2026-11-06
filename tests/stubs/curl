@@ -1,0 +1,7 @@
+#!/bin/bash
+. "${0%/*}/_log"
+# The nvm installer is piped to bash: emit a script that installs the fake nvm.sh.
+case "$*" in
+  *nvm-sh/nvm*) echo "mkdir -p \"\$NVM_DIR\" && cp '$FIXTURES/nvm.sh' \"\$NVM_DIR/nvm.sh\"" ;;
+esac
+exit 0

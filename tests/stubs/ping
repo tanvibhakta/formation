@@ -1,0 +1,5 @@
+#!/bin/bash
+. "${0%/*}/_log"
+# Online unless FAKE_OFFLINE=1.
+[ -n "$FAKE_OFFLINE" ] && exit 2
+exit 0
