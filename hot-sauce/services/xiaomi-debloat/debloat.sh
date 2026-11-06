@@ -63,6 +63,44 @@ REMOVE=(
   com.netflix.mediaclient                        # Netflix
   com.miui.android.fashiongallery                # Glance lock-screen wallpapers/ads
   com.preff.kb.xm                                # Facemoji keyboard (switched to Gboard first)
+  com.google.android.youtube                     # Stock YouTube; replaced by ReVanced (2026-11-07)
+  # Background services UAD-ng rates "Recommended" (approved 2026-11-07).
+  # Deliberately NOT here: Hey Google hotword, Yellow Pages, Vodafone carrier
+  # overlay (her call, undecided); security/finddevice/micloud.sdk/xmsf/updater/
+  # Qualcomm packages (can bootloop or break installs).
+  com.miui.misightservice                        # Xiaomi telemetry
+  com.xiaomi.xmsfkeeper                          # xmsf logger (xmsf itself stays)
+  com.xiaomi.aon                                 # "Always on" tracking
+  com.miui.cleaner                               # Cheetah cleaner, trackers
+  com.miui.cit                                   # Hidden hardware test menu
+  com.bsp.catchlog                               # Log catcher
+  com.xiaomi.mtb                                 # Baseband debug tool
+  com.xiaomi.cameratools                         # Camera calibration
+  com.miui.thirdappassistant                     # Third-party app problem helper
+  com.xiaomi.aiasst.vision                       # AI call assistant add-on
+  com.xiaomi.barrage                             # Game "bullet" pop-ups
+  com.miui.phrase                                # Frequent Phrases
+  com.miuix.editor                               #   (paired with phrase)
+  com.xiaomi.mirror                              # MIUI+ PC link
+  com.microsoft.appmanager                       # Link to Windows
+  com.microsoft.deviceintegrationservice
+  com.microsoftsdk.crossdeviceservicebroker
+  com.google.ambient.streaming                   # Chromebook app streaming
+  com.tencent.soter.soterserver                  # China biometric payments
+  org.ifaa.aidl.manager                          #   (restore both if a bank app's fingerprint breaks)
+  com.miui.vsimcore                              # Virtual SIM
+  com.wdstechnology.android.kryten               # OTA access-point config
+  com.xiaomi.entitlement.o2                      # O2 (UK/DE) carrier
+  com.miui.phone.carriers.overlay.h3g            # Carrier "3" settings
+  com.dsi.ant.plugins.antplus                    # ANT+ fitness radio
+  com.dsi.ant.service.socket
+  com.google.android.feedback                    # Google crash feedback
+  com.google.android.onetimeinitializer          # First-run setup leftovers
+  com.google.android.apps.setupwizard.searchselector
+  com.google.android.gms.location.history        # Empty stub
+  com.android.egg                                # Android easter egg
+  com.android.traceur                            # System tracing
+  com.android.providers.partnerbookmarks         # Partner bookmarks
 )
 
 GBOARD=com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME
