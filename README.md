@@ -45,6 +45,22 @@ Your last Formation run will be saved to `~/slay.log`. To review it, run `less ~
 
 That's it! :sparkles:
 
+## Update mode
+
+`./slay` (no args) installs anything missing *and* checks everything in `swag/` for a newer version at the end of the run. To just check for updates without touching installs, use `./slay update`:
+
+```sh
+./slay update            # check + prompt to upgrade everything in swag/
+./slay update gh         # scope it to one item (a brew/cask token, a mas app name or id, a pnpm package, or node/nvm/bash-it)
+./slay update --check    # dry survey only - no prompts, no sudo, no changes
+```
+
+`update`/`update <name>` show each outdated item's version jump, flag a `MAJOR` version bump, and show a release-notes link plus a short excerpt before asking whether to upgrade (default: no). `--check` just prints what's outdated, grouped by source, plus anything listed in `swag/` but not installed at all - safe to run anytime. Set `SLAY_DRY_RUN=1` to see what command *would* run instead of actually running it.
+
+Release notes come from, in order: a small hand-kept map of URLs for vendors whose changelog isn't worth scraping (webstorm, alfred, 1password, etc.), a GitHub releases page when the project's repo is known, a cask's own Sparkle appcast, the Mac App Store page, or finally the project's homepage - whichever resolves first. When one is fetchable, a short inline excerpt is shown alongside the link.
+
+For a longer read (or to hand to something that summarizes changelogs for you), `./slay update --changelogs [<name>]` prints the **full**, untruncated release notes for everything outdated as plain Markdown to stdout - no colors, no prompts, no upgrades, just `## name (source) old -> new` sections. All progress output goes to stderr, so it's safe to redirect: `./slay update --changelogs > notes.md`.
+
 ## What it sets up
 The setup process will install:
 

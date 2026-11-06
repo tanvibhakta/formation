@@ -38,6 +38,37 @@ else
 fi
 
 ###############################################################################
+# UPDATE: Check for the update-loop + changelog helpers
+###############################################################################
+
+if [ -e update ]; then
+	. "update"
+else
+	printf "\n ⚠️  ./update not found  💃🏾 './slay update' won't be available\n"
+fi
+
+###############################################################################
+# CLI: `./slay`, `./slay update`, `./slay update <name>`, `./slay update --check`
+###############################################################################
+
+MODE="install"
+UPDATE_ARGS=()
+if [ "${1:-}" = "update" ]; then
+	MODE="update"
+	shift
+	UPDATE_ARGS=("$@")
+fi
+
+# `--changelogs` prints plain Markdown meant to be redirected to a file -
+# the banner/chapter/internet-check chatter below (all on stdout) would
+# otherwise land in that file ahead of the Markdown. Route it to stderr
+# instead for this one mode so stdout stays clean from the very first byte.
+PLAIN_STDOUT=0
+if [ "$MODE" = "update" ] && [ "${UPDATE_ARGS[0]:-}" = "--changelogs" ]; then
+	PLAIN_STDOUT=1
+fi
+
+###############################################################################
 # CHECK: Bash version
 ###############################################################################
 
@@ -46,6 +77,8 @@ check_bash_version
 ###############################################################################
 # Get in Formation!          http://patorjk.com/software/taag/ ( font: Script )
 ###############################################################################
+
+if [ "$PLAIN_STDOUT" = "1" ]; then exec 3>&1 1>&2; fi
 
 printf "
    _
@@ -70,6 +103,17 @@ printf "
 ###############################################################################
 chapter "Checking internet connection…"
 check_internet_connection
+
+# Restore stdout for the Markdown that `run_update_changelogs` itself
+# prints - everything from here on in this mode is `update`'s own careful
+# stdout(Markdown)/stderr(progress) split, not this script's normal chatter.
+if [ "$PLAIN_STDOUT" = "1" ]; then exec 1>&3 3>&-; fi
+
+# `./slay update` / `./slay update <name>` / `./slay update --check` skip
+# straight past every install-only chapter below (sudo caching, SSH, Xcode/
+# Bash-it/NVM/Homebrew/brews/casks/apps/pnpm installs, hot sauce) and go
+# straight to the update loop at the bottom of this file.
+if [ "$MODE" = "install" ]; then
 
 ###############################################################################
 # PROMPT: Password
@@ -181,6 +225,9 @@ fi
 ###############################################################################
 chapter "Updating Homebrew formulae…"
 brew update
+# `./slay update`'s own loop (run unconditionally below, after hot sauce)
+# only runs `brew update` once per invocation - it's already fresh from here.
+_BREW_UPDATE_DONE=1
 
 ###############################################################################
 # INSTALL: casks
@@ -252,6 +299,23 @@ if [ -f "$cwd/hot-sauce/setup.sh" ]; then
 	fi
 else
 	print_warning "No hot-sauce/setup.sh found. Skipping."
+fi
+
+fi # MODE = install
+
+###############################################################################
+# UPDATE: check everything in swag/ for a newer version
+#
+# Runs AFTER hot sauce (rather than before) so it can see anything hot
+# sauce itself installed/configured. For a plain `./slay` this is the only
+# difference from earlier versions of this script - everything above is
+# unchanged. For `./slay update[...]` it's the ONLY thing that runs.
+###############################################################################
+if [ "$MODE" = "update" ]; then
+	update_main "${UPDATE_ARGS[@]}"
+	exit $?
+else
+	update_main
 fi
 
 ###############################################################################
