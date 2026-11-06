@@ -22,12 +22,17 @@ The script tries three steps in turn and stops at the first that works:
 
 | Step | Command | Undo |
 |---|---|---|
-| Uninstall (apps someone installed) | `pm uninstall <pkg>` | Reinstall from Play Store |
+| Uninstall (apps someone installed; skipped for preinstalled apps, where it only strips updates yet still reports `Success`) | `pm uninstall <pkg>` | Reinstall from Play Store |
 | Remove for user 0 (preinstalled apps) | `pm uninstall -k --user 0 <pkg>` | `adb shell cmd package install-existing <pkg>` |
 | Disable (HyperOS blocks uninstall with `Failure [-1000]`) | `pm disable-user --user 0 <pkg>` | `adb shell pm enable <pkg>` |
 
 A factory reset brings back every preinstalled app.
 
+Facemoji (`com.preff.kb.xm`) is her default keyboard, so the script switches the
+keyboard to Gboard first and stops if that fails.
+
 ## History
 
 - 2026-11-06: first run removed 24 apps and disabled Screen Recorder; free space went from 161 GB to 164 GB.
+- 2026-11-06: second batch removed 18 preinstalled ad/tracking/bloat apps, switched the
+  keyboard to Gboard and disabled Facemoji; free space reached 172 GB.
