@@ -1,11 +1,12 @@
 #!/usr/bin/env bats
 # Characterization tests for hot-sauce/setup.sh, run through ./slay with the
 # hot-sauce prompt answered by its default (yes) unless a test says otherwise.
-# Tests marked "BUG (pinned)" will fail once that bug is fixed: flip them on purpose.
+# Tests marked "BUG (pinned)" record a known bug; fixing it fails that test,
+# so flip it on purpose.
 #
 # Prompt order on a provisioned home: SSH "enter it in GitHub?" (default no),
-# "add hot sauce?" (default yes), then one per pre-existing link target, then
-# the gh config.yml prompt (see test 17). Unanswered prompts take the default.
+# "add hot sauce?" (default yes), then one per pre-existing link target.
+# Unanswered prompts take the default.
 
 load test_helper
 
@@ -69,15 +70,15 @@ snapshot() {
     links_to "$HOME/.hammerspoon/init.lua" "$(HS)/hammerspoon/init.lua"
 }
 
-@test "17. BUG (pinned): gh config.yml prompt appears on every fresh run; default leaves repo file intact" {
-    # ~/.config/gh is already a link to the repo folder, so ~/.config/gh/config.yml
-    # IS the tracked file. Answering yes would move it to .backup and replace it
-    # with a link to itself, damaging the repo. Not tested: we only pin the default.
+@test "17. gh config.yml reached through the linked ~/.config/gh: no prompt, repo file intact" {
+    # ~/.config/gh is a link to the repo folder, so ~/.config/gh/config.yml IS
+    # the tracked file. Even answering yes to everything must not touch it.
     before="$(shasum -a 256 < "$(HS)/config/gh/config.yml")"
+    ANSWERS=$'\n\ny\ny\ny'
     run_slay
     [ "$status" -eq 0 ]
-    output_has "~/.config/gh/config.yml exists. Overwrite?"
-    output_has "gh config.yml left unchanged"
+    output_lacks "config.yml exists. Overwrite?"
+    output_has "gh config.yml already linked"
     [ ! -L "$(HS)/config/gh/config.yml" ]
     [ "$(shasum -a 256 < "$(HS)/config/gh/config.yml")" = "$before" ]
 }
@@ -97,18 +98,14 @@ snapshot() {
     output_has "No shadowing config; ~/.config/ghostty is authoritative"
 }
 
-@test "19. Alfred: prefs.json pointed at the repo, other keys kept; no-op once set (BUG pinned: absolute syncfolder)" {
+@test "19. Alfred: prefs.json pointed at the repo, other keys kept; no-op once set" {
     prefs="$HOME/Library/Application Support/Alfred/prefs.json"
     mkdir -p "$(dirname "$prefs")"
     echo '{"current": "/somewhere/else", "keep": 1}' > "$prefs"
     run_slay
     [ "$status" -eq 0 ]
     [ "$(jq -r .current "$prefs")" = "$(HS)/alfred/Alfred.alfredpreferences" ]
-    # BUG (pinned): setup.sh means to store "~/Code/formation/hot-sauce/alfred"
-    # via ${HOTSAUCE_DIR/#$HOME/~}, but bash >= 5.2 (patsub_replacement)
-    # tilde-expands the replacement, so the absolute path is stored. Bash 3.2
-    # and zsh store the "~" form; flip this when that changes.
-    [ "$(jq -r '.syncfolders["5"]' "$prefs")" = "$(HS)/alfred" ]
+    [ "$(jq -r '.syncfolders["5"]' "$prefs")" = "~/Code/formation/hot-sauce/alfred" ]
     [ "$(jq -r .keep "$prefs")" = "1" ]
     called "osascript -e tell application id \"com.runningwithcrayons.Alfred\" to quit"
     called "defaults write com.runningwithcrayons.Alfred-Preferences syncfolder -string $(HS)/alfred"
@@ -238,4 +235,13 @@ snapshot() {
     none_called "pnpm add"
     none_called "git clone"
     none_called "launchctl bootstrap"
+}
+
+@test "27. fresh Mac: full run under macOS /bin/bash 3.2 completes, plists included" {
+    use_bash /bin/bash
+    run_slay
+    [ "$status" -eq 0 ]
+    output_has "Hot sauce applied!"
+    called "defaults import com.knollsoft.Rectangle $(HS)/plists/rectangle.plist"
+    output_has "Congrats! You're in formation!"
 }

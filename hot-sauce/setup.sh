@@ -147,7 +147,9 @@ if [ -d "$HOTSAUCE_DIR/config/gh" ]; then
     mkdir -p "$HOME/.config/gh"
     src="$HOTSAUCE_DIR/config/gh/config.yml"
     dst="$HOME/.config/gh/config.yml"
-    if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+    # -ef: the config-dir step usually links ~/.config/gh to the repo folder,
+    # making dst the tracked file itself. Replacing it would destroy the repo copy.
+    if [ "$dst" -ef "$src" ]; then
         print_success_muted "gh config.yml already linked"
     elif [ -e "$dst" ]; then
         if ask "~/.config/gh/config.yml exists. Overwrite?" N; then
@@ -187,7 +189,13 @@ if [ -d "$HOTSAUCE_DIR/alfred/Alfred.alfredpreferences" ]; then
         osascript -e 'tell application id "com.runningwithcrayons.Alfred" to quit' 2>/dev/null || true
         sleep 2
         mkdir -p "$(dirname "$alfred_prefs_json")"
-        python3 - "$alfred_prefs_json" "$alfred_target" "${HOTSAUCE_DIR/#$HOME/~}/alfred" <<'PY'
+        # A literal "~/..." path. Not ${HOTSAUCE_DIR/#$HOME/~}: bash >= 5.2
+        # tilde-expands that replacement back to the absolute path.
+        case "$HOTSAUCE_DIR" in
+            "$HOME"/*) alfred_folder="~${HOTSAUCE_DIR#"$HOME"}/alfred" ;;
+            *) alfred_folder="$HOTSAUCE_DIR/alfred" ;;
+        esac
+        python3 - "$alfred_prefs_json" "$alfred_target" "$alfred_folder" <<'PY'
 import json, os, sys
 path, target, folder = sys.argv[1:]
 d = json.load(open(path)) if os.path.exists(path) else {}
@@ -209,18 +217,22 @@ fi
 ###############################################################################
 echo ""
 echo "  ── macOS Preferences ──"
-declare -A PLIST_DOMAINS=(
-    ["rectangle.plist"]="com.knollsoft.Rectangle"
-    ["betterdisplay.plist"]="pro.betterdisplay.BetterDisplay"
-    ["ia-writer.plist"]="pro.writer.mac"
-    ["imageoptim.plist"]="net.pornel.ImageOptim"
-    ["transmission.plist"]="org.m0k.transmission"
-)
+# A case, not `declare -A`: macOS /bin/bash is 3.2, which has no associative
+# arrays, and a fresh Mac runs this before Homebrew's bash exists.
+plist_domain() {
+    case "$1" in
+        rectangle.plist) echo "com.knollsoft.Rectangle" ;;
+        betterdisplay.plist) echo "pro.betterdisplay.BetterDisplay" ;;
+        ia-writer.plist) echo "pro.writer.mac" ;;
+        imageoptim.plist) echo "net.pornel.ImageOptim" ;;
+        transmission.plist) echo "org.m0k.transmission" ;;
+    esac
+}
 
 for plist_file in "$HOTSAUCE_DIR"/plists/*.plist; do
     [ -f "$plist_file" ] || continue
     name="$(basename "$plist_file")"
-    domain="${PLIST_DOMAINS[$name]}"
+    domain="$(plist_domain "$name")"
     if [ -n "$domain" ]; then
         defaults import "$domain" "$plist_file"
         print_success "Imported $name → $domain"

@@ -326,9 +326,10 @@ get_os_version() {
 }
 
 check_internet_connection() {
-    if [ ping -q -w1 -c1 google.com &>/dev/null ]; then
+    # macOS ping: -t is the overall timeout in seconds.
+    if ! ping -q -c1 -t2 google.com &>/dev/null; then
         print_error "Please check your internet connection";
-        exit 0
+        exit 1
     else
         print_success "Internet connection";
     fi
@@ -569,11 +570,12 @@ gem_install_or_update() {
 }
 
 install_brews() {
-    if brew list | grep -q "^${brew}$"; then
+    local brew="$1"
+    if brew list | grep -qx -- "$brew"; then
         print_success_muted "$brew already installed. Skipped."
     else
         echo_install "Installing $brew"
-        if brew install $brew >/dev/null; then
+        if brew install "$brew" >/dev/null; then
             print_in_green "${bold}✓ installed!${normal}\n"
         else
             print_warning "$brew failed to install. Skipping."
@@ -582,11 +584,12 @@ install_brews() {
 }
 
 install_application_via_brew() {
-    if brew list --cask | grep -q "^${cask}$"; then
+    local cask="$1"
+    if brew list --cask | grep -qx -- "$cask"; then
         print_success_muted "$cask already installed. Skipped."
     else
         echo_install "Installing $cask"
-        if brew install --cask $cask --appdir=/Applications >/dev/null; then
+        if brew install --cask "$cask" --appdir=/Applications >/dev/null; then
             print_in_green "${bold}✓ installed!${normal}\n"
         else
             print_warning "$cask failed to install. Skipping."
@@ -595,9 +598,9 @@ install_application_via_brew() {
 }
 
 install_application_via_app_store() {
-	if ! mas list | grep $1 &> /dev/null; then
+	if ! mas list | grep -- "$1" &> /dev/null; then
 		echo_install "Installing $2"
-		mas install $1 >/dev/null
+		mas install "$1" >/dev/null
 		print_in_green "${bold}✓ installed!${normal}\n"
 	else
 		print_success_muted "$2 already installed. Skipped."

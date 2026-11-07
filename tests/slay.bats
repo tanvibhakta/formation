@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 # Characterization tests for ./slay (preflight checks and install loops).
-# These pin what the script does today, bugs included. Tests marked
-# "BUG (pinned)" will fail once that bug is fixed: flip them on purpose.
+# These pin what the script does today. Tests marked "BUG (pinned)" record a
+# known bug; fixing it fails that test, so flip it on purpose.
 
 load test_helper
 
@@ -27,13 +27,17 @@ setup_file() { formation_setup_file; }
     [ ! -e "$HOME/elsewhere/formation" ]
 }
 
-@test "3. BUG (pinned): internet check never runs ping and always passes" {
-    # twirl: `if [ ping -q -w1 -c1 google.com &>/dev/null ]` is a `test` with
-    # too many arguments, never a ping. Here the network is down.
+@test "3. internet check: offline stops the run with exit 1; online passes" {
     run_slay FAKE_OFFLINE=1
+    [ "$status" -eq 1 ]
+    output_has "Please check your internet connection"
+    called "ping -q -c1 -t2 google.com"
+    none_called "brew"
+
+    reset_log
+    run_slay
     [ "$status" -eq 0 ]
     output_has "[✓] Internet connection"
-    none_called "ping"
 }
 
 @test "4. provisioned machine: Xcode, Bash-it, nvm, Homebrew skipped" {
@@ -60,9 +64,6 @@ setup_file() { formation_setup_file; }
 }
 
 @test "6. brews: installed skipped, missing installed, one failure doesn't stop the rest" {
-    # Latent bug, not observable from outside: install_brews reads the global
-    # $brew, not its argument. The caller's loop variable is also named brew,
-    # so the right formula is always used.
     grep -vx -e tmux -e wget "$FORMATION/swag/brews" > "$FAKE/brew-formulae"
     run_slay FAKE_BREW_FAIL=tmux
     [ "$status" -eq 0 ]
@@ -74,7 +75,6 @@ setup_file() { formation_setup_file; }
 }
 
 @test "7. casks: installed skipped, missing installed to /Applications, failure skipped" {
-    # Same latent global-$cask bug as test 6.
     grep -vx -e vlc -e zoom "$FORMATION/swag/casks" > "$FAKE/brew-casks"
     run_slay FAKE_BREW_FAIL=vlc
     [ "$status" -eq 0 ]
@@ -85,11 +85,14 @@ setup_file() { formation_setup_file; }
     called "brew install --cask zoom --appdir=/Applications"
 }
 
-@test "8. App Store id::Name: missing installed by id, installed skipped by name" {
-    grep -v '^803453959 ' "$FAKE/mas-installed" > "$FAKE/mas-tmp" && mv "$FAKE/mas-tmp" "$FAKE/mas-installed"
+@test "8. App Store id::Name: missing installed by id, installed skipped by name, spaces kept" {
+    grep -v -e '^803453959 ' -e '^775737590 ' "$FAKE/mas-installed" > "$FAKE/mas-tmp" && mv "$FAKE/mas-tmp" "$FAKE/mas-installed"
     run_slay
     [ "$status" -eq 0 ]
     called "mas install 803453959"
+    called "mas install 775737590"
+    output_has "Installing iA Writer"
+    not_called "mas install Writer"
     output_has "Keynote already installed. Skipped."
     not_called "mas install 409183694"
 }
@@ -101,21 +104,20 @@ setup_file() { formation_setup_file; }
     none_called "mas install"
 }
 
-@test "10. BUG (pinned): mas check looks for a file named mas in the repo, not on PATH" {
-    # slay: `if [ -x mas ]` tests ./mas relative to the repo folder.
+@test "10. mas missing from PATH: asks to install mas-cli; a file named mas in the repo doesn't matter" {
     without_stubs mas
     run_slay
     [ "$status" -eq 0 ]
-    output_lacks "Please install mas-cli first"
-    output_has "Please signin to App Store first. Skipping."
+    output_has "Please install mas-cli first: brew install mas. Skipping."
+    output_lacks "Please signin to App Store first"
 
     STUBS="$BATS_TEST_DIRNAME/stubs"
     printf '#!/bin/sh\n' > "$FORMATION/mas" && chmod +x "$FORMATION/mas"
     reset_log
     run_slay
     [ "$status" -eq 0 ]
-    output_has "Please install mas-cli first: brew mas. Skipping."
-    not_called "mas account"
+    output_lacks "Please install mas-cli first"
+    called "mas account"
 }
 
 @test "11. pnpm pkg::binary: binary on PATH skipped, missing added; setup only without PNPM_HOME in ~/.zshrc" {

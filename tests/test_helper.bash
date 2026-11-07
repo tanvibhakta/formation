@@ -83,6 +83,9 @@ run_slay() {
 
 reset_log() { : > "$STUB_LOG"; }
 
+# Make `#!/usr/bin/env bash` find a different bash, e.g. macOS /bin/bash 3.2.
+use_bash() { ln -sf "$1" "$REALBIN/bash"; }
+
 # Point $STUBS at a dir of symlinks to every stub except the named ones, so
 # those commands are absent from PATH (symlinks avoid the first-launch cost).
 without_stubs() {

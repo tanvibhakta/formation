@@ -171,9 +171,10 @@ fi
 if [ -e $cwd/swag/brews ]; then
 	chapter "Installing Homebrew formulae…"
 
-	for brew in $(<$cwd/swag/brews); do
-		install_brews $brew
-	done
+	# One entry per line, read whole: `for x in $(<file)` would split on spaces.
+	while IFS= read -r brew <&3 || [ -n "$brew" ]; do
+		[ -n "$brew" ] && install_brews "$brew"
+	done 3< "$cwd/swag/brews"
 fi
 
 ###############################################################################
@@ -188,18 +189,18 @@ brew update
 if [ -e $cwd/swag/casks ]; then
 	chapter "Installing apps via Homebrew…"
 
-	for cask in $(<$cwd/swag/casks); do
-	    install_application_via_brew $cask
-	done
+	while IFS= read -r cask <&3 || [ -n "$cask" ]; do
+		[ -n "$cask" ] && install_application_via_brew "$cask"
+	done 3< "$cwd/swag/casks"
 fi
 
 ###############################################################################
 # INSTALL: Mac App Store Apps
 ###############################################################################
 chapter "Installing apps from App Store…"
-if [ -x mas ]; then
+if ! command -v mas >/dev/null 2>&1; then
 
-	print_warning "Please install mas-cli first: brew mas. Skipping."
+	print_warning "Please install mas-cli first: brew install mas. Skipping."
 
 	else
 
@@ -207,11 +208,13 @@ if [ -x mas ]; then
 		if mas_setup; then
 			# Workaround for associative array in Bash 3
 			# https://stackoverflow.com/questions/6047648/bash-4-associative-arrays-error-declare-a-invalid-option
-			for app in $(<$cwd/swag/apps); do
+			# Names can contain spaces ("iA Writer"), so read whole lines.
+			while IFS= read -r app <&3 || [ -n "$app" ]; do
+				[ -n "$app" ] || continue
 				KEY="${app%%::*}"
 				VALUE="${app##*::}"
-				install_application_via_app_store $KEY $VALUE
-			done
+				install_application_via_app_store "$KEY" "$VALUE"
+			done 3< "$cwd/swag/apps"
 		else
 			print_warning "Please signin to App Store first. Skipping."
 		fi
@@ -232,11 +235,12 @@ if [ -e $cwd/swag/pnpm ]; then
 	chapter "Installing pnpm packages…"
 	pnpm_setup
 
-	for pkg in $(<$cwd/swag/pnpm); do
+	while IFS= read -r pkg <&3 || [ -n "$pkg" ]; do
+		[ -n "$pkg" ] || continue
 		KEY="${pkg%%::*}"
 		VALUE="${pkg##*::}"
-		install_pnpm_packages $KEY $VALUE
-	done
+		install_pnpm_packages "$KEY" "$VALUE"
+	done 3< "$cwd/swag/pnpm"
 fi
 
 
