@@ -22,7 +22,7 @@ if [ "$this_dir" != "$formation_dest" ] && [ ! -d "$formation_dest" ]; then
 	printf "  Moving formation to ~/Code/formation…\n"
 	mv "$this_dir" "$formation_dest"
 	printf "  Moved. Re-launching from new location…\n"
-	exec "$formation_dest/slay"
+	exec "$formation_dest/slay" "$@"  # keep the arguments: `./slay update` must stay update mode
 fi
 
 ###############################################################################

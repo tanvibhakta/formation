@@ -318,3 +318,15 @@ EOF
     output_has "**SECURITY RELEASE**"
     output_has "Node 22.5 notes"
 }
+
+@test "U14. ./slay update from a clone elsewhere: relocates, then still runs update mode" {
+    mkdir -p "$HOME/elsewhere"
+    mv "$FORMATION" "$HOME/elsewhere/formation"
+    cd "$HOME/elsewhere/formation"
+    run_clean ./slay update --check
+    [ "$status" -eq 0 ]
+    output_has "Moving formation to ~/Code/formation"
+    output_has "Update survey (--check, no changes made)"
+    output_lacks "Caching password"
+    none_called "brew install"
+}
