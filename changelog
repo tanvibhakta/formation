@@ -1,0 +1,509 @@
+#!/usr/bin/env bash
+###############################################################################
+# changelog
+#
+# Release-notes helpers for `./slay update`. Sourced from `update` (which is
+# itself sourced from `slay`), same way `twirl` is sourced.
+#
+# Every public function here fails SOFT: curl/gh/jq/python failures are
+# swallowed and the function returns non-zero. Nothing here should ever be
+# able to abort the caller, even under the parent script's `set -e`.
+#
+# Two things every outdated item wants:
+#   - CHANGELOG_LINK  : a single "go read more here" URL. Priority order:
+#       1. hand-kept URL map (changelog_url_from_map)
+#       2. GitHub releases page, when the GitHub repo is known
+#       3. Sparkle appcast's <sparkle:releaseNotesLink>
+#       4. Mac App Store page (apps.apple.com)
+#       5. homepage from brew/mas/npm metadata
+#   - CHANGELOG_BODY  : an inline excerpt (interactive/--check) or the full
+#     concatenated release notes (--changelogs), when fetchable at all.
+#     Not every source can provide this (the URL-map-only tokens can't) -
+#     that's fine, the link line still stands on its own.
+###############################################################################
+
+# Populated by changelog_render(); callers (in `update`, a different source
+# file) read these right after calling it - shellcheck can't see that
+# cross-file usage, hence the disables below.
+# shellcheck disable=SC2034
+CHANGELOG_LINK=""
+# shellcheck disable=SC2034
+CHANGELOG_BODY=""
+# shellcheck disable=SC2034
+CHANGELOG_COUNT=0
+# shellcheck disable=SC2034
+CHANGELOG_NOTE=""
+
+###############################################################################
+# Hand-kept token -> release-notes URL map.
+# Deliberately dumb: no fetching, no parsing, just a known-good URL per
+# vendor whose changelog isn't worth scraping. Verified with
+# `curl -sI -L --max-time 10 <url>` returning 200 before shipping.
+###############################################################################
+changelog_url_from_map() {
+	case "$1" in
+		webstorm)    printf '%s' "https://www.jetbrains.com/webstorm/whatsnew/" ;;
+		alfred)      printf '%s' "https://www.alfredapp.com/changelog/" ;;
+		1password)   printf '%s' "https://releases.1password.com/mac/" ;;
+		claude-code) printf '%s' "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" ;;
+		ghostty)     printf '%s' "https://ghostty.org/docs/install/release-notes" ;;
+		go)          printf '%s' "https://go.dev/doc/devel/release" ;;
+		git)         printf '%s' "https://github.com/git/git/tree/master/Documentation/RelNotes" ;;
+		awscli)      printf '%s' "https://github.com/aws/aws-cli/blob/v2/CHANGELOG.rst" ;;
+		*) return 1 ;;
+	esac
+}
+
+###############################################################################
+# Version helpers
+###############################################################################
+
+# Strip a leading "v", "release-" or "rust-v" so tags compare like bare
+# version numbers. Best-effort - not every project's tag scheme is covered.
+_changelog_norm_ver() {
+	local v="$1"
+	v="${v#release-}"
+	v="${v#rust-v}"
+	v="${v#v}"
+	printf '%s' "$v"
+}
+
+# true if $1 > $2 (numeric-aware via sort -V)
+_changelog_ver_gt() {
+	[ "$1" != "$2" ] && [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -1)" = "$1" ]
+}
+
+# true if $1 <= $2
+_changelog_ver_le() {
+	! _changelog_ver_gt "$1" "$2"
+}
+
+# true if installed < v <= latest
+_changelog_ver_in_range() {
+	local v="$1" installed="$2" latest="$3"
+	_changelog_ver_gt "$v" "$installed" && _changelog_ver_le "$v" "$latest"
+}
+
+###############################################################################
+# GitHub repo derivation (layer for link priority #2 and the inline-excerpt
+# GitHub-releases source).
+###############################################################################
+
+_changelog_extract_github_repo() {
+	local url="$1"
+	[ -z "$url" ] && return 1
+	url="${url#git+}"
+	url="${url%.git}"
+	case "$url" in
+		*github.com*)
+			printf '%s' "$url" | sed -E 's#.*github\.com[:/]+([^/]+/[^/#]+).*#\1#'
+			return 0
+			;;
+	esac
+	return 1
+}
+
+changelog_github_repo_for_formula() {
+	local token="$1" json url
+	json="$(brew info --json=v2 "$token" 2>/dev/null)" || return 1
+	[ -z "$json" ] && return 1
+	url=$(printf '%s' "$json" | jq -r '.formulae[0].urls.stable.url // empty' 2>/dev/null)
+	if [ -z "$url" ]; then
+		url=$(printf '%s' "$json" | jq -r '.formulae[0].urls.head.url // empty' 2>/dev/null)
+	fi
+	if [ -z "$url" ]; then
+		url=$(printf '%s' "$json" | jq -r '.formulae[0].homepage // empty' 2>/dev/null)
+	fi
+	_changelog_extract_github_repo "$url"
+}
+
+changelog_github_repo_for_cask() {
+	local token="$1" json url
+	json="$(brew info --cask --json=v2 "$token" 2>/dev/null)" || return 1
+	[ -z "$json" ] && return 1
+	url=$(printf '%s' "$json" | jq -r '.casks[0].url // empty' 2>/dev/null)
+	if [ -z "$url" ]; then
+		url=$(printf '%s' "$json" | jq -r '.casks[0].homepage // empty' 2>/dev/null)
+	fi
+	_changelog_extract_github_repo "$url"
+}
+
+changelog_github_repo_for_pnpm() {
+	local pkg="$1" url
+	# npm may only exist as an nvm lazy-loaded shell function - caller is
+	# responsible for having sourced nvm.sh first.
+	url=$(npm view "$pkg" repository.url 2>/dev/null)
+	[ -z "$url" ] && url=$(npm view "$pkg" repository 2>/dev/null)
+	_changelog_extract_github_repo "$url"
+}
+
+###############################################################################
+# Homepage lookup (link priority #5, last resort)
+###############################################################################
+changelog_homepage_for() {
+	local kind="$1" name="$2" url
+	case "$kind" in
+		formula)
+			url=$(brew info --json=v2 "$name" 2>/dev/null | jq -r '.formulae[0].homepage // empty' 2>/dev/null)
+			;;
+		cask)
+			url=$(brew info --cask --json=v2 "$name" 2>/dev/null | jq -r '.casks[0].homepage // empty' 2>/dev/null)
+			;;
+		pnpm)
+			url="https://www.npmjs.com/package/$name"
+			;;
+	esac
+	[ -z "${url:-}" ] && return 1
+	printf '%s' "$url"
+}
+
+###############################################################################
+# Sparkle appcast (cask-only): feed discovery via the installed app's own
+# Info.plist, then fetch + parse the XML.
+###############################################################################
+
+# Resolves a cask token to its /Applications/<App>.app path via the cask's
+# own artifact metadata (NOT the version-check logic in `update` - this is
+# intentionally independent so changelog fetching works even if version
+# resolution failed).
+_changelog_cask_app_path() {
+	local token="$1" json app
+	json="$(brew info --cask --json=v2 "$token" 2>/dev/null)" || return 1
+	[ -z "$json" ] && return 1
+	app=$(printf '%s' "$json" | jq -r '[.casks[0].artifacts[]? | select(has("app")) | .app[0]?] | map(select(. != null)) | first // empty' 2>/dev/null)
+	[ -z "$app" ] && return 1
+	# FORMATION_APPDIR: test suite only, so tests never read the real /Applications.
+	printf '%s/%s' "${FORMATION_APPDIR:-/Applications}" "$app"
+}
+
+_changelog_cask_sparkle_feed() {
+	local token="$1" path plist feed
+	path=$(_changelog_cask_app_path "$token") || return 1
+	plist="$path/Contents/Info.plist"
+	[ -f "$plist" ] || return 1
+	feed=$(/usr/libexec/PlistBuddy -c "Print SUFeedURL" "$plist" 2>/dev/null) || return 1
+	[ -z "$feed" ] && return 1
+	printf '%s' "$feed"
+}
+
+_changelog_sparkle_xml() {
+	curl -sL --max-time 10 "$1" 2>/dev/null
+}
+
+_changelog_sparkle_release_notes_link() {
+	local feed="$1" xml link
+	xml=$(_changelog_sparkle_xml "$feed") || return 1
+	[ -z "$xml" ] && return 1
+	link=$(printf '%s' "$xml" | grep -o '<sparkle:releaseNotesLink>[^<]*' | head -1 | sed 's#.*>##')
+	[ -z "$link" ] && return 1
+	printf '%s' "$link"
+}
+
+# changelog_sparkle_fetch feed installed latest mode(excerpt|full)
+# Sets CHANGELOG_BODY / CHANGELOG_COUNT on success. Uses python3 (always
+# present on macOS) to parse the RSS/XML + strip HTML - far more robust than
+# hand-rolled sed/grep for arbitrary vendor markup.
+changelog_sparkle_fetch() {
+	local feed="$1" installed="$2" latest="$3" mode="$4"
+	local xml result
+
+	xml=$(_changelog_sparkle_xml "$feed") || return 1
+	[ -z "$xml" ] && return 1
+
+	# The python script is passed via -c (a string), NOT a heredoc, because
+	# stdin is needed for piping $xml in - a heredoc there would silently
+	# steal stdin out from under the pipe (shellcheck SC2259).
+	local _changelog_sparkle_py
+	# `read -d ''` always returns 1 at EOF even on a clean read - that's
+	# expected here (there's no NUL byte in the heredoc), so `|| true`
+	# stops it from tripping the parent script's `set -e`.
+	read -r -d '' _changelog_sparkle_py <<'PYEOF' || true
+import sys, re, html
+
+xml = sys.stdin.read()
+installed, latest, mode = sys.argv[1], sys.argv[2], sys.argv[3]
+
+def norm(v):
+    v = v.lstrip('v')
+    for p in ("release-", "rust-v"):
+        if v.startswith(p):
+            v = v[len(p):]
+    return v
+
+def vtuple(v):
+    parts = re.split(r'[.\-_]', norm(v))
+    out = []
+    for p in parts:
+        try:
+            out.append(int(p))
+        except ValueError:
+            out.append(0)
+    return tuple(out)
+
+def in_range(v):
+    try:
+        return vtuple(installed) < vtuple(v) <= vtuple(latest)
+    except Exception:
+        return False
+
+items = re.findall(r'<item\b.*?>(.*?)</item>', xml, re.S)
+blocks = []
+count = 0
+for it in items:
+    m = re.search(r'<sparkle:shortVersionString>([^<]*)</sparkle:shortVersionString>', it)
+    ver = m.group(1) if m else None
+    if not ver:
+        m = re.search(r'<sparkle:version>([^<]*)</sparkle:version>', it)
+        ver = m.group(1) if m else None
+    if not ver or not in_range(ver):
+        continue
+    d = re.search(r'<description>(.*?)</description>', it, re.S)
+    desc = d.group(1).strip() if d else ""
+    if desc.startswith('<![CDATA['):
+        desc = desc[len('<![CDATA['):]
+        if desc.endswith(']]>'):
+            desc = desc[:-3]
+    desc = re.sub(r'<[^>]+>', ' ', desc)
+    desc = html.unescape(desc)
+    desc = re.sub(r'[ \t]+', ' ', desc)
+    desc = re.sub(r'\n\s*\n+', '\n\n', desc).strip()
+    if not desc:
+        continue
+    count += 1
+    blocks.append("### %s\n\n%s" % (ver, desc))
+
+if count == 0:
+    sys.exit(1)
+
+body = "\n\n".join(blocks)
+if mode == "excerpt":
+    body = "\n".join(body.splitlines()[:15])
+
+print(count)
+print("---CHANGELOG-BODY---")
+print(body)
+PYEOF
+
+	result=$(printf '%s' "$xml" | python3 -c "$_changelog_sparkle_py" "$installed" "$latest" "$mode" 2>/dev/null) || return 1
+	[ -z "$result" ] && return 1
+
+	CHANGELOG_COUNT=$(printf '%s\n' "$result" | sed -n '1p')
+	CHANGELOG_BODY=$(printf '%s\n' "$result" | sed '1,/^---CHANGELOG-BODY---$/d')
+	[ -z "$CHANGELOG_BODY" ] && return 1
+	return 0
+}
+
+###############################################################################
+# GitHub releases (generic fallback, and the inline-excerpt source for
+# formulae/casks/pnpm packages whose repo we could derive, plus nvm/bash-it).
+###############################################################################
+
+# changelog_github_fetch owner/repo installed latest mode(excerpt|full)
+# Sets CHANGELOG_BODY / CHANGELOG_COUNT on success.
+changelog_github_fetch() {
+	local repo="$1" installed="$2" latest="$3" mode="$4"
+	local i_norm l_norm json
+	i_norm=$(_changelog_norm_ver "$installed")
+	l_norm=$(_changelog_norm_ver "$latest")
+
+	json=$(gh api "repos/${repo}/releases?per_page=50" 2>/dev/null) || return 1
+	[ -z "$json" ] || [ "$json" = "[]" ] && return 1
+
+	local tag draft prerelease body_b64 body tv count=0 out=""
+	while IFS=$'\t' read -r tag draft prerelease body_b64; do
+		[ -z "$tag" ] && continue
+		[ "$draft" = "true" ] && continue
+		[ "$prerelease" = "true" ] && continue
+		tv=$(_changelog_norm_ver "$tag")
+		_changelog_ver_in_range "$tv" "$i_norm" "$l_norm" || continue
+		body=$(printf '%s' "$body_b64" | base64 --decode 2>/dev/null)
+		[ -z "$body" ] && continue
+		count=$((count + 1))
+		if [ "$mode" = "full" ]; then
+			out="${out}### ${tag}"$'\n\n'"${body}"$'\n\n'
+		elif [ "$count" -eq 1 ]; then
+			out="${body}"
+		fi
+	done < <(printf '%s' "$json" | jq -r '.[] | [.tag_name, (.draft|tostring), (.prerelease|tostring), ((.body // "") | @base64)] | @tsv' 2>/dev/null)
+
+	[ "$count" -eq 0 ] && return 1
+
+	if [ "$mode" = "excerpt" ]; then
+		out=$(printf '%s' "$out" | head -n 15)
+	fi
+
+	CHANGELOG_BODY="$out"
+	CHANGELOG_COUNT="$count"
+	return 0
+}
+
+###############################################################################
+# Mac App Store (itunes lookup - always latest-version-only)
+###############################################################################
+
+_changelog_mas_store() {
+	local store
+	store=$(mas config 2>/dev/null | awk '/^store/ {print $NF}')
+	[ -z "$store" ] && store="in"
+	printf '%s' "$store" | tr '[:upper:]' '[:lower:]'
+}
+
+# changelog_mas_fetch adamID mode(excerpt|full) - mode is irrelevant here
+# since Apple only ever gives one version's worth of notes, but we accept
+# it for interface symmetry with the other fetchers.
+changelog_mas_fetch() {
+	local adam_id="$1" json notes store
+	store=$(_changelog_mas_store)
+	json=$(curl -s --max-time 10 "https://itunes.apple.com/lookup?id=${adam_id}&country=${store}" 2>/dev/null) || return 1
+	[ -z "$json" ] && return 1
+	notes=$(printf '%s' "$json" | jq -r '.results[0].releaseNotes // empty' 2>/dev/null)
+	[ -z "$notes" ] && return 1
+	CHANGELOG_BODY="$notes"
+	CHANGELOG_COUNT=1
+	CHANGELOG_NOTE="(latest version only - Apple does not expose historical release notes)"
+	return 0
+}
+
+###############################################################################
+# Node / nvm
+###############################################################################
+
+# changelog_node_fetch version(e.g. v22.23.4) mode(excerpt|full)
+changelog_node_fetch() {
+	local version="$1" mode="$2" body
+	body=$(gh api "repos/nodejs/node/releases/tags/${version}" --jq '.body' 2>/dev/null) || return 1
+	[ -z "$body" ] || [ "$body" = "null" ] && return 1
+	CHANGELOG_COUNT=1
+	if [ "$mode" = "excerpt" ]; then
+		CHANGELOG_BODY=$(printf '%s' "$body" | head -n 15)
+	else
+		CHANGELOG_BODY="$body"
+	fi
+	return 0
+}
+
+# true (0) if nodejs.org/dist/index.json flags this version as a security release
+changelog_node_is_security() {
+	local version="$1" index sec
+	index=$(curl -s --max-time 10 "https://nodejs.org/dist/index.json" 2>/dev/null) || return 1
+	[ -z "$index" ] && return 1
+	sec=$(printf '%s' "$index" | jq -r --arg v "$version" '.[] | select(.version==$v) | .security' 2>/dev/null | head -1)
+	[ "$sec" = "true" ]
+}
+
+###############################################################################
+# Top-level link resolver - the priority order described at the top of this
+# file. Always try to produce *something*; only truly unknown items (no repo,
+# no map entry, no homepage) come back empty.
+###############################################################################
+
+# changelog_link kind name installed latest [extra]
+# kind: formula | cask | pnpm | mas | node | nvm | bashit
+# extra: adamID for mas, the exact node version (e.g. v22.23.4) for node
+changelog_link() {
+	local kind="$1" name="$2" installed="$3" latest="$4" extra="${5:-}"
+	local url repo feed link
+
+	# 1. hand-kept URL map
+	if url=$(changelog_url_from_map "$name" 2>/dev/null) && [ -n "$url" ]; then
+		printf '%s' "$url"
+		return 0
+	fi
+
+	# 2. GitHub releases page
+	repo=""
+	case "$kind" in
+		formula) repo=$(changelog_github_repo_for_formula "$name" 2>/dev/null) ;;
+		cask) repo=$(changelog_github_repo_for_cask "$name" 2>/dev/null) ;;
+		pnpm) repo=$(changelog_github_repo_for_pnpm "$name" 2>/dev/null) ;;
+		node | nvm) repo="nodejs/node" ;;
+		bashit) repo="Bash-it/bash-it" ;;
+	esac
+	if [ -n "$repo" ]; then
+		printf 'https://github.com/%s/releases' "$repo"
+		return 0
+	fi
+
+	# 3. Sparkle releaseNotesLink (casks only)
+	if [ "$kind" = "cask" ]; then
+		feed=$(_changelog_cask_sparkle_feed "$name" 2>/dev/null)
+		if [ -n "$feed" ]; then
+			link=$(_changelog_sparkle_release_notes_link "$feed" 2>/dev/null)
+			if [ -n "$link" ]; then
+				printf '%s' "$link"
+				return 0
+			fi
+		fi
+	fi
+
+	# 4. Mac App Store page
+	if [ "$kind" = "mas" ] && [ -n "$extra" ]; then
+		printf 'https://apps.apple.com/app/id%s' "$extra"
+		return 0
+	fi
+
+	# 5. homepage
+	url=$(changelog_homepage_for "$kind" "$name" 2>/dev/null)
+	if [ -n "$url" ]; then
+		printf '%s' "$url"
+		return 0
+	fi
+
+	return 1
+}
+
+###############################################################################
+# Top-level body+link combo. Sets CHANGELOG_LINK/CHANGELOG_BODY/
+# CHANGELOG_COUNT/CHANGELOG_NOTE. Always resets them first. Never fails -
+# a miss just means empty fields; the caller decides how to display that.
+###############################################################################
+
+# changelog_render kind name installed latest extra mode(excerpt|full)
+changelog_render() {
+	CHANGELOG_LINK=""
+	CHANGELOG_BODY=""
+	CHANGELOG_COUNT=0
+	CHANGELOG_NOTE=""
+
+	local kind="$1" name="$2" installed="$3" latest="$4" extra="$5" mode="$6"
+
+	CHANGELOG_LINK=$(changelog_link "$kind" "$name" "$installed" "$latest" "$extra" 2>/dev/null)
+
+	local repo feed
+	case "$kind" in
+		formula)
+			repo=$(changelog_github_repo_for_formula "$name" 2>/dev/null)
+			[ -n "$repo" ] && changelog_github_fetch "$repo" "$installed" "$latest" "$mode" 2>/dev/null
+			;;
+		cask)
+			repo=$(changelog_github_repo_for_cask "$name" 2>/dev/null)
+			if [ -n "$repo" ] && changelog_github_fetch "$repo" "$installed" "$latest" "$mode" 2>/dev/null; then
+				:
+			else
+				feed=$(_changelog_cask_sparkle_feed "$name" 2>/dev/null)
+				[ -n "$feed" ] && changelog_sparkle_fetch "$feed" "$installed" "$latest" "$mode" 2>/dev/null
+			fi
+			;;
+		pnpm)
+			repo=$(changelog_github_repo_for_pnpm "$name" 2>/dev/null)
+			[ -n "$repo" ] && changelog_github_fetch "$repo" "$installed" "$latest" "$mode" 2>/dev/null
+			;;
+		mas)
+			if changelog_mas_fetch "$extra" "$mode" 2>/dev/null; then :; fi
+			;;
+		node)
+			# Security-release flagging is handled by the caller (it already
+			# calls changelog_node_is_security itself to render a loud badge -
+			# setting CHANGELOG_NOTE here too would just duplicate that line).
+			changelog_node_fetch "$extra" "$mode" 2>/dev/null
+			;;
+		nvm)
+			changelog_github_fetch "nvm-sh/nvm" "$installed" "$latest" "$mode" 2>/dev/null
+			;;
+		bashit)
+			: # update() fills this one in itself (release list or commit count)
+			;;
+	esac
+
+	return 0
+}

@@ -1,0 +1,877 @@
+#!/usr/bin/env bash
+###############################################################################
+# update
+#
+# The `./slay update` loop: checks every item in swag/ for a newer version
+# and, for each one that's outdated, shows what changed and asks before
+# upgrading. Sourced from `slay` the same way `twirl` is - never run
+# directly, though it degrades gracefully if it is (see HAS_HELPERS below),
+# mainly so it's easy to source from a standalone test harness.
+#
+# Modes (dispatched by `update_main`, called from `slay`):
+#   update_main                    - full interactive loop, every item
+#   update_main <name>             - interactive loop, one item
+#   update_main --check [--fresh]  - dry survey, no prompts, no changes
+#   update_main --changelogs [name]- plain Markdown release notes to stdout
+#
+# Every detection/upgrade step fails soft: a single package's broken `brew
+# info` call or network hiccup is reported with print_warning/print_error
+# and the loop moves on. Nothing here should ever `exit` except the
+# `<name>`-not-found case, by design (see slay for how that propagates).
+###############################################################################
+
+UPDATE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Degrade gracefully when sourced standalone (e.g. a test harness) instead
+# of from `slay` - same pattern hot-sauce/setup.sh already uses.
+if type print_success &>/dev/null; then
+	HAS_HELPERS=true
+else
+	# shellcheck disable=SC2034  # informational, mirrors hot-sauce/setup.sh's
+	# own (also-unread) HAS_HELPERS flag - kept for parity/future use.
+	HAS_HELPERS=false
+	reset="\033[0m"
+	highlight="\033[41m\033[97m"
+	dim="\033[2m"
+	yellow="\e[33m"
+	bold=""
+	normal=""
+	print_success() { printf "  [v] %s\n" "$1"; }
+	print_success_muted() { printf "  [v] %s (skipped)\n" "$1"; }
+	print_warning() { printf "  [!] %s\n" "$1"; }
+	print_error() { printf "  [x] %s %s\n" "$1" "${2:-}"; }
+	print_muted() { printf "  %s\n" "$1"; }
+	step() { printf "\n  > %s\n" "$*"; }
+	chapter() { printf "\n== %s ==\n" "$1"; }
+	ask() {
+		local prompt default reply
+		if [ "${2:-}" = "Y" ]; then
+			prompt="Y/n"; default=Y
+		elif [ "${2:-}" = "N" ]; then
+			prompt="y/N"; default=N
+		else
+			prompt="y/n"; default=
+		fi
+		echo -n "  [?] $1 [$prompt] "
+		read -r reply <"${FORMATION_TTY:-/dev/tty}"  # FORMATION_TTY: test suite only
+		[ -z "$reply" ] && reply=$default
+		case "$reply" in Y* | y*) return 0 ;; *) return 1 ;; esac
+	}
+	cwd="$(cd "$(dirname "$0")" && pwd)"
+fi
+
+# shellcheck source=./changelog
+. "$UPDATE_DIR/changelog"
+
+# Internal record separator - lets fields contain anything (spaces, "::",
+# whatever) without ambiguity. Never printed to the user.
+REC_SEP=$'\x1f'
+
+_BREW_UPDATE_DONE="${_BREW_UPDATE_DONE:-0}"
+
+###############################################################################
+# Small shared helpers
+###############################################################################
+
+_read_list() {
+	[ -f "$1" ] || return 0
+	grep -v '^[[:space:]]*$' "$1" 2>/dev/null
+}
+
+# installed/latest major-version component, leading non-digits stripped
+_major_of() {
+	local v="${1#v}"
+	printf '%s' "$v" | sed -E 's/^([0-9]+).*/\1/'
+}
+
+_is_major_bump() {
+	local mi ml
+	mi=$(_major_of "$1")
+	ml=$(_major_of "$2")
+	[ -n "$mi" ] && [ -n "$ml" ] && [ "$ml" -gt "$mi" ] 2>/dev/null
+}
+
+_source_label() {
+	case "$1" in
+		formula) printf 'Homebrew formula' ;;
+		cask) printf 'Homebrew cask' ;;
+		mas) printf 'Mac App Store' ;;
+		pnpm) printf 'pnpm global package' ;;
+		nvm) printf 'nvm' ;;
+		node) printf 'node' ;;
+		bashit) printf 'Bash-it' ;;
+	esac
+}
+
+# Parses a packed record into REC_KIND/REC_NAME/REC_INSTALLED/REC_LATEST/REC_EXTRA
+_rec_parse() {
+	IFS="$REC_SEP" read -r REC_KIND REC_NAME REC_INSTALLED REC_LATEST REC_EXTRA <<<"$1"
+}
+
+_ensure_brew_update_once() {
+	if [ "$_BREW_UPDATE_DONE" != "1" ]; then
+		step "Running brew update (once)…"
+		if brew update >/dev/null 2>&1; then
+			print_success_muted "Homebrew formulae/casks metadata refreshed."
+		else
+			print_warning "brew update failed - continuing with possibly-stale formula/cask data."
+		fi
+		_BREW_UPDATE_DONE=1
+	fi
+}
+
+###############################################################################
+# Detection: Homebrew formulae
+###############################################################################
+
+detect_outdated_formulae() {
+	OUTDATED_FORMULAE=()
+	[ -f "$cwd/swag/brews" ] || return 0
+	local json
+	json=$(brew outdated --json=v2 2>/dev/null) || return 0
+	[ -z "$json" ] && return 0
+
+	local token installed latest installed_s latest_s
+	while IFS= read -r token; do
+		[ -z "$token" ] && continue
+		installed=$(printf '%s' "$json" | jq -r --arg t "$token" '.formulae[] | select(.name==$t) | .installed_versions[0] // empty' 2>/dev/null)
+		latest=$(printf '%s' "$json" | jq -r --arg t "$token" '.formulae[] | select(.name==$t) | .current_version // empty' 2>/dev/null)
+		[ -z "$installed" ] && continue
+		[ -z "$latest" ] && continue
+		installed_s=$(printf '%s' "$installed" | sed -E 's/_[0-9]+$//')
+		latest_s=$(printf '%s' "$latest" | sed -E 's/_[0-9]+$//')
+		_changelog_ver_gt "$latest_s" "$installed_s" || continue
+		OUTDATED_FORMULAE+=("formula${REC_SEP}${token}${REC_SEP}${installed_s}${REC_SEP}${latest_s}${REC_SEP}")
+	done < <(_read_list "$cwd/swag/brews")
+}
+
+###############################################################################
+# Detection: Homebrew casks (the fiddly one - real installed version wins
+# over brew's own record, since Sparkle-updating casks drift out of sync)
+###############################################################################
+
+detect_outdated_casks() {
+	OUTDATED_CASKS=()
+	CASK_RENAMES=()
+	[ -f "$cwd/swag/casks" ] || return 0
+	local json
+	json=$(brew outdated --json=v2 --greedy-auto-updates 2>/dev/null) || return 0
+
+	local token
+	while IFS= read -r token; do
+		[ -z "$token" ] && continue
+
+		# Rename detection: `brew info --cask` transparently resolves an old
+		# token to its replacement and tells us the real token back.
+		local info_json real_token
+		info_json=$(brew info --cask --json=v2 "$token" 2>/dev/null)
+		if [ -n "$info_json" ]; then
+			real_token=$(printf '%s' "$info_json" | jq -r '.casks[0].token // empty' 2>/dev/null)
+			if [ -n "$real_token" ] && [ "$real_token" != "$token" ]; then
+				CASK_RENAMES+=("${token}${REC_SEP}${real_token}")
+			fi
+		fi
+
+		[ -z "$json" ] && continue
+		local brew_installed_raw brew_latest_raw brew_latest brew_installed_s
+		brew_installed_raw=$(printf '%s' "$json" | jq -r --arg t "$token" '.casks[] | select(.name==$t) | .installed_versions[0] // empty' 2>/dev/null)
+		brew_latest_raw=$(printf '%s' "$json" | jq -r --arg t "$token" '.casks[] | select(.name==$t) | .current_version // empty' 2>/dev/null)
+		[ -z "$brew_latest_raw" ] && continue
+		brew_latest="${brew_latest_raw%%,*}"
+		brew_installed_s="${brew_installed_raw%%,*}"
+
+		# Resolve the REAL installed app version off disk.
+		local app_path real_version="" note=""
+		app_path=$(_changelog_cask_app_path "$token" 2>/dev/null)
+		if [ -n "$app_path" ] && [ -f "$app_path/Contents/Info.plist" ]; then
+			real_version=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$app_path/Contents/Info.plist" 2>/dev/null)
+		fi
+
+		local installed_for_display
+		if [ -n "$real_version" ]; then
+			installed_for_display="$real_version"
+			# Already self-updated to/past what brew thinks is current -
+			# brew has nothing to offer, drop it.
+			if _changelog_ver_le "$brew_latest" "$real_version"; then
+				continue
+			fi
+		else
+			installed_for_display="${brew_installed_s:-unknown}"
+			note="(version from brew record)"
+		fi
+
+		OUTDATED_CASKS+=("cask${REC_SEP}${token}${REC_SEP}${installed_for_display}${REC_SEP}${brew_latest}${REC_SEP}${note}")
+	done < <(_read_list "$cwd/swag/casks")
+}
+
+###############################################################################
+# Detection: Mac App Store
+###############################################################################
+
+detect_outdated_mas() {
+	OUTDATED_MAS=()
+	[ -f "$cwd/swag/apps" ] || return 0
+	command -v mas >/dev/null 2>&1 || return 0
+	local raw
+	raw=$(mas outdated --json 2>/dev/null)
+	[ -z "$raw" ] && return 0
+
+	local entry id name installed latest
+	while IFS= read -r entry; do
+		[ -z "$entry" ] && continue
+		id=$(printf '%s' "$entry" | jq -r '.adamID // empty' 2>/dev/null)
+		[ -z "$id" ] && continue
+		grep -q "^${id}::" "$cwd/swag/apps" 2>/dev/null || continue
+
+		name=$(printf '%s' "$entry" | jq -r '.name // empty' 2>/dev/null)
+		installed=$(printf '%s' "$entry" | jq -r '.version // empty' 2>/dev/null)
+		latest=$(printf '%s' "$entry" | jq -r '.newVersion // empty' 2>/dev/null)
+		[ -z "$latest" ] && continue
+
+		OUTDATED_MAS+=("mas${REC_SEP}${name}${REC_SEP}${installed}${REC_SEP}${latest}${REC_SEP}${id}")
+	done <<<"$raw"
+}
+
+###############################################################################
+# Detection: pnpm globals (outdated + listed-but-missing)
+###############################################################################
+
+detect_outdated_pnpm() {
+	OUTDATED_PNPM=()
+	[ -f "$cwd/swag/pnpm" ] || return 0
+	command -v pnpm >/dev/null 2>&1 || return 0
+	local json
+	json=$(pnpm outdated -g --format json 2>/dev/null)
+	[ -z "$json" ] && return 0
+
+	local entry pkg installed latest
+	while IFS= read -r entry; do
+		[ -z "$entry" ] && continue
+		pkg="${entry%%::*}"
+		latest=$(printf '%s' "$json" | jq -r --arg p "$pkg" '.[$p].latest // empty' 2>/dev/null)
+		[ -z "$latest" ] && continue
+		installed=$(printf '%s' "$json" | jq -r --arg p "$pkg" '.[$p].current // empty' 2>/dev/null)
+		OUTDATED_PNPM+=("pnpm${REC_SEP}${pkg}${REC_SEP}${installed}${REC_SEP}${latest}${REC_SEP}")
+	done < <(_read_list "$cwd/swag/pnpm")
+}
+
+detect_missing_pnpm() {
+	MISSING_PNPM=()
+	[ -f "$cwd/swag/pnpm" ] || return 0
+	command -v pnpm >/dev/null 2>&1 || return 0
+	local ls_json
+	ls_json=$(pnpm ls -g --json 2>/dev/null)
+	[ -z "$ls_json" ] && return 0
+
+	local entry pkg bin present
+	while IFS= read -r entry; do
+		[ -z "$entry" ] && continue
+		pkg="${entry%%::*}"
+		bin="${entry##*::}"
+		present=$(printf '%s' "$ls_json" | jq -r --arg p "$pkg" '[.[].dependencies[$p]?] | map(select(. != null)) | length' 2>/dev/null)
+		[ "${present:-0}" = "0" ] && MISSING_PNPM+=("${pkg}${REC_SEP}${bin}")
+	done < <(_read_list "$cwd/swag/pnpm")
+}
+
+###############################################################################
+# Detection: "listed in swag/ but not installed at all" (brews/casks/apps)
+###############################################################################
+
+detect_missing_brews() {
+	MISSING_BREWS=()
+	[ -f "$cwd/swag/brews" ] || return 0
+	local installed
+	installed=$(brew list --formula 2>/dev/null)
+	local token
+	while IFS= read -r token; do
+		[ -z "$token" ] && continue
+		printf '%s\n' "$installed" | grep -qx "$token" || MISSING_BREWS+=("$token")
+	done < <(_read_list "$cwd/swag/brews")
+}
+
+detect_missing_casks() {
+	MISSING_CASKS=()
+	[ -f "$cwd/swag/casks" ] || return 0
+	local installed
+	installed=$(brew list --cask 2>/dev/null)
+	local token
+	while IFS= read -r token; do
+		[ -z "$token" ] && continue
+		# Match the bare token OR a version-pinned variant like
+		# "claude-code@latest"/"claude-code@1.2.3" - brew lists those under
+		# an "@"-suffixed name, not the bare token.
+		printf '%s\n' "$installed" | grep -qE "^${token}(@|$)" || MISSING_CASKS+=("$token")
+	done < <(_read_list "$cwd/swag/casks")
+}
+
+detect_missing_apps() {
+	MISSING_APPS=()
+	[ -f "$cwd/swag/apps" ] || return 0
+	command -v mas >/dev/null 2>&1 || return 0
+	local installed_ids
+	# `mas list` right-pads/aligns the id column with leading spaces, so
+	# grab just the first whitespace-separated field rather than anchoring
+	# on column 1.
+	installed_ids=$(mas list 2>/dev/null | awk '{print $1}')
+	local entry id name
+	while IFS= read -r entry; do
+		[ -z "$entry" ] && continue
+		id="${entry%%::*}"
+		name="${entry##*::}"
+		printf '%s\n' "$installed_ids" | grep -qx "$id" || MISSING_APPS+=("${id}${REC_SEP}${name}")
+	done < <(_read_list "$cwd/swag/apps")
+}
+
+###############################################################################
+# Detection: nvm itself
+###############################################################################
+
+detect_nvm_update() {
+	NVM_UPDATE=()
+	export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+	[ -s "$NVM_DIR/nvm.sh" ] || return 0
+	# shellcheck disable=SC1091
+	. "$NVM_DIR/nvm.sh" >/dev/null 2>&1
+	command -v nvm >/dev/null 2>&1 || return 0
+
+	local installed latest
+	installed=$(nvm --version 2>/dev/null)
+	latest=$(gh api repos/nvm-sh/nvm/releases/latest --jq .tag_name 2>/dev/null)
+	latest="${latest#v}"
+	[ -z "$installed" ] && return 0
+	[ -z "$latest" ] && return 0
+	_changelog_ver_gt "$latest" "$installed" || return 0
+	NVM_UPDATE+=("nvm${REC_SEP}nvm${REC_SEP}${installed}${REC_SEP}${latest}${REC_SEP}")
+}
+
+###############################################################################
+# Detection: Node (two independent candidates - same major, and new LTS)
+###############################################################################
+
+detect_node_updates() {
+	NODE_SAMEMAJOR=()
+	NODE_NEWLTS=()
+	export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+	[ -s "$NVM_DIR/nvm.sh" ] || return 0
+	# shellcheck disable=SC1091
+	. "$NVM_DIR/nvm.sh" >/dev/null 2>&1
+	command -v nvm >/dev/null 2>&1 || return 0
+
+	local current major remote_same remote_lts lts_major
+	current=$(nvm current 2>/dev/null)
+	[ -z "$current" ] && return 0
+	[ "$current" = "none" ] && return 0
+	current="${current#v}"
+	major="${current%%.*}"
+
+	remote_same=$(nvm version-remote "$major" 2>/dev/null)
+	remote_same="${remote_same#v}"
+	if [ -n "$remote_same" ] && _changelog_ver_gt "$remote_same" "$current"; then
+		NODE_SAMEMAJOR+=("node${REC_SEP}node (same major)${REC_SEP}${current}${REC_SEP}${remote_same}${REC_SEP}v${remote_same}")
+	fi
+
+	remote_lts=$(nvm version-remote --lts 2>/dev/null)
+	remote_lts="${remote_lts#v}"
+	lts_major="${remote_lts%%.*}"
+	if [ -n "$remote_lts" ] && [ -n "$lts_major" ] && [ "$lts_major" -gt "$major" ] 2>/dev/null; then
+		NODE_NEWLTS+=("node${REC_SEP}node (new LTS)${REC_SEP}${current}${REC_SEP}${remote_lts}${REC_SEP}v${remote_lts}")
+	fi
+}
+
+###############################################################################
+# Detection: Bash-it
+###############################################################################
+
+detect_bashit_update() {
+	BASHIT_UPDATE=()
+	[ -d "$HOME/.bash_it/.git" ] || return 0
+	local local_sha remote_sha
+	local_sha=$(git -C "$HOME/.bash_it" rev-parse HEAD 2>/dev/null)
+	remote_sha=$(git -C "$HOME/.bash_it" ls-remote origin HEAD 2>/dev/null | awk '{print $1}')
+	[ -z "$local_sha" ] && return 0
+	[ -z "$remote_sha" ] && return 0
+	[ "$local_sha" = "$remote_sha" ] && return 0
+	BASHIT_UPDATE+=("bashit${REC_SEP}bash-it${REC_SEP}${local_sha:0:7}${REC_SEP}${remote_sha:0:7}${REC_SEP}${local_sha}")
+}
+
+# Bash-it has its own changelog shape (GitHub releases are infrequent, so we
+# fall back to "N commits behind"). Fills CHANGELOG_BODY/CHANGELOG_COUNT -
+# called in addition to changelog_render (which only sets CHANGELOG_LINK for
+# kind=bashit).
+_bashit_body() {
+	local local_sha="$1" mode="$2"
+	local local_date json count=0 out=""
+	local_date=$(git -C "$HOME/.bash_it" log -1 --format=%cI "$local_sha" 2>/dev/null)
+	[ -z "$local_date" ] && return 1
+
+	json=$(gh api repos/Bash-it/bash-it/releases 2>/dev/null)
+	if [ -n "$json" ] && [ "$json" != "[]" ]; then
+		local tag draft prerelease published body_b64 body
+		while IFS=$'\t' read -r tag draft prerelease published body_b64; do
+			[ -z "$tag" ] && continue
+			[ "$draft" = "true" ] && continue
+			[ "$prerelease" = "true" ] && continue
+			[[ "$published" > "$local_date" ]] || continue
+			body=$(printf '%s' "$body_b64" | base64 --decode 2>/dev/null)
+			[ -z "$body" ] && continue
+			count=$((count + 1))
+			if [ "$mode" = "full" ]; then
+				out="${out}### ${tag} (${published})"$'\n\n'"${body}"$'\n\n'
+			elif [ "$count" -eq 1 ]; then
+				out="$body"
+			fi
+		done < <(printf '%s' "$json" | jq -r '.[] | [.tag_name, (.draft|tostring), (.prerelease|tostring), .published_at, ((.body // "") | @base64)] | @tsv' 2>/dev/null)
+	fi
+
+	if [ "$count" -eq 0 ]; then
+		local default_branch commit_count
+		default_branch=$(git -C "$HOME/.bash_it" remote show origin 2>/dev/null | awk '/HEAD branch/ {print $NF}')
+		[ -z "$default_branch" ] && default_branch="master"
+		git -C "$HOME/.bash_it" fetch origin --quiet 2>/dev/null
+		commit_count=$(git -C "$HOME/.bash_it" rev-list --count "HEAD..origin/${default_branch}" 2>/dev/null)
+		[ -z "$commit_count" ] && return 1
+		CHANGELOG_BODY="Bash-it doesn't tag frequent GitHub releases - ${commit_count} commit(s) behind origin/${default_branch}."
+		CHANGELOG_COUNT=1
+		return 0
+	fi
+
+	if [ "$mode" = "excerpt" ]; then
+		out=$(printf '%s' "$out" | head -n 15)
+	fi
+	CHANGELOG_BODY="$out"
+	CHANGELOG_COUNT="$count"
+	return 0
+}
+
+###############################################################################
+# Pulling it all together
+###############################################################################
+
+_collect_outdated_records() {
+	ALL_RECORDS=()
+	detect_outdated_formulae
+	ALL_RECORDS+=("${OUTDATED_FORMULAE[@]}")
+	detect_outdated_casks
+	ALL_RECORDS+=("${OUTDATED_CASKS[@]}")
+	detect_outdated_mas
+	ALL_RECORDS+=("${OUTDATED_MAS[@]}")
+	detect_outdated_pnpm
+	ALL_RECORDS+=("${OUTDATED_PNPM[@]}")
+	detect_nvm_update
+	ALL_RECORDS+=("${NVM_UPDATE[@]}")
+	detect_node_updates
+	ALL_RECORDS+=("${NODE_SAMEMAJOR[@]}" "${NODE_NEWLTS[@]}")
+	detect_bashit_update
+	ALL_RECORDS+=("${BASHIT_UPDATE[@]}")
+}
+
+# Validates a `<name>` against everything swag/ + the special literals know
+# about. Sets MATCH_KIND on success (used to filter ALL_RECORDS).
+_match_target() {
+	local target="$1"
+	MATCH_KIND=""
+
+	if [ -f "$cwd/swag/brews" ] && grep -qx "$target" "$cwd/swag/brews" 2>/dev/null; then
+		MATCH_KIND="formula"
+		return 0
+	fi
+	if [ -f "$cwd/swag/casks" ] && grep -qx "$target" "$cwd/swag/casks" 2>/dev/null; then
+		MATCH_KIND="cask"
+		return 0
+	fi
+	if [ -f "$cwd/swag/apps" ] && grep -qE "(^${target}::|::${target}$)" "$cwd/swag/apps" 2>/dev/null; then
+		MATCH_KIND="mas"
+		return 0
+	fi
+	if [ -f "$cwd/swag/pnpm" ] && grep -q "^${target}::" "$cwd/swag/pnpm" 2>/dev/null; then
+		MATCH_KIND="pnpm"
+		return 0
+	fi
+	case "$target" in
+		node) MATCH_KIND="node"; return 0 ;;
+		nvm) MATCH_KIND="nvm"; return 0 ;;
+		bash-it) MATCH_KIND="bashit"; return 0 ;;
+	esac
+	return 1
+}
+
+_unknown_target_error() {
+	print_error "Unknown update target: ${1}" ""
+	print_muted "Accepted names: a Homebrew formula token (swag/brews), a Homebrew cask token (swag/casks), a Mac App Store app name or numeric id (swag/apps), a pnpm package name (swag/pnpm), or one of: node, nvm, bash-it."
+}
+
+# Filters ALL_RECORDS down to FILTERED_RECORDS for a given target+kind.
+_filter_records_by_target() {
+	local target="$1" kind="$2" rec
+	FILTERED_RECORDS=()
+	for rec in "${ALL_RECORDS[@]}"; do
+		_rec_parse "$rec"
+		case "$kind" in
+			mas)
+				if [ "$REC_NAME" = "$target" ] || [ "$REC_EXTRA" = "$target" ]; then
+					FILTERED_RECORDS+=("$rec")
+				fi
+				;;
+			node)
+				[ "$REC_KIND" = "node" ] && FILTERED_RECORDS+=("$rec")
+				;;
+			*)
+				[ "$REC_KIND" = "$kind" ] && [ "$REC_NAME" = "$target" ] && FILTERED_RECORDS+=("$rec")
+				;;
+		esac
+	done
+}
+
+###############################################################################
+# Upgrade command construction + execution
+###############################################################################
+
+_upgrade_cmd_display() {
+	local kind="$1" name="$2" extra="$3"
+	export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+	case "$kind" in
+		formula) printf 'brew upgrade %s' "$name" ;;
+		cask) printf 'brew upgrade --cask %s' "$name" ;;
+		mas) printf 'sudo mas update %s' "$extra" ;;
+		pnpm) printf 'pnpm add -g %s@latest' "$name" ;;
+		nvm) printf '(cd %s && git fetch --tags origin && git checkout <latest-tag>)' "$NVM_DIR" ;;
+		node) printf 'nvm install %s --reinstall-packages-from=current' "$extra" ;;
+		bashit) printf 'git -C %s pull --ff-only' "$HOME/.bash_it" ;;
+	esac
+}
+
+# Runs the real upgrade (or prints the dry-run line under SLAY_DRY_RUN=1).
+# Returns the real command's exit status (0 under dry-run).
+_run_upgrade() {
+	local kind="$1" name="$2" extra="$3" rc=0
+
+	if [ "${SLAY_DRY_RUN:-0}" = "1" ]; then
+		printf "     ${yellow}[DRY RUN] would run:${reset} %s\n" "$(_upgrade_cmd_display "$kind" "$name" "$extra")"
+		return 0
+	fi
+
+	case "$kind" in
+		formula)
+			brew upgrade "$name" >/dev/null 2>&1
+			rc=$?
+			;;
+		cask)
+			brew upgrade --cask "$name" >/dev/null 2>&1
+			rc=$?
+			;;
+		mas)
+			sudo -v 2>/dev/null
+			sudo mas update "$extra" >/dev/null 2>&1
+			rc=$?
+			;;
+		pnpm)
+			pnpm add -g "${name}@latest" --silent >/dev/null 2>&1
+			rc=$?
+			;;
+		nvm)
+			export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+			(
+				cd "$NVM_DIR" || exit 1
+				git fetch --tags origin >/dev/null 2>&1 || exit 1
+				tag=$(git describe --abbrev=0 --tags --match "v[0-9]*" "$(git rev-list --tags --max-count=1)" 2>/dev/null)
+				[ -n "$tag" ] || exit 1
+				git checkout "$tag" >/dev/null 2>&1
+			)
+			rc=$?
+			;;
+		node)
+			export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+			# shellcheck disable=SC1091
+			. "$NVM_DIR/nvm.sh" >/dev/null 2>&1
+			nvm install "$extra" --reinstall-packages-from=current >/dev/null 2>&1
+			rc=$?
+			if [ "$rc" -eq 0 ] && [ "$name" = "node (new LTS)" ]; then
+				nvm alias default "$extra" >/dev/null 2>&1
+			fi
+			;;
+		bashit)
+			git -C "$HOME/.bash_it" pull --ff-only >/dev/null 2>&1
+			rc=$?
+			;;
+	esac
+
+	return "$rc"
+}
+
+###############################################################################
+# Interactive display + prompt + execute, one record at a time
+###############################################################################
+
+process_record() {
+	local rec="$1"
+	_rec_parse "$rec"
+	local kind="$REC_KIND" name="$REC_NAME" installed="$REC_INSTALLED" latest="$REC_LATEST" extra="$REC_EXTRA"
+	local label
+	label=$(_source_label "$kind")
+
+	step "${name} (${label})"
+	printf "     %s → ${bold}%s${normal}\n" "$installed" "$latest"
+	[ -n "$extra" ] && [ "$kind" = "cask" ] && printf "     ${dim}%s${reset}\n" "$extra"
+
+	# $highlight/$reset are fixed ANSI codes with no '%' in them, injected
+	# into the format string - same pattern twirl's own print_success/
+	# print_warning/etc. already use throughout this codebase.
+	# bash-it's "versions" are commit SHAs, not semver - a major-version
+	# check on those is meaningless, so it's skipped for that kind.
+	if [ "$kind" != "bashit" ] && _is_major_bump "$installed" "$latest"; then
+		# shellcheck disable=SC2059
+		printf "     ${highlight} MAJOR ${reset}\n"
+	fi
+	if [ "$kind" = "node" ] && changelog_node_is_security "$extra" 2>/dev/null; then
+		# shellcheck disable=SC2059
+		printf "     ${highlight} SECURITY RELEASE ${reset}\n"
+	fi
+
+	changelog_render "$kind" "$name" "$installed" "$latest" "$extra" "excerpt"
+	if [ "$kind" = "bashit" ]; then
+		_bashit_body "$extra" "excerpt" || true
+	fi
+
+	if [ -n "$CHANGELOG_LINK" ]; then
+		printf "     ${dim}Release notes:${reset} %s\n" "$CHANGELOG_LINK"
+	else
+		# shellcheck disable=SC2059
+		printf "     ${dim}No release-notes source could be found.${reset}\n"
+	fi
+	if [ -n "$CHANGELOG_BODY" ]; then
+		[ -n "$CHANGELOG_NOTE" ] && printf "     ${dim}%s${reset}\n" "$CHANGELOG_NOTE"
+		printf "     ${dim}(%s release(s) in range - excerpt below)${reset}\n" "$CHANGELOG_COUNT"
+		printf '%s\n' "$CHANGELOG_BODY" | sed 's/^/     /'
+	fi
+
+	if ask "Update ${name}?" N; then
+		if _run_upgrade "$kind" "$name" "$extra"; then
+			print_success "${name} updated."
+		else
+			print_error "${name} failed to update." "- see above, or re-run with the underlying tool directly to debug."
+		fi
+	else
+		print_success_muted "${name} skipped."
+	fi
+}
+
+###############################################################################
+# Mode: full/scoped interactive loop
+###############################################################################
+
+run_update_loop() {
+	local target="${1:-}"
+	chapter "Checking for updates…"
+	_ensure_brew_update_once
+
+	_collect_outdated_records
+
+	if [ -n "$target" ]; then
+		if ! _match_target "$target"; then
+			_unknown_target_error "$target"
+			return 1
+		fi
+		_filter_records_by_target "$target" "$MATCH_KIND"
+	else
+		FILTERED_RECORDS=("${ALL_RECORDS[@]}")
+	fi
+
+	if [ "${#FILTERED_RECORDS[@]}" -eq 0 ]; then
+		print_success_muted "Nothing to update."
+		return 0
+	fi
+
+	local rec
+	for rec in "${FILTERED_RECORDS[@]}"; do
+		process_record "$rec"
+	done
+	return 0
+}
+
+###############################################################################
+# Mode: --check (dry survey, no prompts, no sudo, no changes)
+###############################################################################
+
+_print_check_group() {
+	local title="$1" kind="$2" rec found=0
+	local lines=()
+	for rec in "${ALL_RECORDS[@]}"; do
+		_rec_parse "$rec"
+		[ "$REC_KIND" = "$kind" ] || continue
+		found=1
+		local tag=""
+		[ "$kind" != "bashit" ] && _is_major_bump "$REC_INSTALLED" "$REC_LATEST" && tag=" [MAJOR]"
+		lines+=("  ${REC_NAME}: ${REC_INSTALLED} -> ${REC_LATEST}${tag}")
+	done
+	[ "$found" -eq 0 ] && return 0
+	step "$title"
+	local l
+	for l in "${lines[@]}"; do
+		printf '%s\n' "$l"
+	done
+}
+
+run_update_check() {
+	local fresh="${1:-0}"
+	chapter "Update survey (--check, no changes made)…"
+	if [ "$fresh" = "1" ]; then
+		_ensure_brew_update_once
+	fi
+
+	_collect_outdated_records
+	detect_missing_brews
+	detect_missing_casks
+	detect_missing_apps
+	detect_missing_pnpm
+
+	_print_check_group "Homebrew formulae" formula
+	_print_check_group "Homebrew casks" cask
+	_print_check_group "Mac App Store" mas
+	_print_check_group "pnpm" pnpm
+	_print_check_group "nvm" nvm
+	_print_check_group "Node" node
+	_print_check_group "Bash-it" bashit
+
+	if [ "${#CASK_RENAMES[@]}" -gt 0 ]; then
+		step "Renamed in Homebrew"
+		local r old new
+		for r in "${CASK_RENAMES[@]}"; do
+			IFS="$REC_SEP" read -r old new <<<"$r"
+			printf "  renamed in Homebrew: %s -> %s\n" "$old" "$new"
+		done
+	fi
+
+	step "Listed in swag/ but not installed"
+	local any=0
+	if [ "${#MISSING_BREWS[@]}" -gt 0 ]; then
+		any=1
+		printf "  Homebrew formulae: %s\n" "${MISSING_BREWS[*]}"
+	fi
+	if [ "${#MISSING_CASKS[@]}" -gt 0 ]; then
+		any=1
+		printf "  Homebrew casks: %s\n" "${MISSING_CASKS[*]}"
+	fi
+	if [ "${#MISSING_APPS[@]}" -gt 0 ]; then
+		any=1
+		local a id name
+		for a in "${MISSING_APPS[@]}"; do
+			IFS="$REC_SEP" read -r id name <<<"$a"
+			printf "  Mac App Store: %s (%s)\n" "$name" "$id"
+		done
+	fi
+	if [ "${#MISSING_PNPM[@]}" -gt 0 ]; then
+		any=1
+		local p pkg
+		for p in "${MISSING_PNPM[@]}"; do
+			IFS="$REC_SEP" read -r pkg _ <<<"$p"
+			printf "  pnpm: %s\n" "$pkg"
+		done
+	fi
+	[ "$any" -eq 0 ] && printf "  Everything listed in swag/ is installed.\n"
+	return 0
+}
+
+###############################################################################
+# Mode: --changelogs (plain Markdown, full release notes, non-interactive)
+#
+# Deliberately prints NO ansi color/step/chapter decoration to stdout - this
+# is meant to be redirected to a file and summarized by something else.
+# Progress/status goes to stderr so stdout stays clean Markdown.
+###############################################################################
+
+run_update_changelogs() {
+	local target="${1:-}"
+
+	echo "Collecting outdated items…" >&2
+	_collect_outdated_records
+
+	if [ -n "$target" ]; then
+		if ! _match_target "$target"; then
+			echo "Unknown update target: ${target}" >&2
+			echo "Accepted names: a Homebrew formula/cask token, a Mac App Store app name or numeric id, a pnpm package name, or one of: node, nvm, bash-it." >&2
+			return 1
+		fi
+		_filter_records_by_target "$target" "$MATCH_KIND"
+	else
+		FILTERED_RECORDS=("${ALL_RECORDS[@]}")
+	fi
+
+	if [ "${#FILTERED_RECORDS[@]}" -eq 0 ]; then
+		echo "Nothing outdated - no changelog sections to print." >&2
+		return 0
+	fi
+
+	local rec
+	for rec in "${FILTERED_RECORDS[@]}"; do
+		_rec_parse "$rec"
+		local kind="$REC_KIND" name="$REC_NAME" installed="$REC_INSTALLED" latest="$REC_LATEST" extra="$REC_EXTRA"
+		local label
+		label=$(_source_label "$kind")
+
+		echo "Fetching changelog for ${name} (${label})…" >&2
+
+		printf '## %s (%s) %s -> %s\n\n' "$name" "$label" "$installed" "$latest"
+
+		local flags=""
+		[ "$kind" != "bashit" ] && _is_major_bump "$installed" "$latest" && flags="${flags}**MAJOR**  "
+		if [ "$kind" = "node" ] && changelog_node_is_security "$extra" 2>/dev/null; then
+			flags="${flags}**SECURITY RELEASE**  "
+		fi
+		[ -n "$flags" ] && printf '%s\n\n' "$flags"
+
+		changelog_render "$kind" "$name" "$installed" "$latest" "$extra" "full"
+		if [ "$kind" = "bashit" ]; then
+			_bashit_body "$extra" "full" || true
+		fi
+
+		if [ -n "$CHANGELOG_LINK" ]; then
+			printf 'Release notes: %s\n\n' "$CHANGELOG_LINK"
+		else
+			printf 'Release notes: (none found)\n\n'
+		fi
+
+		if [ -n "$CHANGELOG_BODY" ]; then
+			[ -n "$CHANGELOG_NOTE" ] && printf '_%s_\n\n' "$CHANGELOG_NOTE"
+			printf '%s\n\n' "$CHANGELOG_BODY"
+		fi
+	done
+	return 0
+}
+
+###############################################################################
+# Top-level dispatcher, called from `slay`
+#
+# Everything below runs inside a `set +e` subshell. This is the single
+# place that neutralizes the parent script's `set -e`: rather than hunting
+# down and guarding every individual `brew`/`mas`/`pnpm`/`git`/`gh`/
+# `PlistBuddy` call that might legitimately return non-zero (a missing
+# cask, an app with no Sparkle feed, a network hiccup...), the whole
+# detection+prompt+upgrade pipeline runs with errexit off, exactly like a
+# normal interactive shell session would. Nothing in here relies on `set
+# -e` being on, so this is purely a safety net. A subshell (not `set
+# +e`/`set -e` around the call) is used so the parent script's own
+# errexit setting is completely unaffected once this returns.
+###############################################################################
+
+update_main() {
+	(
+		set +e
+		case "${1:-}" in
+			--check)
+				local fresh=0
+				[ "${2:-}" = "--fresh" ] && fresh=1
+				run_update_check "$fresh"
+				;;
+			--changelogs)
+				run_update_changelogs "${2:-}"
+				;;
+			"")
+				run_update_loop ""
+				;;
+			*)
+				run_update_loop "$1"
+				;;
+		esac
+	)
+	return $?
+}
