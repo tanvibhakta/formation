@@ -1,0 +1,8 @@
+# Formation step: brew-update. Sourced by ./slay, in the order listed there;
+# relies on the helpers in ./twirl and on $cwd (the repo folder).
+
+###############################################################################
+# UPDATE: Homebrew
+###############################################################################
+chapter "Updating Homebrew formulae…"
+brew update

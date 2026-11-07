@@ -1,0 +1,8 @@
+# Formation step: ssh-key. Sourced by ./slay, in the order listed there;
+# relies on the helpers in ./twirl and on $cwd (the repo folder).
+
+###############################################################################
+# PROMPT: SSH Key
+###############################################################################
+chapter 'Checking for SSH key…'
+ssh_key_setup

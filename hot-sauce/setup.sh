@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 ###############################################################################
 # HOT SAUCE 🔥
@@ -8,7 +8,8 @@
 
 set -e
 
-HOTSAUCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# ${(%):-%x}: the file being read, whether run directly or sourced by slay.
+HOTSAUCE_DIR="$(cd "$(dirname "${(%):-%x}")" && pwd)"
 
 # Source twirl helpers if available (when called from slay)
 if type print_success &>/dev/null; then
@@ -63,7 +64,7 @@ link_dotfile() {
 
 echo ""
 echo "  ── Dotfiles ──"
-for file in "$HOTSAUCE_DIR"/dotfiles/*; do
+for file in "$HOTSAUCE_DIR"/dotfiles/*(N); do
     [ -f "$file" ] && link_dotfile "$file"
 done
 
@@ -110,7 +111,7 @@ link_config_dir() {
 
 echo ""
 echo "  ── Config directories ──"
-for dir in "$HOTSAUCE_DIR"/config/*/; do
+for dir in "$HOTSAUCE_DIR"/config/*/(N); do  # (N): no match → empty, not an error
     [ -d "$dir" ] && link_config_dir "$dir"
 done
 
@@ -229,7 +230,7 @@ plist_domain() {
     esac
 }
 
-for plist_file in "$HOTSAUCE_DIR"/plists/*.plist; do
+for plist_file in "$HOTSAUCE_DIR"/plists/*.plist(N); do
     [ -f "$plist_file" ] || continue
     name="$(basename "$plist_file")"
     domain="$(plist_domain "$name")"
@@ -247,7 +248,11 @@ done
 ###############################################################################
 echo ""
 echo "  ── WebStorm ──"
-LATEST_WS=$(ls -d "$HOME/Library/Application Support/JetBrains/WebStorm"* 2>/dev/null | sort -V | tail -1)
+ws_dirs=( "$HOME/Library/Application Support/JetBrains/WebStorm"*(N/) )
+LATEST_WS=""
+if (( ${#ws_dirs} )); then
+    LATEST_WS=$(printf '%s\n' "${ws_dirs[@]}" | sort -V | tail -1)
+fi
 if [ -n "$LATEST_WS" ]; then
     for settings_dir in keymaps codestyles options; do
         if [ -d "$HOTSAUCE_DIR/jetbrains/$settings_dir" ]; then
@@ -451,7 +456,7 @@ echo ""
 echo "  ── Launch agents ──"
 LA_DST_DIR="$HOME/Library/LaunchAgents"
 mkdir -p "$LA_DST_DIR" "$HOME/Library/Logs"
-for template in "$HOTSAUCE_DIR"/launchagents/*.plist; do
+for template in "$HOTSAUCE_DIR"/launchagents/*.plist(N); do
     [ -f "$template" ] || continue
     name="$(basename "$template")"
     label="${name%.plist}"

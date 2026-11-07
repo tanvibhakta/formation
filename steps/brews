@@ -1,0 +1,14 @@
+# Formation step: brews. Sourced by ./slay, in the order listed there;
+# relies on the helpers in ./twirl and on $cwd (the repo folder).
+
+###############################################################################
+# INSTALL: brews
+###############################################################################
+if [ -e "$cwd/swag/brews" ]; then
+	chapter "Installing Homebrew formulae…"
+
+	# One entry per line, read whole: `for x in $(<file)` would split on spaces.
+	while IFS= read -r brew <&3 || [ -n "$brew" ]; do
+		[ -n "$brew" ] && install_brews "$brew"
+	done 3< "$cwd/swag/brews"
+fi

@@ -1,0 +1,8 @@
+# Formation step: brew-cleanup. Sourced by ./slay, in the order listed there;
+# relies on the helpers in ./twirl and on $cwd (the repo folder).
+
+###############################################################################
+# CLEAN: Homebrew files
+###############################################################################
+chapter "Cleaning up Homebrew files…"
+brew cleanup 2> /dev/null

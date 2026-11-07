@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 ###############################################################################
 # VARIABLES
@@ -84,7 +84,8 @@ _show_spinner() {
 
     while kill -0 "$PID" &>/dev/null; do
 
-        frameText=" [${FRAMES:i++%NUMBER_OR_FRAMES:1}] $MSG"
+        # $(( )) offset: zsh would read a bare `:i` as a modifier.
+        frameText=" [${FRAMES:$((i++ % NUMBER_OR_FRAMES)):1}] $MSG"
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -116,16 +117,18 @@ _kill_all_subprocesses() {
 
     local i=""
 
-    for i in $(jobs -p); do
-        kill "$i"
-        wait "$i" &> /dev/null
+    # zsh's `jobs -p` prints job lines, not bare PIDs; walk the job table.
+    for i in ${(k)jobstates}; do
+        kill "%$i"
+        wait "%$i" &> /dev/null
     done
 
 }
 
 _set_trap() {
 
-    trap -p "$1" | grep "$2" &> /dev/null \
+    # zsh has no `trap -p`; plain `trap` lists every trap.
+    trap | grep "$2" &> /dev/null \
         || trap '$2' "$1"
 
 }
@@ -139,12 +142,12 @@ _link_file() {
   if [ -f "$dst" -o -d "$dst" -o -L "$dst" ]
   then
 
-    if [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ]
+    if [ "$overwrite_all" = "false" ] && [ "$backup_all" = "false" ] && [ "$skip_all" = "false" ]
     then
 
       local currentSrc="$(readlink $dst)"
 
-      if [ "$currentSrc" == "$src" ]
+      if [ "$currentSrc" = "$src" ]
       then
 
         skip=true;
@@ -153,7 +156,7 @@ _link_file() {
 
         printf "\r   ${yellow}!${reset} File already exists: $dst ($(basename "$src")), what do you want to do?
      [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all? "
-        read -n 1 action
+        read -k 1 action
 
         case "$action" in
           o )
@@ -180,19 +183,19 @@ _link_file() {
     backup=${backup:-$backup_all}
     skip=${skip:-$skip_all}
 
-    if [ "$overwrite" == "true" ]
+    if [ "$overwrite" = "true" ]
     then
       rm -rf "$dst"
       print_in_green "\n      ✓ deleted $dst"
     fi
 
-    if [ "$backup" == "true" ]
+    if [ "$backup" = "true" ]
     then
       mv "$dst" "${dst}.backup"
       print_in_green "\n      ✓ moved $dst to ${dst}.backup"
     fi
 
-    if [ "$skip" == "true" ]
+    if [ "$skip" = "true" ]
     then
       printf "\n  ${dim}    ✓ $src already linked. Skipped.${reset}"
     fi
@@ -277,10 +280,11 @@ print_error() {
 # Meta Checks
 ###############################################################################
 
-check_bash_version() {
-    if ((BASH_VERSINFO[0] < 3))
+check_zsh_version() {
+    autoload -Uz is-at-least
+    if ! is-at-least 5.0
     then
-        print_error "Sorry, you need at least bash-3.0 to run this script."
+        print_error "Sorry, you need at least zsh 5.0 to run this script."
         exit 1
     fi
 }
@@ -294,9 +298,9 @@ get_os() {
 
     kernelName="$(uname -s)"
 
-    if [ "$kernelName" == "Darwin" ]; then
+    if [ "$kernelName" = "Darwin" ]; then
         os="macOS"
-    elif [ "$kernelName" == "Linux" ] && [ -e "/etc/lsb-release" ]; then
+    elif [ "$kernelName" = "Linux" ] && [ -e "/etc/lsb-release" ]; then
         os="ubuntu"
     else
         os="$kernelName"
@@ -315,9 +319,9 @@ get_os_version() {
 
     os="$(get_os)"
 
-    if [ "$os" == "macOS" ]; then
+    if [ "$os" = "macOS" ]; then
         version="$(sw_vers -productVersion)"
-    elif [ "$os" == "ubuntu" ]; then
+    elif [ "$os" = "ubuntu" ]; then
         version="$(lsb_release -d | cut -f2 | cut -d' ' -f2)"
     fi
 
@@ -499,7 +503,7 @@ copy_key_github() {
     inform 'Public key copied! Paste into Github…'
     [[ -f $pub ]] && cat $pub | pbcopy
     open 'https://github.com/account/ssh'
-    read -p "   ✦  Press enter to continue…"
+    read "?   ✦  Press enter to continue…"  # zsh: "?text" is the prompt; -p means coprocess
     print_success "SSH key"
     return
 }
@@ -608,7 +612,7 @@ install_application_via_app_store() {
 }
 
 install_pnpm_packages() {
-	if [[ $(cli_is_installed $2) == 0 ]]; then
+	if [[ $(cli_is_installed $2) = 0 ]]; then
 		echo_install "Installing $1"
 		pnpm add -g $1 --silent
 		print_in_green "${bold}✓ installed!${normal}\n"

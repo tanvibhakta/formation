@@ -1,0 +1,8 @@
+# Formation step: internet. Sourced by ./slay, in the order listed there;
+# relies on the helpers in ./twirl and on $cwd (the repo folder).
+
+###############################################################################
+# CHECK: Internet
+###############################################################################
+chapter "Checking internet connection…"
+check_internet_connection

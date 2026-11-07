@@ -22,8 +22,12 @@ git clone git@github.com/minamarkham/formation.git && cd formation
 Review the script (please don't run scripts you don't understand):
 
 ```sh
-less slay
+less slay steps/*
 ```
+
+`slay` is a zsh script (macOS's default shell, so a fresh Mac can run it). It
+runs the files in `steps/` in the order it lists them, one per chapter of
+output; shared helpers live in `twirl`.
 
 Slay:
 

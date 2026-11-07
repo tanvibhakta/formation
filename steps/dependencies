@@ -1,0 +1,85 @@
+# Formation step: dependencies. Sourced by ./slay, in the order listed there;
+# relies on the helpers in ./twirl and on $cwd (the repo folder).
+
+###############################################################################
+# INSTALL: Dependencies
+###############################################################################
+chapter "Installing Dependencies…"
+
+# -----------------------------------------------------------------------------
+# XCode
+# -----------------------------------------------------------------------------
+if type xcode-select >/dev/null 2>&1 && xpath=$( xcode-select --print-path ) &&
+	test -d "${xpath}" && test -x "${xpath}" ; then
+	print_success_muted "Xcode already installed. Skipping."
+else
+	step "Installing Xcode…"
+	xcode-select --install
+	print_success "Xcode installed!"
+fi
+
+if [ ! -d "$HOME/.bin/" ]; then
+	mkdir "$HOME/.bin"
+fi
+
+# -----------------------------------------------------------------------------
+# Bash-it
+# -----------------------------------------------------------------------------
+if [ -d "$HOME/.bash_it" ]; then
+	print_success_muted "Bash-it already installed. Skipping."
+else
+	step "Installing Bash-it…"
+	git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
+	~/.bash_it/install.sh --silent --no-modify-config
+	print_success "Bash-it installed!"
+fi
+
+# -----------------------------------------------------------------------------
+# NVM
+# -----------------------------------------------------------------------------
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+
+if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+	step "Installing NVM…"
+	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+	print_success "NVM installed!"
+else
+	print_success_muted "NVM already installed. Skipping."
+fi
+
+# Source nvm so it's available for the rest of the script
+. "$NVM_DIR/nvm.sh"
+
+step "Ensuring latest LTS Node…"
+nvm install --lts >/dev/null 2>&1
+# Quoted: unquoted, zsh treats lts/* as a glob and aborts when nothing matches.
+nvm alias default 'lts/*' >/dev/null 2>&1
+nvm use default >/dev/null 2>&1
+print_success "Using Node $(node -v)"
+
+# -----------------------------------------------------------------------------
+# Homebrew
+# -----------------------------------------------------------------------------
+if ! [ -x "$(command -v brew)" ]; then
+	step "Installing Homebrew…"
+	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	print_success "Homebrew installed!"
+else
+	print_success_muted "Homebrew already installed. Skipping."
+fi
+
+# Add Homebrew to PATH for this session only if brew isn't already reachable
+# (Apple Silicon installs to /opt/homebrew, Intel to /usr/local)
+if ! command -v brew &>/dev/null; then
+	if [[ $(uname -m) == 'arm64' ]] && [ -x "/opt/homebrew/bin/brew" ]; then
+		eval "$(/opt/homebrew/bin/brew shellenv)"
+	elif [ -x "/usr/local/bin/brew" ]; then
+		eval "$(/usr/local/bin/brew shellenv)"
+	fi
+fi
+
+if brew list | grep -Fq brew-cask; then
+	step "Uninstalling old Homebrew-Cask…"
+	brew uninstall --force brew-cask
+	print_success "Homebrew-Cask uninstalled!"
+fi

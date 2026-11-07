@@ -1,0 +1,16 @@
+# Formation step: hot-sauce. Sourced by ./slay, in the order listed there;
+# relies on the helpers in ./twirl and on $cwd (the repo folder).
+
+###############################################################################
+# OPTIONAL: Customizations (dotfiles, configs, plists)
+###############################################################################
+chapter "Adding hot sauce…"
+if [ -f "$cwd/hot-sauce/setup.sh" ]; then
+	if ask "Do you want to add hot sauce?" Y; then
+		. "$cwd/hot-sauce/setup.sh"; printf "\n  You got hot sauce in your bag. 🔥 ${bold}Swag.${normal}\n";
+	else
+		print_success_muted "Hot sauce declined. Skipped.";
+	fi
+else
+	print_warning "No hot-sauce/setup.sh found. Skipping."
+fi

@@ -1,0 +1,13 @@
+# Formation step: casks. Sourced by ./slay, in the order listed there;
+# relies on the helpers in ./twirl and on $cwd (the repo folder).
+
+###############################################################################
+# INSTALL: casks
+###############################################################################
+if [ -e "$cwd/swag/casks" ]; then
+	chapter "Installing apps via Homebrew…"
+
+	while IFS= read -r cask <&3 || [ -n "$cask" ]; do
+		[ -n "$cask" ] && install_application_via_brew "$cask"
+	done 3< "$cwd/swag/casks"
+fi

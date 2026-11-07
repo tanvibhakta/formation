@@ -1,0 +1,28 @@
+# Formation step: app-store. Sourced by ./slay, in the order listed there;
+# relies on the helpers in ./twirl and on $cwd (the repo folder).
+
+###############################################################################
+# INSTALL: Mac App Store Apps
+###############################################################################
+chapter "Installing apps from App Store…"
+if ! command -v mas >/dev/null 2>&1; then
+
+	print_warning "Please install mas-cli first: brew install mas. Skipping."
+
+	else
+
+	if [ -e "$cwd/swag/apps" ]; then
+		if mas_setup; then
+			# Names can contain spaces ("iA Writer"), so read whole lines.
+			while IFS= read -r app <&3 || [ -n "$app" ]; do
+				[ -n "$app" ] || continue
+				KEY="${app%%::*}"
+				VALUE="${app##*::}"
+				install_application_via_app_store "$KEY" "$VALUE"
+			done 3< "$cwd/swag/apps"
+		else
+			print_warning "Please signin to App Store first. Skipping."
+		fi
+	fi
+
+fi

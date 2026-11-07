@@ -1,0 +1,17 @@
+# Formation step: pnpm. Sourced by ./slay, in the order listed there;
+# relies on the helpers in ./twirl and on $cwd (the repo folder).
+
+###############################################################################
+# INSTALL: pnpm packages
+###############################################################################
+if [ -e "$cwd/swag/pnpm" ]; then
+	chapter "Installing pnpm packages…"
+	pnpm_setup
+
+	while IFS= read -r pkg <&3 || [ -n "$pkg" ]; do
+		[ -n "$pkg" ] || continue
+		KEY="${pkg%%::*}"
+		VALUE="${pkg##*::}"
+		install_pnpm_packages "$KEY" "$VALUE"
+	done 3< "$cwd/swag/pnpm"
+fi

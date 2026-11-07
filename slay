@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 ###############################################################################
 # ERROR: Let the user know if the script fails
@@ -15,7 +15,7 @@ set -e
 mkdir -p "$HOME/Code"
 
 # Resolve the directory this script is running from
-this_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+this_dir="$(cd "$(dirname "$0")" && pwd)"
 formation_dest="$HOME/Code/formation"
 
 if [ "$this_dir" != "$formation_dest" ] && [ ! -d "$formation_dest" ]; then
@@ -30,18 +30,19 @@ fi
 ###############################################################################
 
 if [ -e twirl ]; then
-	cd "$(dirname "${BASH_SOURCE[0]}")" \
-		&& . "twirl"
+	# ./twirl, not twirl: zsh's `.` searches $PATH, not the current folder.
+	cd "$(dirname "$0")" \
+		&& . ./twirl
 else
 	printf "\n ⚠️  ./twirl not found  💃🏾 First, you need to twirl on your haters\n"
 	exit 1
 fi
 
 ###############################################################################
-# CHECK: Bash version
+# CHECK: zsh version
 ###############################################################################
 
-check_bash_version
+check_zsh_version
 
 ###############################################################################
 # Get in Formation!          http://patorjk.com/software/taag/ ( font: Script )
@@ -54,7 +55,7 @@ printf "
   |/  /  \_/  |  / |/ |/ |  /  |  |  |  /  \_/ |/ |
   |__/\__/    |_/  |  |  |_/\_/|_/|_/|_/\__/   |  |
   |\  ---------------------------------------------
-  |/  Cause you slay           [for Bash 3.2 - 3.9]
+  |/  Cause you slay                     [for zsh 5+]
 ╭───────────────────────────────────────────────────╮
 │  Okay developers now let's get in ${bold}formation${normal}.      │
 │───────────────────────────────────────────────────│
@@ -62,201 +63,28 @@ printf "
 │  It ${green}installs${reset}, ${blue}upgrades${reset}, or ${yellow}skips${reset} packages based   │
 │  on what is already installed on the machine.     │
 ╰───────────────────────────────────────────────────╯
-   ${dim}$(get_os) $(get_os_version) ${normal} // ${dim}$BASH ${normal} // ${dim}$BASH_VERSION${reset}
+   ${dim}$(get_os) $(get_os_version) ${normal} // ${dim}$ZSH_NAME ${normal} // ${dim}$ZSH_VERSION${reset}
 "
 
 ###############################################################################
-# CHECK: Internet
+# STEPS: one file per chapter in ./steps, run in this order
 ###############################################################################
-chapter "Checking internet connection…"
-check_internet_connection
 
-###############################################################################
-# PROMPT: Password
-###############################################################################
-chapter "Caching password…"
-ask_for_sudo
-
-###############################################################################
-# PROMPT: SSH Key
-###############################################################################
-chapter 'Checking for SSH key…'
-ssh_key_setup
-
-###############################################################################
-# INSTALL: Dependencies
-###############################################################################
-chapter "Installing Dependencies…"
-
-# -----------------------------------------------------------------------------
-# XCode
-# -----------------------------------------------------------------------------
-if type xcode-select >/dev/null 2>&1 && xpath=$( xcode-select --print-path ) &&
-	test -d "${xpath}" && test -x "${xpath}" ; then
-	print_success_muted "Xcode already installed. Skipping."
-else
-	step "Installing Xcode…"
-	xcode-select --install
-	print_success "Xcode installed!"
-fi
-
-if [ ! -d "$HOME/.bin/" ]; then
-	mkdir "$HOME/.bin"
-fi
-
-# -----------------------------------------------------------------------------
-# Bash-it
-# -----------------------------------------------------------------------------
-if [ -d "$HOME/.bash_it" ]; then
-	print_success_muted "Bash-it already installed. Skipping."
-else
-	step "Installing Bash-it…"
-	git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
-	~/.bash_it/install.sh --silent --no-modify-config
-	print_success "Bash-it installed!"
-fi
-
-# -----------------------------------------------------------------------------
-# NVM
-# -----------------------------------------------------------------------------
-export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
-
-if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-	step "Installing NVM…"
-	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-	print_success "NVM installed!"
-else
-	print_success_muted "NVM already installed. Skipping."
-fi
-
-# Source nvm so it's available for the rest of the script
-. "$NVM_DIR/nvm.sh"
-
-step "Ensuring latest LTS Node…"
-nvm install --lts >/dev/null 2>&1
-nvm alias default lts/* >/dev/null 2>&1
-nvm use default >/dev/null 2>&1
-print_success "Using Node $(node -v)"
-
-# -----------------------------------------------------------------------------
-# Homebrew
-# -----------------------------------------------------------------------------
-if ! [ -x "$(command -v brew)" ]; then
-	step "Installing Homebrew…"
-	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	print_success "Homebrew installed!"
-else
-	print_success_muted "Homebrew already installed. Skipping."
-fi
-
-# Add Homebrew to PATH for this session only if brew isn't already reachable
-# (Apple Silicon installs to /opt/homebrew, Intel to /usr/local)
-if ! command -v brew &>/dev/null; then
-	if [[ $(uname -m) == 'arm64' ]] && [ -x "/opt/homebrew/bin/brew" ]; then
-		eval "$(/opt/homebrew/bin/brew shellenv)"
-	elif [ -x "/usr/local/bin/brew" ]; then
-		eval "$(/usr/local/bin/brew shellenv)"
-	fi
-fi
-
-if brew list | grep -Fq brew-cask; then
-	step "Uninstalling old Homebrew-Cask…"
-	brew uninstall --force brew-cask
-	print_success "Homebrew-Cask uninstalled!"
-fi
-
-###############################################################################
-# INSTALL: brews
-###############################################################################
-if [ -e $cwd/swag/brews ]; then
-	chapter "Installing Homebrew formulae…"
-
-	# One entry per line, read whole: `for x in $(<file)` would split on spaces.
-	while IFS= read -r brew <&3 || [ -n "$brew" ]; do
-		[ -n "$brew" ] && install_brews "$brew"
-	done 3< "$cwd/swag/brews"
-fi
-
-###############################################################################
-# UPDATE: Homebrew
-###############################################################################
-chapter "Updating Homebrew formulae…"
-brew update
-
-###############################################################################
-# INSTALL: casks
-###############################################################################
-if [ -e $cwd/swag/casks ]; then
-	chapter "Installing apps via Homebrew…"
-
-	while IFS= read -r cask <&3 || [ -n "$cask" ]; do
-		[ -n "$cask" ] && install_application_via_brew "$cask"
-	done 3< "$cwd/swag/casks"
-fi
-
-###############################################################################
-# INSTALL: Mac App Store Apps
-###############################################################################
-chapter "Installing apps from App Store…"
-if ! command -v mas >/dev/null 2>&1; then
-
-	print_warning "Please install mas-cli first: brew install mas. Skipping."
-
-	else
-
-	if [ -e $cwd/swag/apps ]; then
-		if mas_setup; then
-			# Workaround for associative array in Bash 3
-			# https://stackoverflow.com/questions/6047648/bash-4-associative-arrays-error-declare-a-invalid-option
-			# Names can contain spaces ("iA Writer"), so read whole lines.
-			while IFS= read -r app <&3 || [ -n "$app" ]; do
-				[ -n "$app" ] || continue
-				KEY="${app%%::*}"
-				VALUE="${app##*::}"
-				install_application_via_app_store "$KEY" "$VALUE"
-			done 3< "$cwd/swag/apps"
-		else
-			print_warning "Please signin to App Store first. Skipping."
-		fi
-	fi
-
-fi
-
-###############################################################################
-# CLEAN: Homebrew files
-###############################################################################
-chapter "Cleaning up Homebrew files…"
-brew cleanup 2> /dev/null
-
-###############################################################################
-# INSTALL: pnpm packages
-###############################################################################
-if [ -e $cwd/swag/pnpm ]; then
-	chapter "Installing pnpm packages…"
-	pnpm_setup
-
-	while IFS= read -r pkg <&3 || [ -n "$pkg" ]; do
-		[ -n "$pkg" ] || continue
-		KEY="${pkg%%::*}"
-		VALUE="${pkg##*::}"
-		install_pnpm_packages "$KEY" "$VALUE"
-	done 3< "$cwd/swag/pnpm"
-fi
-
-
-###############################################################################
-# OPTIONAL: Customizations (dotfiles, configs, plists)
-###############################################################################
-chapter "Adding hot sauce…"
-if [ -f "$cwd/hot-sauce/setup.sh" ]; then
-	if ask "Do you want to add hot sauce?" Y; then
-		. "$cwd/hot-sauce/setup.sh"; printf "\n  You got hot sauce in your bag. 🔥 ${bold}Swag.${normal}\n";
-	else
-		print_success_muted "Hot sauce declined. Skipped.";
-	fi
-else
-	print_warning "No hot-sauce/setup.sh found. Skipping."
-fi
+for step in \
+	internet \
+	password \
+	ssh-key \
+	dependencies \
+	brews \
+	brew-update \
+	casks \
+	app-store \
+	brew-cleanup \
+	pnpm \
+	hot-sauce
+do
+	. "$cwd/steps/$step"
+done
 
 ###############################################################################
 # 🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋
