@@ -1,7 +1,10 @@
 #!/bin/bash
 . "${0%/*}/_log"
 # State: $FAKE/brew-formulae, $FAKE/brew-casks (one name per line).
-# FAKE_BREW_FAIL: space-separated names whose install fails.
+# Update mode: $FAKE/brew-outdated.json (default: nothing outdated) and
+# $FAKE/brew-info[-cask]-<token>.json (default: no info, exit 1).
+# FAKE_BREW_FAIL: space-separated names whose install/upgrade fails.
+fails() { case " $FAKE_BREW_FAIL " in *" $1 "*) echo "Error: $1 failed" >&2; return 0 ;; esac; return 1; }
 case "$1" in
   list)
     if [ "$2" = "--cask" ]; then cat "$FAKE/brew-casks" 2>/dev/null; else cat "$FAKE/brew-formulae" 2>/dev/null; fi ;;
@@ -9,7 +12,19 @@ case "$1" in
     shift
     file="$FAKE/brew-formulae"
     [ "$1" = "--cask" ] && { file="$FAKE/brew-casks"; shift; }
-    case " $FAKE_BREW_FAIL " in *" $1 "*) echo "Error: $1 failed" >&2; exit 1 ;; esac
+    fails "$1" && exit 1
     echo "$1" >> "$file" ;;
+  upgrade)
+    name="${@: -1}"
+    fails "$name" && exit 1 ;;
+  outdated)
+    if [ -f "$FAKE/brew-outdated.json" ]; then cat "$FAKE/brew-outdated.json"
+    else echo '{"formulae":[],"casks":[]}'; fi ;;
+  info)
+    token="${@: -1}"
+    kind=""; [ "$2" = "--cask" ] && kind="-cask"
+    f="$FAKE/brew-info$kind-$token.json"
+    [ -f "$f" ] || exit 1
+    cat "$f" ;;
 esac
 exit 0

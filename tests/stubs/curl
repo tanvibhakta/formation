@@ -1,7 +1,11 @@
 #!/bin/bash
 . "${0%/*}/_log"
 # The nvm installer is piped to bash: emit a script that installs the fake nvm.sh.
+# Any other URL: serve $FAKE/curl/<url with :/?&= turned into _>, else no output.
 case "$*" in
-  *nvm-sh/nvm*) echo "mkdir -p \"\$NVM_DIR\" && cp '$FIXTURES/nvm.sh' \"\$NVM_DIR/nvm.sh\"" ;;
+  *nvm-sh/nvm*) echo "mkdir -p \"\$NVM_DIR\" && cp '$FIXTURES/nvm.sh' \"\$NVM_DIR/nvm.sh\""; exit 0 ;;
 esac
+url="${@: -1}"
+f="$FAKE/curl/$(printf '%s' "$url" | tr ':/?&=' '_____')"
+[ -f "$f" ] && cat "$f"
 exit 0

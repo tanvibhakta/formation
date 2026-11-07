@@ -9,6 +9,9 @@
 
 REPO_SRC="$(cd "$BATS_TEST_DIRNAME/.." && pwd)"
 
+# `run --separate-stderr` (update-mode tests) needs bats 1.5.
+bats_require_minimum_version 1.5.0
+
 # Copy the repo's tracked files (with working-tree contents) once per test file.
 # Untracked and gitignored files stay out, so private settings never leak in.
 formation_setup_file() {
@@ -66,12 +69,13 @@ provision_machine() {
 run_clean() {
     local -a vars=()
     while [[ "${1:-}" == *=* ]]; do vars+=("$1"); shift; done
-    run env -i \
+    # RUN_SEPARATE_STDERR=1: keep stderr out of $output, in $stderr instead.
+    run ${RUN_SEPARATE_STDERR:+--separate-stderr} env -i \
         HOME="$HOME" \
         PATH="$STUBS:$REALBIN:/usr/bin:/bin:/usr/sbin:/sbin" \
         TERM=xterm-256color LANG=en_US.UTF-8 \
         FAKE="$FAKE" STUB_LOG="$STUB_LOG" FIXTURES="$FIXTURES" \
-        FORMATION_TTY=/dev/stdin \
+        FORMATION_TTY=/dev/stdin FORMATION_APPDIR="$HOME/Applications" \
         "${vars[@]}" "$@" <<< "${ANSWERS-}"
 }
 

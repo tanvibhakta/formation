@@ -2,12 +2,21 @@
 . "${0%/*}/_log"
 # `git clone [opts] <url> <dest>`: create <dest>/.git (and bash-it's install.sh).
 # FAKE_GIT_CLONE_FAIL=1 → clone fails.
-if [ "$1" = "clone" ]; then
-  [ -n "$FAKE_GIT_CLONE_FAIL" ] && exit 128
-  dest="${@: -1}"
-  mkdir -p "$dest/.git"
-  case "$dest" in
-    *.bash_it) printf '#!/bin/sh\nexit 0\n' > "$dest/install.sh"; chmod +x "$dest/install.sh" ;;
-  esac
-fi
+# `git -C <dir> ...` (Bash-it update checks): answers from $FAKE/bashit-*
+# files; absent files mean "no answer" (empty output).
+[ "$1" = "-C" ] && shift 2
+case "$1" in
+  clone)
+    [ -n "$FAKE_GIT_CLONE_FAIL" ] && exit 128
+    dest="${@: -1}"
+    mkdir -p "$dest/.git"
+    case "$dest" in
+      *.bash_it) printf '#!/bin/sh\nexit 0\n' > "$dest/install.sh"; chmod +x "$dest/install.sh" ;;
+    esac ;;
+  rev-parse) cat "$FAKE/bashit-local-sha" 2>/dev/null ;;
+  ls-remote) [ -f "$FAKE/bashit-remote-sha" ] && printf '%s\tHEAD\n' "$(cat "$FAKE/bashit-remote-sha")" ;;
+  log) cat "$FAKE/bashit-local-date" 2>/dev/null ;;
+  remote) echo "  HEAD branch: master" ;;
+  rev-list) cat "$FAKE/bashit-behind" 2>/dev/null ;;
+esac
 exit 0

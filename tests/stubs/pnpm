@@ -1,3 +1,10 @@
 #!/bin/bash
 . "${0%/*}/_log"
+# Update mode: $FAKE/pnpm-outdated.json, $FAKE/pnpm-ls.json (default: no output).
+# FAKE_PNPM_FAIL=1 → `add` fails.
+case "$1" in
+  outdated) cat "$FAKE/pnpm-outdated.json" 2>/dev/null ;;
+  ls) cat "$FAKE/pnpm-ls.json" 2>/dev/null ;;
+  add) [ -n "$FAKE_PNPM_FAIL" ] && exit 1 ;;
+esac
 exit 0
