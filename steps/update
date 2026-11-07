@@ -1,0 +1,17 @@
+# Formation step: update. Sourced by ./slay, last; relies on ./update
+# (sourced by slay) and on $MODE / $UPDATE_ARGS from slay's CLI parsing.
+
+###############################################################################
+# UPDATE: check everything in swag/ for a newer version
+#
+# Runs AFTER hot sauce (rather than before) so it can see anything hot
+# sauce itself installed/configured. For a plain `./slay` this is the only
+# difference from earlier versions of this script - everything above is
+# unchanged. For `./slay update[...]` it's the ONLY thing that runs.
+###############################################################################
+if [ "$MODE" = "update" ]; then
+	update_main "${UPDATE_ARGS[@]}"
+	exit $?
+else
+	update_main
+fi

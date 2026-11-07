@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 ###############################################################################
 # update
 #
@@ -20,7 +20,8 @@
 # `<name>`-not-found case, by design (see slay for how that propagates).
 ###############################################################################
 
-UPDATE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# ${(%):-%x}: this file's path, also when sourced.
+UPDATE_DIR="$(cd "$(dirname "${(%):-%x}")" && pwd)"
 
 # Degrade gracefully when sourced standalone (e.g. a test harness) instead
 # of from `slay` - same pattern hot-sauce/setup.sh already uses.
@@ -157,13 +158,15 @@ detect_outdated_casks() {
 	local json
 	json=$(brew outdated --json=v2 --greedy-auto-updates 2>/dev/null) || return 0
 
-	local token
+	# Declared once, outside the loop: in zsh, a bare `local x` for a variable
+	# that is already local prints `x=value`, so a per-iteration local leaks.
+	local token info_json real_token brew_installed_raw brew_latest_raw brew_latest brew_installed_s
+	local app_path real_version note installed_for_display
 	while IFS= read -r token; do
 		[ -z "$token" ] && continue
 
 		# Rename detection: `brew info --cask` transparently resolves an old
 		# token to its replacement and tells us the real token back.
-		local info_json real_token
 		info_json=$(brew info --cask --json=v2 "$token" 2>/dev/null)
 		if [ -n "$info_json" ]; then
 			real_token=$(printf '%s' "$info_json" | jq -r '.casks[0].token // empty' 2>/dev/null)
@@ -173,7 +176,6 @@ detect_outdated_casks() {
 		fi
 
 		[ -z "$json" ] && continue
-		local brew_installed_raw brew_latest_raw brew_latest brew_installed_s
 		brew_installed_raw=$(printf '%s' "$json" | jq -r --arg t "$token" '.casks[] | select(.name==$t) | .installed_versions[0] // empty' 2>/dev/null)
 		brew_latest_raw=$(printf '%s' "$json" | jq -r --arg t "$token" '.casks[] | select(.name==$t) | .current_version // empty' 2>/dev/null)
 		[ -z "$brew_latest_raw" ] && continue
@@ -181,13 +183,12 @@ detect_outdated_casks() {
 		brew_installed_s="${brew_installed_raw%%,*}"
 
 		# Resolve the REAL installed app version off disk.
-		local app_path real_version="" note=""
+		real_version="" note=""
 		app_path=$(_changelog_cask_app_path "$token" 2>/dev/null)
 		if [ -n "$app_path" ] && [ -f "$app_path/Contents/Info.plist" ]; then
 			real_version=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$app_path/Contents/Info.plist" 2>/dev/null)
 		fi
 
-		local installed_for_display
 		if [ -n "$real_version" ]; then
 			installed_for_display="$real_version"
 			# Already self-updated to/past what brew thinks is current -
@@ -761,9 +762,9 @@ run_update_check() {
 	fi
 	if [ "${#MISSING_PNPM[@]}" -gt 0 ]; then
 		any=1
-		local p pkg
+		local p pkg _bin
 		for p in "${MISSING_PNPM[@]}"; do
-			IFS="$REC_SEP" read -r pkg _ <<<"$p"
+			IFS="$REC_SEP" read -r pkg _bin <<<"$p"  # not `_`: special in zsh
 			printf "  pnpm: %s\n" "$pkg"
 		done
 	fi
@@ -801,18 +802,17 @@ run_update_changelogs() {
 		return 0
 	fi
 
-	local rec
+	local rec kind name installed latest extra label flags
 	for rec in "${FILTERED_RECORDS[@]}"; do
 		_rec_parse "$rec"
-		local kind="$REC_KIND" name="$REC_NAME" installed="$REC_INSTALLED" latest="$REC_LATEST" extra="$REC_EXTRA"
-		local label
+		kind="$REC_KIND" name="$REC_NAME" installed="$REC_INSTALLED" latest="$REC_LATEST" extra="$REC_EXTRA"
 		label=$(_source_label "$kind")
 
 		echo "Fetching changelog for ${name} (${label})…" >&2
 
 		printf '## %s (%s) %s -> %s\n\n' "$name" "$label" "$installed" "$latest"
 
-		local flags=""
+		flags=""
 		[ "$kind" != "bashit" ] && _is_major_bump "$installed" "$latest" && flags="${flags}**MAJOR**  "
 		if [ "$kind" = "node" ] && changelog_node_is_security "$extra" 2>/dev/null; then
 			flags="${flags}**SECURITY RELEASE**  "

@@ -39,6 +39,37 @@ else
 fi
 
 ###############################################################################
+# UPDATE: Check for the update-loop + changelog helpers
+###############################################################################
+
+if [ -e update ]; then
+	. ./update
+else
+	printf "\n ⚠️  ./update not found  💃🏾 './slay update' won't be available\n"
+fi
+
+###############################################################################
+# CLI: `./slay`, `./slay update`, `./slay update <name>`, `./slay update --check`
+###############################################################################
+
+MODE="install"
+UPDATE_ARGS=()
+if [ "${1:-}" = "update" ]; then
+	MODE="update"
+	shift
+	UPDATE_ARGS=("$@")
+fi
+
+# `--changelogs` prints plain Markdown meant to be redirected to a file -
+# the banner/chapter/internet-check chatter below (all on stdout) would
+# otherwise land in that file ahead of the Markdown. Route it to stderr
+# instead for this one mode so stdout stays clean from the very first byte.
+PLAIN_STDOUT=0
+if [ "$MODE" = "update" ] && [ "${UPDATE_ARGS[1]:-}" = "--changelogs" ]; then  # zsh arrays start at 1
+	PLAIN_STDOUT=1
+fi
+
+###############################################################################
 # CHECK: zsh version
 ###############################################################################
 
@@ -47,6 +78,8 @@ check_zsh_version
 ###############################################################################
 # Get in Formation!          http://patorjk.com/software/taag/ ( font: Script )
 ###############################################################################
+
+if [ "$PLAIN_STDOUT" = "1" ]; then exec 3>&1 1>&2; fi
 
 printf "
    _
@@ -70,21 +103,34 @@ printf "
 # STEPS: one file per chapter in ./steps, run in this order
 ###############################################################################
 
-for step in \
-	internet \
-	password \
-	ssh-key \
-	dependencies \
-	brews \
-	brew-update \
-	casks \
-	app-store \
-	brew-cleanup \
-	pnpm \
-	hot-sauce
-do
-	. "$cwd/steps/$step"
-done
+. "$cwd/steps/internet"
+
+# Restore stdout for the Markdown that `run_update_changelogs` itself
+# prints - everything from here on in this mode is `update`'s own careful
+# stdout(Markdown)/stderr(progress) split, not this script's normal chatter.
+if [ "$PLAIN_STDOUT" = "1" ]; then exec 1>&3 3>&-; fi
+
+# `./slay update` / `./slay update <name>` / `./slay update --check` skip
+# straight past every install-only step (sudo caching, SSH, Xcode/Bash-it/
+# NVM/Homebrew/brews/casks/apps/pnpm installs, hot sauce) to steps/update.
+if [ "$MODE" = "install" ]; then
+	for step in \
+		password \
+		ssh-key \
+		dependencies \
+		brews \
+		brew-update \
+		casks \
+		app-store \
+		brew-cleanup \
+		pnpm \
+		hot-sauce
+	do
+		. "$cwd/steps/$step"
+	done
+fi
+
+. "$cwd/steps/update"
 
 ###############################################################################
 # 🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋

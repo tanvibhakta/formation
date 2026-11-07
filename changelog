@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 ###############################################################################
 # changelog
 #
@@ -177,9 +177,10 @@ _changelog_cask_app_path() {
 }
 
 _changelog_cask_sparkle_feed() {
-	local token="$1" path plist feed
-	path=$(_changelog_cask_app_path "$token") || return 1
-	plist="$path/Contents/Info.plist"
+	# app_path, not path: zsh ties $path to $PATH.
+	local token="$1" app_path plist feed
+	app_path=$(_changelog_cask_app_path "$token") || return 1
+	plist="$app_path/Contents/Info.plist"
 	[ -f "$plist" ] || return 1
 	feed=$(/usr/libexec/PlistBuddy -c "Print SUFeedURL" "$plist" 2>/dev/null) || return 1
 	[ -z "$feed" ] && return 1
