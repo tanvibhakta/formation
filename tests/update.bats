@@ -12,6 +12,14 @@ setup_file() { formation_setup_file; }
 
 json() { mkdir -p "$(dirname "$FAKE/$1")"; cat > "$FAKE/$1"; }
 
+# zsh prints `name=value` when a bare `local name` re-declares an existing
+# local (e.g. inside a loop); fail if any such line reaches the output.
+no_var_leaks() {
+    if printf '%s\n' "$output" | grep -E '^[a-z_][a-z0-9_]*=' ; then
+        echo "variable listing leaked into output (zsh local re-declare?)"; return 1
+    fi
+}
+
 # An app on disk, as the cask check reads it: <appdir>/<App>.app/Contents/Info.plist.
 # fake_app <App>.app <version> [<Sparkle feed URL>]
 fake_app() {
@@ -85,6 +93,7 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
 @test "U1. --check, nothing outdated: survey only, no install chapters, no brew update, no sudo" {
     run_update --check
     [ "$status" -eq 0 ]
+    no_var_leaks
     output_has "Update survey (--check, no changes made)"
     output_has "Everything listed in swag/ is installed."
     output_lacks "Caching password"
@@ -103,6 +112,7 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
     json pnpm-ls.json <<< '[{"dependencies":{"netlify-cli":{"version":"17.0.0"}}}]'
     run_update --check
     [ "$status" -eq 0 ]
+    no_var_leaks
     output_has "gh: 2.1.0 -> 2.2.0"
     output_has "tmux: 3.3 -> 3.4"
     output_lacks "git: 2.40"
@@ -124,6 +134,7 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
     toolchain_world
     run_update --check
     [ "$status" -eq 0 ]
+    no_var_leaks
     output_has "nvm: 0.39.0 -> 0.40.1"
     output_has "node (same major): 22.1.0 -> 22.5.0"
     output_has "node (new LTS): 22.1.0 -> 24.1.0 [MAJOR]"
@@ -143,6 +154,7 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
     ANSWERS=$'y\n\ny\ny'
     run_update
     [ "$status" -eq 0 ]
+    no_var_leaks
     [ "$(call_count 'brew update')" -eq 1 ]
     called "brew upgrade gh"
     not_called "brew upgrade tmux"
@@ -219,6 +231,7 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
     RUN_SEPARATE_STDERR=1
     run_update --changelogs gh
     [ "$status" -eq 0 ]
+    no_var_leaks
     [ "${lines[0]}" = "## gh (Homebrew formula) 2.1.0 -> 2.2.0" ]
     output_has "Release notes: https://github.com/cli/cli/releases"
     output_has "### v2.2.0"
@@ -233,6 +246,7 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
 
     run_update --changelogs
     [ "$status" -eq 0 ]
+    no_var_leaks
     [ "$(printf '%s\n' "$output" | grep -c '^## ')" -eq 5 ]
     output_has "## zed (Homebrew cask) 0.9.0 -> 1.0.0"
     output_has "**MAJOR**"
@@ -242,6 +256,7 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
 @test "U11. plain ./slay ends with the update loop, reusing the install run's brew update" {
     run_slay
     [ "$status" -eq 0 ]
+    no_var_leaks
     output_has "Checking for updates…"
     output_has "Nothing to update."
     [ "$(call_count 'brew update')" -eq 1 ]
@@ -250,6 +265,7 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
     reset_log
     run_slay
     [ "$status" -eq 0 ]
+    no_var_leaks
     output_has "gh skipped."
     none_called "brew upgrade"
     output_has "Congrats! You're in formation!"
@@ -261,6 +277,7 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
     ANSWERS=$'y\ny\ny\ny'
     run_update
     [ "$status" -eq 0 ]
+    no_var_leaks
     called "nvm install v22.5.0 --reinstall-packages-from=current"
     called "nvm install v24.1.0 --reinstall-packages-from=current"
     called "nvm alias default v24.1.0"
@@ -287,6 +304,7 @@ EOF
     RUN_SEPARATE_STDERR=1
     run_update --changelogs
     [ "$status" -eq 0 ]
+    no_var_leaks
     output_has "## zed (Homebrew cask) 0.9.0 -> 1.0.0"
     output_lacks "(version from brew record)"
     output_has "Release notes: https://zed.dev/releases"
