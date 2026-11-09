@@ -13,6 +13,7 @@
 ## Browser Use
 - **Codex handles browser use; any other agent delegates to it via `codex exec`.**
 
+- **Run Playwright with Chrome with elevated permissions from the first attempt.** Chrome always aborts at startup in the Codex sandbox, even headless, and each attempt leaves a macOS crash dialog and wastes a retry.
 ## Evidence Before Code
 - **Check real data before handling an edge case or performance concern.** Before adding code or settings for one, show it actually occurs, using the real content (e.g. a site's posts) or a measured sample run. Base any threshold on measurements, not guesses.
 
