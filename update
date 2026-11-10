@@ -647,7 +647,7 @@ process_record() {
 		printf '%s\n' "$CHANGELOG_BODY" | sed 's/^/     /'
 	fi
 
-	if ask "Update ${name}?" N; then
+	if ask "Update ${name}?" Y; then  # Enter = yes; type n to skip
 		if [ "${SLAY_DRY_RUN:-0}" = "1" ]; then
 			_run_upgrade "$kind" "$name" "$extra"
 			print_success_muted "${name}: dry run, nothing changed."

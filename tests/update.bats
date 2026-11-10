@@ -3,7 +3,7 @@
 # and the update loop that ends a plain `./slay`.
 #
 # In update mode slay skips every install chapter, so the only prompts are the
-# per-item "Update <name>?" questions (default no), in record order: formulae,
+# per-item "Update <name>?" questions (default yes), in record order: formulae,
 # casks, App Store, pnpm, nvm, node, Bash-it.
 
 load test_helper
@@ -148,22 +148,23 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
     [ "$(call_count 'brew update')" -eq 1 ]
 }
 
-@test "U5. interactive update: asks per item (default no), upgrades only the yeses, shows notes" {
+@test "U5. interactive update: asks per item (default yes), skips only the noes, shows notes" {
     outdated_world
-    # gh y, tmux default, zed y, Slack y, netlify-cli default
-    ANSWERS=$'y\n\ny\ny'
+    # gh y, tmux n, zed y, Slack y, netlify-cli default (Enter = yes)
+    ANSWERS=$'y\nn\ny\ny'
     run_update
     [ "$status" -eq 0 ]
     no_var_leaks
     [ "$(call_count 'brew update')" -eq 1 ]
+    output_has "Update gh? [Y/n]"
     called "brew upgrade gh"
     not_called "brew upgrade tmux"
     called "brew upgrade --cask zed"
     called "sudo mas update 803453959"
-    none_called "pnpm add"
+    called "pnpm add -g netlify-cli@latest --silent"
     output_has "gh updated."
     output_has "tmux skipped."
-    output_has "netlify-cli skipped."
+    output_has "netlify-cli updated."
     output_has "https://github.com/cli/cli/releases"
     output_has "Two point two notes"
     output_lacks "Too new notes"
@@ -268,8 +269,8 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
     run_slay
     [ "$status" -eq 0 ]
     no_var_leaks
-    output_has "gh skipped."
-    none_called "brew upgrade"
+    output_has "gh updated."  # no answer given: the default is yes
+    called "brew upgrade gh"
     output_has "Congrats! You're in formation!"
 }
 
