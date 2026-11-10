@@ -26,6 +26,21 @@ if [ "$this_dir" != "$formation_dest" ] && [ ! -d "$formation_dest" ]; then
 fi
 
 ###############################################################################
+# LOG: save every run to ~/Library/Logs/formation, keep the newest 20
+###############################################################################
+
+# After the relocation above, so the re-launched copy sets this up only once.
+# stdout and stderr are teed separately so `--changelogs > notes.md` still gets
+# only the Markdown. Prompts read from /dev/tty, so they are unaffected.
+log_dir="$HOME/Library/Logs/formation"
+mkdir -p "$log_dir"
+log_file="$log_dir/slay-$(date +%Y%m%d-%H%M%S).log"
+old_logs=( "$log_dir"/slay-*.log(Nom) )  # (om): newest first
+(( ${#old_logs} >= 20 )) && rm -f "${old_logs[@]:19}"  # keep 19, plus this run's
+exec > >(tee -a "$log_file") 2> >(tee -a "$log_file" >&2)
+printf "  Saving this run to %s\n" "~${log_file#"$HOME"}" >&2
+
+###############################################################################
 # TWIRL: Check for required functions file
 ###############################################################################
 

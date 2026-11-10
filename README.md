@@ -35,7 +35,7 @@ Slay:
 
 ```sh
 cd formation
-./slay 2>&1 | tee ~/slay.log
+./slay
 ```
 Just follow the prompts and you’ll be fine. 👌
 
@@ -47,7 +47,7 @@ Once the script is done, quit and relaunch Terminal.
 
 It is highly recommended to run the script regularly to keep your computer up to date.
 
-Your last Formation run will be saved to `~/slay.log`. To review it, run `less ~/slay.log`.
+Every run (including `./slay update`) is also saved to `~/Library/Logs/formation/slay-<date>-<time>.log`; the newest 20 are kept. The first line of each run says which file. To review the latest: `less -R "$(ls -t ~/Library/Logs/formation/*.log | head -1)"`.
 
 That's it! :sparkles:
 

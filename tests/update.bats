@@ -382,6 +382,27 @@ EOF
     called "brew upgrade --cask zoom"
 }
 
+@test "U17. every run is also saved to a log in ~/Library/Logs/formation; old logs are pruned" {
+    mkdir -p "$HOME/Library/Logs/formation"
+    for i in $(seq -w 1 25); do : > "$HOME/Library/Logs/formation/slay-20200101-0000$i.log"; done
+    outdated_world
+    ANSWERS=y
+    run_update gh
+    [ "$status" -eq 0 ]
+    output_has "Saving this run to ~/Library/Logs/formation/slay-"
+    local log; log="$(ls -t "$HOME"/Library/Logs/formation/slay-*.log | head -1)"
+    grep -q "Update gh?" "$log"
+    grep -q "gh updated." "$log"
+    [ "$(ls "$HOME"/Library/Logs/formation/slay-*.log | wc -l | tr -d ' ')" -eq 20 ]
+
+    # --changelogs: the log gets the Markdown too, stdout stays clean.
+    RUN_SEPARATE_STDERR=1
+    run_update --changelogs gh
+    [ "${lines[0]}" = "## gh (Homebrew formula) 2.1.0 -> 2.2.0" ]
+    log="$(ls -t "$HOME"/Library/Logs/formation/slay-*.log | head -1)"
+    grep -q "## gh (Homebrew formula)" "$log"
+}
+
 @test "U14. ./slay update from a clone elsewhere: relocates, then still runs update mode" {
     mkdir -p "$HOME/elsewhere"
     mv "$FORMATION" "$HOME/elsewhere/formation"
