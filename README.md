@@ -3,6 +3,7 @@
 [] How do I get apps to use settings files I've stored on other platforms like iCloud and Dropbox during setup?
 [] How do I copy over setting files for local terminal changes, such as my global gitignore and my bash profile?
 [] How do I allow the option of only having certain libraries on certain machines? separate asset files entirely or a build step on each one? g
+[] An uninstall step: offer to remove anything Homebrew or the App Store has installed that is no longer listed in swag/.
 
 # 🐝 Formation <a href="https://www.patreon.com/minamarkham"><img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="100"></a>
 
@@ -50,22 +51,24 @@ Your last Formation run will be saved to `~/slay.log`. To review it, run `less ~
 
 That's it! :sparkles:
 
-## Update mode
+## Commands
 
-`./slay` (no args) installs anything missing *and* checks everything in `swag/` for a newer version at the end of the run. To just check for updates without touching installs, use `./slay update`:
+| Command | What it does | Changes anything? |
+|---|---|---|
+| `./slay` | Full setup: installs whatever in `swag/` is missing, adds hot sauce, then runs the update loop below. | Yes. Asks for your password once. |
+| `./slay update` | Checks everything in `swag/` (plus nvm, Node and Bash-it) for a newer version. For each outdated item it shows the version jump, a `MAJOR` flag, and release notes, then asks "Update?" (default: no). Skips every install step. | Only what you say yes to. |
+| `./slay update <name>` | The same, for one item: a formula or cask token (`gh`, `zoom`), an App Store app name or id (`Kindle`, `302584613`), a pnpm package, or `node`, `nvm`, `bash-it`. | Only if you say yes. |
+| `./slay update --check` | Lists what's outdated, grouped by source, and what's listed in `swag/` but not installed. No prompts. Uses Homebrew's last-known versions. | No. |
+| `./slay update --check --fresh` | The same, after a `brew update` so Homebrew's versions are current. | Only Homebrew's own package index. |
+| `./slay update --changelogs [<name>]` | Prints the full release notes for everything outdated (or one item) as plain Markdown. Progress goes to stderr, so `./slay update --changelogs > notes.md` gives a clean file. | No. |
+| `SLAY_DRY_RUN=1 ./slay update [<name>]` | Walks through the prompts, but prints each upgrade command instead of running it. | No. |
+| `bats --jobs 10 tests/` | Runs the test suite against fake tools in a throwaway home folder (see [Tests](#tests)). | No. |
 
-```sh
-./slay update            # check + prompt to upgrade everything in swag/
-./slay update gh         # scope it to one item (a brew/cask token, a mas app name or id, a pnpm package, or node/nvm/bash-it)
-./slay update --check    # dry survey only - no prompts, no sudo, no changes
-```
+The update check takes about a minute before the first prompt, mostly asking Homebrew about each cask.
 
-`update`/`update <name>` show each outdated item's version jump, flag a `MAJOR` version bump, and show a release-notes link plus a short excerpt before asking whether to upgrade (default: no). `--check` just prints what's outdated, grouped by source, plus anything listed in `swag/` but not installed at all - safe to run anytime. Set `SLAY_DRY_RUN=1` to see what command *would* run instead of actually running it.
+An app's version is read from the app itself in `/Applications`, not from Homebrew's record, because most apps update themselves. Homebrew then only offers an upgrade when it really has something newer.
 
 Release notes come from, in order: a small hand-kept map of URLs for vendors whose changelog isn't worth scraping (webstorm, alfred, 1password, etc.), a GitHub releases page when the project's repo is known, a cask's own Sparkle appcast, the Mac App Store page, or finally the project's homepage - whichever resolves first. When one is fetchable, a short inline excerpt is shown alongside the link.
-
-For a longer read (or to hand to something that summarizes changelogs for you), `./slay update --changelogs [<name>]` prints the **full**, untruncated release notes for everything outdated as plain Markdown to stdout - no colors, no prompts, no upgrades, just `## name (source) old -> new` sections. All progress output goes to stderr, so it's safe to redirect: `./slay update --changelogs > notes.md`.
-
 ## What it sets up
 The setup process will install:
 

@@ -9,8 +9,10 @@ git
 go
 hub
 imagemagick
+imageoptim-cli
 mas
 mkcert
+netlify-cli
 nginx
 pnpm
 rbenv

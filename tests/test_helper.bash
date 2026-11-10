@@ -24,6 +24,10 @@ formation_setup_file() {
     # the folder exists, so keep an empty one and skip copying them per test.
     rm -rf "$REPO_CACHE/hot-sauce/alfred/Alfred.alfredpreferences"
     mkdir -p "$REPO_CACHE/hot-sauce/alfred/Alfred.alfredpreferences"
+    # Pin the list entries the pnpm and App Store tests rely on, so editing the
+    # real swag/ lists (moving a package to Homebrew, say) can't break them.
+    printf 'imageoptim-cli::imageOptim\nnetlify-cli::netlify\n' > "$REPO_CACHE/swag/pnpm"
+    grep -q '^803453959::' "$REPO_CACHE/swag/apps" || echo '803453959::Slack' >> "$REPO_CACHE/swag/apps"
 }
 
 setup() {
