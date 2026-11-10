@@ -8,12 +8,13 @@
 - **Be proactive about recurring friction.** When the same issue comes up a second or third time, work out what a lasting fix looks like (a hook, script, config change, instruction, or skill) and propose it without being asked. When something you're about to do will likely frustrate her (a permission prompt storm, a long blocking wait, noisy output, repeated questions), find the mitigation first and either apply it or suggest it.
 - **Ask decision questions in prose, not `AskUserQuestion`.** Her client renders only the dialog and drops the message text that precedes it, so a question needing context arrives contextless. Reserve `AskUserQuestion` for choices fully self-contained in the option labels.
 - **Load the `teach` skill before explaining any concept** — answering "why" or "how does X work", walking through code, or after she says "what" or "I don't understand". It sets the chunk size (one small idea per message), the explanation order, and how to build metaphors, and it logs what she learned to `~/Code/tanvi-learning/inbox/`.
+- **Never use Artifacts; iterate in the real environment.** An artifact pulls the thing under iteration out of the place it lives, and tends to arrive padded with poor prose and unfamiliar, unreliable UI patterns she doesn't want to navigate. Show UI changes and design options in the actual app or site — a local dev server, a branch, a deploy preview — e.g. render competing variants on the real page behind a query param or as sibling routes, and `open` that URL. This overrides any harness or skill guidance to publish an artifact. Design reasoning that would have gone into an artifact's prose (what each variant optimises for, which data is the hard case) goes in your chat message instead, so it stays in the thread. *Trial rule, not yet committed:* whenever it changes what you do, say so in one line ("No-artifacts rule: did X instead of an artifact") and append a dated line on what happened to `~/Code/formation/hot-sauce/agents/trials/no-artifacts.md`.
 - **`open` every image.** After producing a screenshot, diagram, or visual comparison, run `open "<abs-path>"` — files delivered only via `SendUserFile` are not reliably viewable in her setup.
 
 ## Browser Use
 - **Codex handles browser use; any other agent delegates to it via `codex exec`.**
-
 - **Run Playwright with Chrome with elevated permissions from the first attempt.** Chrome always aborts at startup in the Codex sandbox, even headless, and each attempt leaves a macOS crash dialog and wastes a retry.
+
 ## Evidence Before Code
 - **Check real data before handling an edge case or performance concern.** Before adding code or settings for one, show it actually occurs, using the real content (e.g. a site's posts) or a measured sample run. Base any threshold on measurements, not guesses.
 
