@@ -605,6 +605,37 @@ _run_upgrade() {
 # Interactive display + prompt + execute, one record at a time
 ###############################################################################
 
+# Asks "Update <name>? [Y/n/f]". Enter or y upgrades, n skips, f shows every
+# release's notes in a pager and asks again. Anything else (an arrow key's
+# escape code, say) just asks again.
+_ask_update() {
+	local kind="$1" name="$2" installed="$3" latest="$4" extra="$5" reply
+	while true; do
+		printf "  [?] Update %s? [Y/n/f = full notes] " "$name"
+		read -r reply <"${FORMATION_TTY:-/dev/tty}" || reply=""
+		case "$reply" in
+			"" | Y* | y*) return 0 ;;
+			N* | n*) return 1 ;;
+			F* | f*) _show_full_notes "$kind" "$name" "$installed" "$latest" "$extra" ;;
+		esac
+	done
+}
+
+_show_full_notes() {
+	local kind="$1" name="$2" installed="$3" latest="$4" extra="$5" notes
+	changelog_render "$kind" "$name" "$installed" "$latest" "$extra" "full"
+	[ "$kind" = "bashit" ] && _bashit_body "$extra" "full"
+	notes="# ${name} ${installed} -> ${latest}"$'\n\n'"${CHANGELOG_BODY:-No release notes found.}"
+	[ -n "$CHANGELOG_LINK" ] && notes="${notes}"$'\n\n'"Release notes: ${CHANGELOG_LINK}"
+	if [ -n "${FORMATION_TTY:-}" ]; then
+		printf '%s\n' "$notes"  # test suite: no pager
+	else
+		# Straight to the terminal: stdout is teed into the run log, and less
+		# needs a terminal. q returns to the prompt.
+		printf '%s\n' "$notes" | less -R >/dev/tty
+	fi
+}
+
 process_record() {
 	local rec="$1"
 	_rec_parse "$rec"
@@ -630,6 +661,12 @@ process_record() {
 		printf "     ${highlight} SECURITY RELEASE ${reset}\n"
 	fi
 
+	# --yes: upgrade straight away, without fetching notes or asking.
+	if [ "${UPDATE_ASSUME_YES:-0}" = "1" ]; then
+		_upgrade_and_report "$kind" "$name" "$extra"
+		return
+	fi
+
 	changelog_render "$kind" "$name" "$installed" "$latest" "$extra" "excerpt"
 	if [ "$kind" = "bashit" ]; then
 		_bashit_body "$extra" "excerpt" || true
@@ -643,21 +680,26 @@ process_record() {
 	fi
 	if [ -n "$CHANGELOG_BODY" ]; then
 		[ -n "$CHANGELOG_NOTE" ] && printf "     ${dim}%s${reset}\n" "$CHANGELOG_NOTE"
-		printf "     ${dim}(%s release(s) in range - excerpt below)${reset}\n" "$CHANGELOG_COUNT"
+		printf "     ${dim}(%s release(s) in range - start of the newest below; f at the prompt shows all)${reset}\n" "$CHANGELOG_COUNT"
 		printf '%s\n' "$CHANGELOG_BODY" | sed 's/^/     /'
 	fi
 
-	if ask "Update ${name}?" Y; then  # Enter = yes; type n to skip
-		if [ "${SLAY_DRY_RUN:-0}" = "1" ]; then
-			_run_upgrade "$kind" "$name" "$extra"
-			print_success_muted "${name}: dry run, nothing changed."
-		elif _run_upgrade "$kind" "$name" "$extra"; then
-			print_success "${name} updated."
-		else
-			print_error "${name} failed to update." "- see above, or re-run with the underlying tool directly to debug."
-		fi
+	if _ask_update "$kind" "$name" "$installed" "$latest" "$extra"; then
+		_upgrade_and_report "$kind" "$name" "$extra"
 	else
 		print_success_muted "${name} skipped."
+	fi
+}
+
+_upgrade_and_report() {
+	local kind="$1" name="$2" extra="$3"
+	if [ "${SLAY_DRY_RUN:-0}" = "1" ]; then
+		_run_upgrade "$kind" "$name" "$extra"
+		print_success_muted "${name}: dry run, nothing changed."
+	elif _run_upgrade "$kind" "$name" "$extra"; then
+		print_success "${name} updated."
+	else
+		print_error "${name} failed to update." "- see above, or re-run with the underlying tool directly to debug."
 	fi
 }
 
@@ -869,6 +911,10 @@ update_main() {
 				;;
 			--changelogs)
 				run_update_changelogs "${2:-}"
+				;;
+			--yes)
+				UPDATE_ASSUME_YES=1
+				run_update_loop "${2:-}"
 				;;
 			"")
 				run_update_loop ""

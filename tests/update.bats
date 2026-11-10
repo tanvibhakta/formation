@@ -156,7 +156,7 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
     [ "$status" -eq 0 ]
     no_var_leaks
     [ "$(call_count 'brew update')" -eq 1 ]
-    output_has "Update gh? [Y/n]"
+    output_has "Update gh? [Y/n/f = full notes]"
     called "brew upgrade gh"
     not_called "brew upgrade tmux"
     called "brew upgrade --cask zed"
@@ -402,6 +402,42 @@ EOF
     [ "${lines[0]}" = "## gh (Homebrew formula) 2.1.0 -> 2.2.0" ]
     log="$(ls -t "$HOME"/Library/Logs/formation/slay-*.log | head -1)"
     grep -q "## gh (Homebrew formula)" "$log"
+}
+
+@test "U18. prompt: f shows every release's notes then asks again; junk (arrow keys) asks again" {
+    outdated_world
+    # gh: f (full notes), then an up-arrow escape code, then n
+    ANSWERS=$'f\n\e[A\nn'
+    run_update gh
+    [ "$status" -eq 0 ]
+    output_has "# gh 2.1.0 -> 2.2.0"
+    output_has "### v2.2.0"
+    # Answers from a file echo no newline, so the prompts share a line: count matches.
+    [ "$(printf '%s\n' "$output" | grep -o 'Update gh?' | wc -l | tr -d ' ')" -eq 3 ]
+    output_has "gh skipped."
+    none_called "brew upgrade"
+}
+
+@test "U19. --yes: upgrades everything outdated with no prompts and no release notes" {
+    outdated_world
+    run_update --yes
+    [ "$status" -eq 0 ]
+    no_var_leaks
+    output_lacks "Update gh?"
+    output_lacks "Release notes:"
+    called "brew upgrade gh"
+    called "brew upgrade tmux"
+    called "brew upgrade --cask zed"
+    called "sudo mas update 803453959"
+    called "pnpm add -g netlify-cli@latest --silent"
+    not_called "gh api repos/cli/cli/releases?per_page=50"
+    output_has "gh updated."
+
+    reset_log
+    run_update --yes tmux
+    [ "$status" -eq 0 ]
+    called "brew upgrade tmux"
+    not_called "brew upgrade gh"
 }
 
 @test "U14. ./slay update from a clone elsewhere: relocates, then still runs update mode" {

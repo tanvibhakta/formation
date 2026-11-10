@@ -56,7 +56,8 @@ That's it! :sparkles:
 | Command | What it does | Changes anything? |
 |---|---|---|
 | `./slay` | Full setup: installs whatever in `swag/` is missing, adds hot sauce, then runs the update loop below. | Yes. Asks for your password once. |
-| `./slay update` | Checks everything in `swag/` (plus nvm, Node and Bash-it) for a newer version. For each outdated item it shows the version jump, a `MAJOR` flag, and release notes, then asks "Update? [Y/n]". Enter means yes; type `n` to skip. Skips every install step. | Everything you don't skip. |
+| `./slay update` | Checks everything in `swag/` (plus nvm, Node and Bash-it) for a newer version. For each outdated item it shows the version jump, a `MAJOR` flag, and release notes, then asks "Update? [Y/n/f]". Enter means yes, `n` skips, and `f` opens every release's notes in `less` (`q` returns to the prompt). Skips every install step. | Everything you don't skip. |
+| `./slay update --yes [<name>]` | Upgrades everything outdated (or one item) without showing notes or asking. | Yes. |
 | `./slay update <name>` | The same, for one item: a formula or cask token (`gh`, `zoom`), an App Store app name or id (`Kindle`, `302584613`), a pnpm package, or `node`, `nvm`, `bash-it`. | Unless you type `n`. |
 | `./slay update --check` | Lists what's outdated, grouped by source, and what's listed in `swag/` but not installed. No prompts. Uses Homebrew's last-known versions. | No. |
 | `./slay update --check --fresh` | The same, after a `brew update` so Homebrew's versions are current. | Only Homebrew's own package index. |
