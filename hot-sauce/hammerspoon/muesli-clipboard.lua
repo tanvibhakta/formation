@@ -5,9 +5,9 @@
 -- and, once a dictation finishes (after the restore), puts the newest
 -- transcript back on top of the clipboard.
 
-local supportDir = os.getenv("HOME") .. "/Library/Application Support/Muesli"
+local supportDir = os.getenv("HOME") .. "/Library/Application Support/MuesliPreprod"
 local logPath = supportDir .. "/dictation-latency.log"
-local cli = "/Applications/Muesli.app/Contents/MacOS/muesli-cli"
+local cli = "/Applications/MuesliPreprod.app/Contents/MacOS/muesli-cli"
 
 local logOffset = 0
 local lastId = nil

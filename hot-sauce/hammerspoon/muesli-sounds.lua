@@ -4,7 +4,7 @@
 -- sound_start_requested / sound_release_requested at the exact moments it
 -- would have played its sounds, so this follows those log lines.
 
-local supportDir = os.getenv("HOME") .. "/Library/Application Support/Muesli"
+local supportDir = os.getenv("HOME") .. "/Library/Application Support/MuesliPreprod"
 local logPath = supportDir .. "/dictation-latency.log"
 local soundDir = hs.fs.pathToAbsolute(debug.getinfo(1, "S").source:sub(2)):match("(.*)/") .. "/sounds"
 
