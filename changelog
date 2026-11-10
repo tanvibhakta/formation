@@ -167,10 +167,26 @@ changelog_homepage_for() {
 # intentionally independent so changelog fetching works even if version
 # resolution failed).
 _changelog_cask_app_path() {
-	local token="$1" json app
+	local token="$1" json app pkg_id location
 	json="$(brew info --cask --json=v2 "$token" 2>/dev/null)" || return 1
 	[ -z "$json" ] && return 1
 	app=$(printf '%s' "$json" | jq -r '[.casks[0].artifacts[]? | select(has("app")) | .app[0]?] | map(select(. != null)) | first // empty' 2>/dev/null)
+
+	# Casks that install from a .pkg (zoom, tailscale-app) have no `app`
+	# artifact. Their app is named in the uninstall `delete` list, or else
+	# only in the installer receipt's location.
+	if [ -z "$app" ]; then
+		app=$(printf '%s' "$json" | jq -r '[.casks[0].artifacts[]? | select(has("uninstall")) | .uninstall[]? | .delete? // empty] | flatten | map(select(test("^/Applications/[^/]+\\.app$"))) | first // empty' 2>/dev/null)
+		app="${app#/Applications/}"
+	fi
+	if [ -z "$app" ]; then
+		for pkg_id in $(printf '%s' "$json" | jq -r '[.casks[0].artifacts[]? | select(has("uninstall")) | .uninstall[]? | .pkgutil? // empty] | flatten | .[]' 2>/dev/null); do
+			location=$(pkgutil --pkg-info "$pkg_id" 2>/dev/null | sed -n 's/^location: //p')
+			case "$location" in
+				Applications/*.app) app="${location#Applications/}"; break ;;
+			esac
+		done
+	fi
 	[ -z "$app" ] && return 1
 	# FORMATION_APPDIR: test suite only, so tests never read the real /Applications.
 	printf '%s/%s' "${FORMATION_APPDIR:-/Applications}" "$app"

@@ -187,6 +187,8 @@ detect_outdated_casks() {
 		app_path=$(_changelog_cask_app_path "$token" 2>/dev/null)
 		if [ -n "$app_path" ] && [ -f "$app_path/Contents/Info.plist" ]; then
 			real_version=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$app_path/Contents/Info.plist" 2>/dev/null)
+			# Some apps (Steam) set only the build version.
+			[ -z "$real_version" ] && real_version=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$app_path/Contents/Info.plist" 2>/dev/null)
 		fi
 
 		if [ -n "$real_version" ]; then
@@ -646,7 +648,10 @@ process_record() {
 	fi
 
 	if ask "Update ${name}?" N; then
-		if _run_upgrade "$kind" "$name" "$extra"; then
+		if [ "${SLAY_DRY_RUN:-0}" = "1" ]; then
+			_run_upgrade "$kind" "$name" "$extra"
+			print_success_muted "${name}: dry run, nothing changed."
+		elif _run_upgrade "$kind" "$name" "$extra"; then
 			print_success "${name} updated."
 		else
 			print_error "${name} failed to update." "- see above, or re-run with the underlying tool directly to debug."

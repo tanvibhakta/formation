@@ -213,6 +213,8 @@ run_update() { cd "$FORMATION"; run_clean "${VARS[@]}" ./slay update "$@"; }
     output_has "[DRY RUN] would run:"
     output_has "brew upgrade gh"
     none_called "brew upgrade"
+    output_lacks "gh updated."
+    output_has "gh: dry run, nothing changed."
 }
 
 @test "U9. a failed upgrade is reported and the loop carries on" {
@@ -317,6 +319,67 @@ EOF
     output_has "## node (same major) (node) 22.1.0 -> 22.5.0"
     output_has "**SECURITY RELEASE**"
     output_has "Node 22.5 notes"
+}
+
+# An app whose Info.plist has only a build version (no CFBundleShortVersionString).
+fake_app_build_only() {
+    mkdir -p "$HOME/Applications/$1/Contents"
+    cat > "$HOME/Applications/$1/Contents/Info.plist" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict><key>CFBundleVersion</key><string>$2</string></dict></plist>
+EOF
+}
+
+# Casks with no `app` artifact install from a .pkg: the app is named either in
+# the cask's uninstall `delete` list (zoom) or only in the installer receipt
+# (tailscale-app). Both apps self-updated past brew's record.
+pkg_cask_world() {
+    printf 'zoom\ntailscale-app\nsteam\n' >> "$FORMATION/swag/casks"
+    json brew-outdated.json <<'EOF'
+{"formulae":[],"casks":[
+  {"name":"zoom","installed_versions":["5.10.7.7748"],"current_version":"7.2.5.90525"},
+  {"name":"tailscale-app","installed_versions":["1.90.9"],"current_version":"1.104.5"},
+  {"name":"steam","installed_versions":["4.0"],"current_version":"6.1"}]}
+EOF
+    json brew-info-cask-zoom.json <<'EOF'
+{"casks":[{"token":"zoom","homepage":"https://zoom.us","artifacts":[
+  {"uninstall":[{"pkgutil":"us.zoom.pkg.videomeeting","delete":["/Applications/zoom.us.app","/Library/Internet Plug-Ins/ZoomUsPlugIn.plugin"]}]},
+  {"pkg":["zoomusInstallerFull.pkg"]}]}]}
+EOF
+    json brew-info-cask-tailscale-app.json <<'EOF'
+{"casks":[{"token":"tailscale-app","homepage":"https://tailscale.com","artifacts":[
+  {"uninstall":[{"pkgutil":"com.tailscale.ipn.macsys","delete":["/usr/local/bin/tailscale"]}]},
+  {"pkg":["Tailscale.pkg"]}]}]}
+EOF
+    json brew-info-cask-steam.json <<'EOF'
+{"casks":[{"token":"steam","homepage":"https://store.steampowered.com","artifacts":[{"app":["Steam.app"]}]}]}
+EOF
+    printf 'package-id: com.tailscale.ipn.macsys\nversion: 1.90.9\nlocation: Applications/Tailscale.app\n' > "$FAKE/pkgutil-com.tailscale.ipn.macsys.txt"
+    fake_app zoom.us.app 7.1.9
+    fake_app Tailscale.app 1.94.2
+    fake_app_build_only Steam.app 6.1
+}
+
+@test "U15. cask versions come from the app on disk, also for .pkg casks and build-only plists" {
+    pkg_cask_world
+    run_update --check
+    [ "$status" -eq 0 ]
+    no_var_leaks
+    output_has "zoom: 7.1.9 -> 7.2.5.90525"
+    output_lacks "zoom: 7.1.9 -> 7.2.5.90525 [MAJOR]"
+    output_has "tailscale-app: 1.94.2 -> 1.104.5"
+    output_lacks "steam:"
+}
+
+@test "U16. .pkg casks show the on-disk version in the prompt, not the brew record" {
+    pkg_cask_world
+    ANSWERS=y
+    run_update zoom
+    [ "$status" -eq 0 ]
+    output_has "7.1.9 → "
+    output_lacks "(version from brew record)"
+    called "brew upgrade --cask zoom"
 }
 
 @test "U14. ./slay update from a clone elsewhere: relocates, then still runs update mode" {

@@ -1,0 +1,11 @@
+#!/bin/bash
+. "${0%/*}/_log"
+# Installer receipts. State: $FAKE/pkgutil-<package id>.txt holds the
+# `pkgutil --pkg-info <id>` output; no file means no receipt (exit 1).
+case "$1" in
+  --pkg-info)
+    f="$FAKE/pkgutil-$2.txt"
+    [ -f "$f" ] || { echo "No receipt for '$2' found at '/'." >&2; exit 1; }
+    cat "$f" ;;
+esac
+exit 0
