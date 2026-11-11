@@ -62,12 +62,26 @@ ssh -t Tanvis-MacBook-Pro.local 'sudo -u _opremote /opt/op-remote/signin.sh && ~
 The first sign-in as `_opremote` asks for your Secret Key and password; later ones
 ask for the password only.
 
+## Keepalive (`keepalive.sh`)
+
+A LaunchDaemon, `com.tanvi.op-remote-keepalive`, runs `keepalive.sh` as `_opremote`
+every 10 minutes and at boot, independent of the Hermes gateway. It:
+
+- runs `op whoami` so the CLI session never sits idle for 30 minutes. Gateway
+  restarts reuse the saved session, so **only a reboot needs a new sign-in**;
+- rebuilds the secrets list hourly. op-remote reloads it every 5 minutes, so **a
+  new 1Password item in alt.inc or Private becomes requestable within about an
+  hour**, with nothing to run;
+- messages Tanvi once, through the approval bot, when the session is gone, with
+  the sign-in command. It keeps the bot token in `/var/opremote/telegram.cache`
+  (mode 0600) for this, because it can't read 1Password without a session.
+
 ## Traps
 
-- **Sign in again after every gateway restart or reboot.** The session lives only
-  while op-remote keeps it alive.
-- **New 1Password items need a new sign-in** (or rerun `gen-secrets.py`) before
-  Hermes can name them.
+- **Sign in again after a reboot.** The approval bot tells you. The master
+  password is never stored, so this can't be automated.
+- **The keepalive assumes `op whoami` resets the 30-minute idle timer.** If a
+  session ever lapses anyway, the bot asks you to sign in.
 - **The trust moment is the install.** `setup.sh` stages files in `/tmp` and the
   root script trusts them. Run it when Hermes isn't mid-task.
 - **Approved secrets reach the command Hermes runs.** Approval controls which

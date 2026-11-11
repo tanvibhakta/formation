@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Installed by isolate.sh to /Library/LaunchDaemons. Runs keepalive.sh as _opremote
+     every 10 minutes and at boot, independent of the Hermes gateway. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.tanvi.op-remote-keepalive</string>
+  <key>ProgramArguments</key>
+  <array><string>/bin/zsh</string><string>/opt/op-remote/keepalive.sh</string></array>
+  <key>UserName</key><string>_opremote</string>
+  <key>GroupName</key><string>_opremote</string>
+  <key>StartInterval</key><integer>600</integer>
+  <key>RunAtLoad</key><true/>
+  <key>StandardErrorPath</key><string>/var/opremote/keepalive.log</string>
+</dict>
+</plist>

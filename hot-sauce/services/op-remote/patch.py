@@ -24,16 +24,26 @@ var __texts = new Map;
 function __esc(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
-async function __loadRefs(envFile) {
+async function __readRefs(envFile) {
   const { secretVars } = await readEnvFile(envFile);
+  const refs = new Map, labels = new Map;
   for (const v of secretVars)
-    __refs.set(v.name, v.ref);
+    refs.set(v.name, v.ref);
   // "#: NAME<TAB>alt.inc › Item › field" lines from gen-secrets.py: readable labels.
   for (const line of (await Bun.file(envFile).text()).split("\n")) {
     const m = line.match(/^#: (\S+)\t(.+)$/);
     if (m)
-      __labels.set(m[1], m[2]);
+      labels.set(m[1], m[2]);
   }
+  __refs = refs;
+  __labels = labels;
+}
+async function __loadRefs(envFile) {
+  await __readRefs(envFile);
+  // keepalive.sh rebuilds the list hourly; pick up new items without a restart.
+  setInterval(() => {
+    __readRefs(envFile).catch((e) => console.error("[op-remote] list reload failed:", e));
+  }, 5 * 60 * 1000);
   setInterval(() => {
     Bun.spawn(["op", "whoami"], { stdout: "ignore", stderr: "ignore" });
   }, 10 * 60 * 1000);

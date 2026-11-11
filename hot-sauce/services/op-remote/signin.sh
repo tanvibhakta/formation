@@ -28,6 +28,7 @@ token=$(op signin --account "$address" --raw)
 umask 077
 print -r -- "$shorthand"$'\n'"$token" > $HOME/session
 unset token
+rm -f $HOME/needs-signin.notified   # so keepalive.sh messages again next time
 print "Saved the session for op-remote."
 
 # Rebuild the list of requestable secrets (references only). Hermes's user can read it,

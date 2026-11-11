@@ -8,7 +8,7 @@ host=${1:-Tanvis-MacBook-Pro.local}
 stage=/tmp/op-remote-stage
 
 ssh "$host" "rm -rf $stage && mkdir -m 700 $stage"
-scp -q "$here"/{isolate.sh,patch.py,gen-secrets.py,serve.sh,signin.sh,op-remote,telegram.env} "$host:$stage/"
+scp -q "$here"/{isolate.sh,patch.py,gen-secrets.py,serve.sh,signin.sh,keepalive.sh,com.tanvi.op-remote-keepalive.plist,op-remote,telegram.env} "$host:$stage/"
 
 # Root part: hidden user, root-owned code, sudo rule.
 ssh -t "$host" "sudo /bin/zsh $stage/isolate.sh $stage"
@@ -42,6 +42,9 @@ rm -rf $old
 export PATH="$HOME/.nvm/versions/node/v24.21.0/bin:$PATH"
 npm uninstall -g @wyattjoh/op-remote >/dev/null 2>&1 || true
 print "Removed the unisolated install"
+
+# Load the new op-remote. Reuses the saved 1Password session if the keepalive kept it.
+~/.local/bin/hermes gateway restart >/dev/null && print "Restarted the Hermes gateway"
 REMOTE
 
 print "\nNext, sign _opremote into 1Password (Secret Key and password the first time):"

@@ -67,7 +67,7 @@ copy_signed /usr/local/bin/op $opt/bin/op 2BUA8C4S2C                  # AgileBit
 copy_signed "$(ls /Users/$hermes_user/.nvm/versions/node/*/lib/node_modules/bun/bin/bun.exe | head -1)" \
   $opt/bin/bun 7FRXF46ZSN                                              # Bun
 
-for f in serve.sh signin.sh op-remote; do install -o root -g wheel -m 0755 $stage/$f $opt/$f; done
+for f in serve.sh signin.sh keepalive.sh op-remote; do install -o root -g wheel -m 0755 $stage/$f $opt/$f; done
 for f in telegram.env gen-secrets.py; do install -o root -g wheel -m 0644 $stage/$f $opt/$f; done
 ln -sf $opt/op-remote $opt/bin/op-remote
 rm -rf $tmp
@@ -77,5 +77,13 @@ rule=/etc/sudoers.d/op-remote
 print "$hermes_user ALL=($svc) NOPASSWD: $opt/serve.sh" > $rule.tmp
 chmod 0440 $rule.tmp
 visudo -cf $rule.tmp >/dev/null && mv $rule.tmp $rule
+
+# 5. Keepalive daemon, independent of the Hermes gateway: keeps the 1Password session
+#    alive across gateway restarts, rebuilds the list hourly, and asks Tanvi to sign
+#    in after a reboot.
+daemon=/Library/LaunchDaemons/com.tanvi.op-remote-keepalive.plist
+install -o root -g wheel -m 0644 $stage/com.tanvi.op-remote-keepalive.plist $daemon
+launchctl bootout system $daemon >/dev/null 2>&1 || true
+launchctl bootstrap system $daemon
 
 print "Isolation in place."
