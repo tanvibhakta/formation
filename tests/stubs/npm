@@ -1,0 +1,7 @@
+#!/bin/bash
+. "${0%/*}/_log"
+# `npm view <pkg> <field>`: serves $FAKE/npm/<pkg>.<field>; missing → exit 1.
+[ "$1" = "view" ] || exit 0
+f="$FAKE/npm/$2.$3"
+[ -f "$f" ] || exit 1
+cat "$f"

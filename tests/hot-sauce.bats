@@ -14,10 +14,11 @@ setup_file() { formation_setup_file; }
 
 HS() { echo "$FORMATION/hot-sauce"; }
 
-# Files and link targets under $HOME, excluding the repo copy, plus every file
-# in the repo copy modified since $1 (a marker file).
+# Files and link targets under $HOME, excluding the repo copy and slay's own run
+# logs (each run adds one by design), plus every file in the repo copy modified
+# since $1 (a marker file).
 snapshot() {
-    (cd "$HOME" && find . -path ./Code/formation -prune -o -print | LC_ALL=C sort | while IFS= read -r p; do
+    (cd "$HOME" && find . \( -path ./Code/formation -o -path ./Library/Logs/formation \) -prune -o -print | LC_ALL=C sort | while IFS= read -r p; do
         if [ -L "$p" ]; then echo "L $p -> $(readlink "$p")"
         elif [ -f "$p" ]; then echo "F $p $(shasum -a 256 < "$p" | cut -c1-16)"
         else echo "D $p"; fi

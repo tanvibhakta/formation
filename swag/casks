@@ -1,4 +1,5 @@
 1password
+1password-cli
 8bitdo-ultimate-software
 alfred
 android-platform-tools
@@ -6,7 +7,7 @@ beeper
 betterdisplay
 calibre
 chromium
-claude-code
+claude-code@latest
 codex
 discord
 dropbox
@@ -17,7 +18,6 @@ figma
 firefox
 freedom
 ghostty
-github
 hammerspoon
 google-chrome
 imageoptim
@@ -27,11 +27,10 @@ keycastr
 muesli
 numi
 obsidian
-opera
 orbstack
-postman
 rectangle
 signal
+slack
 spotify
 steam
 tailscale-app
@@ -39,7 +38,6 @@ todoist-app
 tor-browser
 transmission
 vlc
-webstorm
 whatsapp
 zed
 zoom

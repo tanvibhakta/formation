@@ -3,6 +3,7 @@
 [] How do I get apps to use settings files I've stored on other platforms like iCloud and Dropbox during setup?
 [] How do I copy over setting files for local terminal changes, such as my global gitignore and my bash profile?
 [] How do I allow the option of only having certain libraries on certain machines? separate asset files entirely or a build step on each one? g
+[] An uninstall step: offer to remove anything Homebrew or the App Store has installed that is no longer listed in swag/.
 
 # 🐝 Formation <a href="https://www.patreon.com/minamarkham"><img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="100"></a>
 
@@ -27,13 +28,14 @@ less slay steps/*
 
 `slay` is a zsh script (macOS's default shell, so a fresh Mac can run it). It
 runs the files in `steps/` in the order it lists them, one per chapter of
-output; shared helpers live in `twirl`.
+output; shared helpers live in `twirl`, and update mode's in `update` and
+`changelog`.
 
 Slay:
 
 ```sh
 cd formation
-./slay 2>&1 | tee ~/slay.log
+./slay
 ```
 Just follow the prompts and you’ll be fine. 👌
 
@@ -45,10 +47,29 @@ Once the script is done, quit and relaunch Terminal.
 
 It is highly recommended to run the script regularly to keep your computer up to date.
 
-Your last Formation run will be saved to `~/slay.log`. To review it, run `less ~/slay.log`.
+Every run (including `./slay update`) is also saved to `~/Library/Logs/formation/slay-<date>-<time>.log`; the newest 20 are kept. The first line of each run says which file. To review the latest: `less -R "$(ls -t ~/Library/Logs/formation/*.log | head -1)"`.
 
 That's it! :sparkles:
 
+## Commands
+
+| Command | What it does | Changes anything? |
+|---|---|---|
+| `./slay` | Full setup: installs whatever in `swag/` is missing, adds hot sauce, then runs the update loop below. | Yes. Asks for your password once. |
+| `./slay update` | Checks everything in `swag/` (plus nvm, Node and Bash-it) for a newer version. For each outdated item it shows the version jump, a `MAJOR` flag, and release notes, then asks "Update? [Y/n/f]". Enter means yes, `n` skips, and `f` opens every release's notes in `less` (`q` returns to the prompt). Skips every install step. | Everything you don't skip. |
+| `./slay update --yes [<name>]` | Upgrades everything outdated (or one item) without showing notes or asking. | Yes. |
+| `./slay update <name>` | The same, for one item: a formula or cask token (`gh`, `zoom`), an App Store app name or id (`Kindle`, `302584613`), a pnpm package, or `node`, `nvm`, `bash-it`. | Unless you type `n`. |
+| `./slay update --check` | Lists what's outdated, grouped by source, and what's listed in `swag/` but not installed. No prompts. Uses Homebrew's last-known versions. | No. |
+| `./slay update --check --fresh` | The same, after a `brew update` so Homebrew's versions are current. | Only Homebrew's own package index. |
+| `./slay update --changelogs [<name>]` | Prints the full release notes for everything outdated (or one item) as plain Markdown. Progress goes to stderr, so `./slay update --changelogs > notes.md` gives a clean file. | No. |
+| `SLAY_DRY_RUN=1 ./slay update [<name>]` | Walks through the prompts, but prints each upgrade command instead of running it. | No. |
+| `bats --jobs 10 tests/` | Runs the test suite against fake tools in a throwaway home folder (see [Tests](#tests)). | No. |
+
+The update check takes about a minute before the first prompt, mostly asking Homebrew about each cask.
+
+An app's version is read from the app itself in `/Applications`, not from Homebrew's record, because most apps update themselves. Homebrew then only offers an upgrade when it really has something newer.
+
+Release notes come from, in order: a small hand-kept map of URLs for vendors whose changelog isn't worth scraping (webstorm, alfred, 1password, etc.), a GitHub releases page when the project's repo is known, a cask's own Sparkle appcast, the Mac App Store page, or finally the project's homepage - whichever resolves first. When one is fetchable, a short inline excerpt is shown alongside the link.
 ## What it sets up
 The setup process will install:
 
@@ -219,7 +240,8 @@ Formation functions such as `step` and `link` can be used in your `~/.hot-sauce`
 bats --jobs 10 tests/
 ```
 
-Characterization tests for `slay`, `twirl` and `hot-sauce/setup.sh`. Takes about 20 seconds.
+Characterization tests for `slay`, `twirl`, `hot-sauce/setup.sh` and update mode
+(`update`, `changelog`). Takes about 30 seconds.
 Needs `bats-core` and `parallel` (both in `swag/brews`).
 
 Each test runs a script as a subprocess against a throwaway `$HOME`, with fake

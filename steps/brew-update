@@ -6,3 +6,6 @@
 ###############################################################################
 chapter "Updating Homebrew formulae…"
 brew update
+# `./slay update`'s own loop (run unconditionally below, after hot sauce)
+# only runs `brew update` once per invocation - it's already fresh from here.
+_BREW_UPDATE_DONE=1

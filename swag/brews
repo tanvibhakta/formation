@@ -9,8 +9,10 @@ git
 go
 hub
 imagemagick
+imageoptim-cli
 mas
 mkcert
+netlify-cli
 nginx
 pnpm
 rbenv
@@ -21,6 +23,5 @@ tailscale
 tmux
 wget
 yt-dlp
-1password-cli
 bats-core
 parallel
