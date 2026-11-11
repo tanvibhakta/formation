@@ -41,8 +41,8 @@ CHANGELOG_NOTE=""
 # `curl -sI -L --max-time 10 <url>` returning 200 before shipping.
 ###############################################################################
 changelog_url_from_map() {
-	case "$1" in
-		webstorm)    printf '%s' "https://www.jetbrains.com/webstorm/whatsnew/" ;;
+	case "${1%@*}" in  # claude-code@latest -> claude-code
+		webstorm)   printf '%s' "https://www.jetbrains.com/webstorm/whatsnew/" ;;
 		alfred)      printf '%s' "https://www.alfredapp.com/changelog/" ;;
 		1password)   printf '%s' "https://releases.1password.com/mac/" ;;
 		claude-code) printf '%s' "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" ;;
