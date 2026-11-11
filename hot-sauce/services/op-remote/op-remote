@@ -1,0 +1,4 @@
+#!/bin/zsh
+# Client entry point for Hermes: `op-remote run --token=… --sock=… --env-file=… -- <cmd>`.
+# Runs the same patched, root-owned op-remote that the server uses.
+exec /opt/op-remote/bin/bun /opt/op-remote/lib/cli.js "$@"

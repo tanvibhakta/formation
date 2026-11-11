@@ -1,5 +1,14 @@
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
+# Claude Code over SSH. Its login lives in the macOS Keychain, which an SSH session
+# can't unlock, so Hermes saw "not logged in" when it SSHed into this laptop. Local
+# shells keep using the Keychain; only SSH sessions get the long-lived token.
+# Set up by hot-sauce/services/laptop-ssh/claude-token.sh.
+if [[ -n "$SSH_CONNECTION" && -r "$HOME/.config/claude-ssh/oauth-token" ]]; then
+  read -r CLAUDE_CODE_OAUTH_TOKEN < "$HOME/.config/claude-ssh/oauth-token"
+  export CLAUDE_CODE_OAUTH_TOKEN
+fi
+
 # Blacksmith testbox routing has to reach NON-INTERACTIVE shells. .zshrc is
 # interactive-only, so an agent's tool call — and any git hook spawned outside a
 # login shell — saw no id and silently verified on this machine instead, which is
